@@ -12,16 +12,18 @@ ouverture future (communauté/paiement) non construite mais non interdite.
 
 ## Stack
 
-(recette Foreman, à confirmer en BOOTSTRAP/ORIENT)
-- Runtime : Node 22 LTS épinglé, TypeScript partout
-- Backend : Hono (sert le contenu + progression), better-sqlite3 (WAL)
+(recette Foreman, installée en BOOTSTRAP le 2026-08-14)
+- Runtime : Node 22 LTS épinglé (`.nvmrc` + `engines`), TypeScript partout
+- Backend : Hono sur port 4620 (127.0.0.1), better-sqlite3
 - UI : React 19 + Vite, CSS pur
-- Tests : Vitest
-- Dev : 2 process (Vite proxy → backend). Prod : 1 process (backend sert les assets).
+- Tests : Vitest (projets `server` en node, `ui` en jsdom + Testing Library)
+- Dev : 2 process (Vite proxy `/api` → 4620). Prod : 1 process (backend sert les assets).
 
 ## Commandes
 
-(à remplir en BOOTSTRAP)
+- `npm run dev` : serveur (port 4620) + UI Vite en parallèle
+- `npm test` : tests Vitest — `npm run typecheck` : tsc --noEmit
+- `npm run build` : typecheck + build UI — `npm start` : serveur production
 
 ## Structure
 
@@ -36,8 +38,10 @@ docs/          # Intrants FIND : références UX
 ## Phase en cours
 
 **FIND terminé (2026-08-14)** : PRD validé après critique advisor (14 findings
-intégrés). **Prochaine étape : BOOTSTRAP** (greenfield), puis SPEC (format de
-contenu + SPEC visuelle), REFINE, GENERATE. La conversion de FORMATION_CLAUDE
+intégrés). **BOOTSTRAP terminé (2026-08-14)** : stack installée (typecheck vert,
+better-sqlite3 et esbuild vérifiés), hooks FORGE actifs, README + docs/API.md.
+**Prochaine étape : SPEC** (format de contenu + SPEC visuelle), puis REFINE,
+GENERATE. La conversion de FORMATION_CLAUDE
 au format Parcours est un chantier éditorial dédié (après conversion : Parcours
 = seule référence du contenu, FORMATION_CLAUDE gelé).
 
