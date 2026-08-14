@@ -46,7 +46,7 @@ advisor appliquée (22 findings), puis **révisée après benchmark marché**
 (P005/P006/P007). **Prochaine étape : validation de la SPEC par
 Cédric**, puis ORIENT léger (lib markdown/sanitisation, Shiki pour la
 coloration), REFINE, GENERATE.
-Reprendre via `.workflow/sessions/2026-08-14-naissance-find-bootstrap-spec.md`. La conversion de FORMATION_CLAUDE
+Reprendre via `.workflow/sessions/2026-08-14-benchmark-marche-revision-spec.md`. La conversion de FORMATION_CLAUDE
 au format Parcours est un chantier éditorial dédié (après conversion : Parcours
 = seule référence du contenu, FORMATION_CLAUDE gelé).
 
