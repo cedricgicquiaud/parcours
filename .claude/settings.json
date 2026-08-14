@@ -1,0 +1,26 @@
+{
+  "_comment": "Config Claude Code PARTAGÉE (versionnée). Déclare les hooks de vérification FORGE. Les réglages personnels (modèle, permissions, plugins) restent dans settings.local.json, non commité.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/lint-on-edit.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/verify-on-stop.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
