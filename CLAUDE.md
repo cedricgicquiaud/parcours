@@ -40,8 +40,10 @@ docs/          # Intrants FIND : références UX
 **FIND terminé (2026-08-14)** : PRD validé après critique advisor (14 findings
 intégrés). **BOOTSTRAP terminé (2026-08-14)** : stack installée (typecheck vert,
 better-sqlite3 et esbuild vérifiés), hooks FORGE actifs, README + docs/API.md.
-**Prochaine étape : SPEC** (format de contenu + SPEC visuelle), puis REFINE,
-GENERATE. La conversion de FORMATION_CLAUDE
+**SPEC rédigée (2026-08-14, statut DRAFT)** : `.workflow/SPEC.md`, critique
+advisor appliquée (22 findings). **Prochaine étape : validation de la SPEC par
+Cédric**, puis ORIENT léger (lib markdown/sanitisation), REFINE, GENERATE.
+Reprendre via `.workflow/sessions/2026-08-14-naissance-find-bootstrap-spec.md`. La conversion de FORMATION_CLAUDE
 au format Parcours est un chantier éditorial dédié (après conversion : Parcours
 = seule référence du contenu, FORMATION_CLAUDE gelé).
 
