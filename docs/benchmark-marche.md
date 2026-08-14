@@ -101,16 +101,29 @@ La SPEC déclasse explicitement la recherche de la V1 (§ 8). Le benchmark
 - Là où elle existe, la recherche sert à **retrouver** un contenu déjà lu, pas
   à explorer ; elle est intégrée au sommaire, pas en page séparée.
 
-Note technique pour plus tard : Pagefind, le meilleur outil du moment, indexe au
-build — inadapté à Parcours qui scanne à chaque requête (C-R1). Le candidat
-serait Orama, côté serveur.
+Note technique : Pagefind, le meilleur outil du moment, indexe au build —
+inadapté à Parcours qui scanne à chaque requête (C-R1). Le candidat serait
+Orama, côté serveur.
+
+> **Décision de Cédric, 2026-08-14 (P007) : la recherche entre en V1 malgré cet
+> arbitrage**, et avec un périmètre plus large que le PRD — sur le contenu des
+> leçons, pas seulement leurs titres. Motif : utilité quotidienne ressentie.
+> Le constat ci-dessus reste vrai et explique pourquoi ce n'était pas
+> obligatoire ; il ne le rend pas inutile. Spécifiée en SPEC § 3B, avec une
+> conséquence non triviale trouvée à l'écriture des règles : **les indices et
+> solutions sont exclus de l'index**, faute de quoi un extrait de résultat
+> dévoilerait une solution sans geste volontaire (non négociable du PRD).
 
 Sources : [Static site search 2026 — Pagefind vs Algolia vs Lunr](https://dev.to/morinaga/static-site-search-for-astro-in-2026-why-i-picked-pagefind-over-algolia-and-lunr-6dg) ·
 [Open LMS — navigation par sommaire](https://support.openlms.net/hc/en-us/articles/23459555546012-Course-Navigation-with-the-Table-of-Contents-TOC)
 
 ---
 
-## 5. Trois arbitrages à trancher
+## 5. Trois arbitrages à trancher — TRANCHÉS le 2026-08-14
+
+Les trois recommandations ci-dessous ont été retenues par Cédric et sont
+appliquées : A-1 → SPEC F-R13 (décision P005), A-2 → SPEC F-R14 (décision P006),
+A-3 → SPEC § 8 + backlog.
 
 ### A-1 — Accepter les noms d'admonitions anglais en alias (recommandé)
 

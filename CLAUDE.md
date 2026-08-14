@@ -41,8 +41,11 @@ docs/          # Intrants FIND : références UX
 intégrés). **BOOTSTRAP terminé (2026-08-14)** : stack installée (typecheck vert,
 better-sqlite3 et esbuild vérifiés), hooks FORGE actifs, README + docs/API.md.
 **SPEC rédigée (2026-08-14, statut DRAFT)** : `.workflow/SPEC.md`, critique
-advisor appliquée (22 findings). **Prochaine étape : validation de la SPEC par
-Cédric**, puis ORIENT léger (lib markdown/sanitisation), REFINE, GENERATE.
+advisor appliquée (22 findings), puis **révisée après benchmark marché**
+(`docs/benchmark-marche.md`) : F-R13, F-R14 et § 3B recherche plein texte
+(P005/P006/P007). **Prochaine étape : validation de la SPEC par
+Cédric**, puis ORIENT léger (lib markdown/sanitisation, Shiki pour la
+coloration), REFINE, GENERATE.
 Reprendre via `.workflow/sessions/2026-08-14-naissance-find-bootstrap-spec.md`. La conversion de FORMATION_CLAUDE
 au format Parcours est un chantier éditorial dédié (après conversion : Parcours
 = seule référence du contenu, FORMATION_CLAUDE gelé).
@@ -53,7 +56,9 @@ Voir .workflow/DECISIONS.md — P001 (lecteur, pas CMS : création = markdown +
 Claude Code, aucun outil auteur), P002 (mono-utilisateur local, ouverture future
 bornée : rien de multi-user, pas d'impasses), P003 (légal : contenu Academy
 jamais intégré, liens sortants + non-affiliation), P004 (ids stables de leçons =
-clé de progression ; formatVersion obligatoire).
+clé de progression ; formatVersion obligatoire), P005 (alias anglais des blocs
+`:::`), P006 (manifeste seul, aucun frontmatter), P007 (recherche plein texte
+dans la V1, indices et solutions exclus de l'index).
 
 Non négociables du PRD : tout local par défaut ; plateforme en lecture seule sur
 les dossiers de formation (seule la base de progression est écrite) ; solutions
