@@ -9,6 +9,7 @@ import { BaseJetons } from "./comptes/jetons";
 import { ExpediteurJournal } from "./courriel/envoi";
 import { BaseReglages } from "./reglages";
 import type { MoteurRendu } from "./markdown/rendu";
+import { BaseCriteres } from "./progression/criteres";
 import { BaseProgression } from "./progression/db";
 import { MoteurRecherche } from "./recherche/moteur";
 
@@ -21,6 +22,7 @@ export interface ContexteTest {
   racine: string;
   app: ReturnType<typeof creerApi>;
   base: BaseProgression;
+  criteres: BaseCriteres;
   comptes: BaseComptes;
   jetons: BaseJetons;
   reglages: BaseReglages;
@@ -53,6 +55,7 @@ export async function creerContexteTest(options: {
 
   const ouverte = ouvrirBase(path.join(dossierDb, "parcours.db"));
   const base = new BaseProgression(ouverte.db);
+  const criteres = new BaseCriteres(ouverte.db);
   const comptes = new BaseComptes(ouverte.db);
   const jetons = new BaseJetons(ouverte.db);
   const reglages = new BaseReglages(ouverte.db);
@@ -62,6 +65,7 @@ export async function creerContexteTest(options: {
   const deps: DependancesApi = {
     dossierFormations: racine,
     base,
+    criteres,
     comptes,
     jetons,
     reglages,
@@ -126,6 +130,7 @@ export async function creerContexteTest(options: {
     racine,
     app,
     base,
+    criteres,
     comptes,
     jetons,
     reglages,

@@ -115,6 +115,13 @@ export interface ReponseFormation {
   avancement: Avancement;
 }
 
+/** Un critère de réussite et son état pour le compte connecté (CR-R15). */
+export interface EtatCritere {
+  id: string;
+  texte: string;
+  coche: boolean;
+}
+
 export interface ReponseLecon {
   formationId: string;
   formationTitre: string;
@@ -125,6 +132,10 @@ export interface ReponseLecon {
   /** HTML déjà assaini par le serveur (A-R5). */
   html: string;
   faite: boolean;
+  /** Critères de la leçon, dans l'ordre du document (CR-R15). */
+  criteres: EtatCritere[];
+  /** Vrai si la leçon dépasse le plafond de critères suivis (CR-R2b). */
+  criteresTronques: boolean;
   /** Rang de la leçon dans la formation, à partir de 1. */
   position: number;
   total: number;
@@ -142,6 +153,11 @@ export interface ReponseRechercheApi {
 export interface ReponseProgression {
   faite: boolean;
   avancement: Avancement;
+}
+
+/** Réponse d'une bascule de critère : l'état complet de la leçon (CR-R14). */
+export interface ReponseCritere extends ReponseProgression {
+  criteres: EtatCritere[];
 }
 
 export interface ReponseSuppression {

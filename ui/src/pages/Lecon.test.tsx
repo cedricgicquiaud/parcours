@@ -17,6 +17,8 @@ function lecon(surcharge: Partial<ReponseLecon> = {}): ReponseLecon {
       '<details class="repliable repliable-solution"><summary>Solution</summary>' +
       '<div class="repliable-corps">Le contenu de la solution.</div></details>',
     faite: false,
+    criteres: [],
+    criteresTronques: false,
     position: 4,
     total: 5,
     precedente: { id: "sous-agents", titre: "Les sous-agents" },

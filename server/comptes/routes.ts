@@ -227,6 +227,8 @@ export function monterComptes(app: AppParcours, deps: DependancesAuth): void {
     }
 
     const progressionEffacee = deps.progression.effacerCompte(cible.id);
+    // CR-R8 : le détail part avec le compte, comme sa progression (CO-R8).
+    deps.criteres.effacerCompte(cible.id);
     deps.jetons.revoquerTous(cible.id);
     deps.comptes.supprimer(cible.id);
     return c.json({ supprime: true, progressionEffacee });

@@ -10,6 +10,7 @@ import { BaseJetons } from "./comptes/jetons";
 import { ExpediteurJournal } from "./courriel/envoi";
 import { BaseReglages } from "./reglages";
 import { MoteurRendu } from "./markdown/rendu";
+import { BaseCriteres } from "./progression/criteres";
 import { BaseProgression, UTILISATEUR_HERITE } from "./progression/db";
 import { MoteurRecherche } from "./recherche/moteur";
 import { cookieDeSession, creerContexteTest, MOT_DE_PASSE_TEST, type ContexteTest } from "./test-utils";
@@ -51,6 +52,7 @@ describe("installation initiale (AU-R1)", () => {
     app = creerApi({
       dossierFormations: path.join(dossier, "formations"),
       base,
+      criteres: new BaseCriteres(ouverte.db),
       comptes,
       jetons,
       reglages: new BaseReglages(ouverte.db),
@@ -333,6 +335,9 @@ describe("couverture de la garde de rôle (CO-R2)", () => {
       "DELETE /api/progression/:fid/:lid",
       "POST /api/progression/:fid/reset",
       "POST /api/progression/:fid/nettoyer",
+      // Critères de réussite : progression personnelle, comme les leçons (CR-R14).
+      "PUT /api/progression/:fid/:lid/criteres/:cid",
+      "DELETE /api/progression/:fid/:lid/criteres/:cid",
     ]);
 
     const nonProtegees = contexte.app.routes

@@ -43,8 +43,10 @@ import {
   type FormationValide,
   type ResultatScan,
 } from "./formations/scan";
-import type { MoteurRendu } from "./markdown/rendu";
+import { FORMAT_ID_CRITERE } from "./markdown/criteres";
+import type { CollecteCriteres, MoteurRendu } from "./markdown/rendu";
 import { calculerAvancement, voisines } from "./progression/calculs";
+import type { BaseCriteres } from "./progression/criteres";
 import type { BaseProgression } from "./progression/db";
 import type { MoteurRecherche } from "./recherche/moteur";
 import type {
@@ -58,6 +60,7 @@ import type {
   ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
+  ReponseCritere,
   ReponseLecon,
   ReponseProgression,
   ReponseRechercheApi,
@@ -67,6 +70,7 @@ import type {
 export interface DependancesApi {
   dossierFormations: string;
   base: BaseProgression;
+  criteres: BaseCriteres;
   comptes: BaseComptes;
   jetons: BaseJetons;
   reglages: BaseReglages;
@@ -129,6 +133,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
   const auth = {
     comptes: deps.comptes,
     progression: deps.base,
+    criteres: deps.criteres,
     jetons: deps.jetons,
     reglages: deps.reglages,
     expediteur: deps.expediteur,
@@ -505,11 +510,24 @@ export function creerApi(deps: DependancesApi): AppParcours {
     return c.json(reponse);
   });
 
-  app.get("/api/formations/:fid/lecons/:lid", async (c) => {
-    const resolu = await resoudre(c, c.req.param("fid"));
-    if (resolu instanceof Response) return resolu;
-    const { formation } = resolu;
-    const lid = c.req.param("lid");
+  /**
+   * Charge et rend une leçon pour le compte courant, critères compris. Partagé
+   * par la lecture et par les bascules de critères : les deux doivent voir
+   * exactement la même liste, sinon un critère valide deviendrait un 404.
+   */
+  async function rendreLeconDe(
+    c: Context<{ Variables: VariablesParcours }>,
+    formation: FormationValide,
+    lid: string,
+  ): Promise<
+    | Response
+    | {
+        entree: NonNullable<ReturnType<typeof trouverLecon>>;
+        html: string;
+        criteres: CollecteCriteres;
+        idsLecons: Set<string>;
+      }
+  > {
     const entree = trouverLecon(formation, lid);
     if (!entree) return c.json({ erreur: `leçon inconnue : ${lid}` }, 404);
 
@@ -523,7 +541,8 @@ export function creerApi(deps: DependancesApi): AppParcours {
       if (!infos.isFile() || infos.size > TAILLE_MAX_LECON) throw new Error("illisible");
       markdown = await fs.readFile(complet, "utf8");
     } catch {
-      // A-R3 : fichier disparu entre le scan et la lecture.
+      // A-R3 : fichier disparu entre le scan et la lecture. Aucune purge de
+      // critères ici (CR-R3) : une leçon illisible n'est pas une leçon vide.
       return c.json(
         {
           erreur: `fichier de leçon introuvable ou illisible : ${entree.lecon.fichier}`,
@@ -535,11 +554,35 @@ export function creerApi(deps: DependancesApi): AppParcours {
     const idsLecons = new Set(
       leconsOrdonnees(formation.manifeste).map(({ lecon }) => lecon.id),
     );
+    const criteres: CollecteCriteres = {
+      etats: deps.criteres.etatsDe(c.get("compte").id, formation.id, lid),
+      liste: [],
+      tronquee: false,
+    };
     const html = deps.rendu.rendre(markdown, {
       formationId: formation.id,
       dossier: formation.dossier,
       idsLecons,
+      criteres,
     });
+    // CR-R3 : le rendu a réussi, la liste fait foi — ce qui n'y est plus part.
+    deps.criteres.purgerOrphelins(
+      c.get("compte").id,
+      formation.id,
+      lid,
+      new Set(criteres.liste.map((critere) => critere.id)),
+    );
+    return { entree, html, criteres, idsLecons };
+  }
+
+  app.get("/api/formations/:fid/lecons/:lid", async (c) => {
+    const resolu = await resoudre(c, c.req.param("fid"));
+    if (resolu instanceof Response) return resolu;
+    const { formation } = resolu;
+    const lid = c.req.param("lid");
+    const rendue = await rendreLeconDe(c, formation, lid);
+    if (rendue instanceof Response) return rendue;
+    const { entree, html, criteres, idsLecons } = rendue;
     const { precedente, suivante, position } = voisines(formation.manifeste, lid);
 
     const reponse: ReponseLecon = {
@@ -551,6 +594,8 @@ export function creerApi(deps: DependancesApi): AppParcours {
       moduleTitre: entree.module.titre,
       html,
       faite: deps.base.leconsCochees(c.get("compte").id, formation.id).has(lid),
+      criteres: criteres.liste,
+      criteresTronques: criteres.tronquee,
       position: position + 1,
       total: idsLecons.size,
       precedente,
@@ -558,6 +603,61 @@ export function creerApi(deps: DependancesApi): AppParcours {
     };
     return c.json(reponse);
   });
+
+  /**
+   * Bascule d'un critère (CR-R14). La leçon est re-rendue pour connaître ses
+   * critères : c'est ce qui garantit qu'aucune coche orpheline ne peut naître
+   * d'un id inventé (CR-R4, A-R3).
+   */
+  async function basculerCritere(
+    c: Context<{ Variables: VariablesParcours }>,
+    cible: { fid: string; lid: string; cid: string },
+    coche: boolean,
+  ): Promise<Response> {
+    const resolu = await resoudre(c, cible.fid);
+    if (resolu instanceof Response) return resolu;
+    const { formation } = resolu;
+    const { lid, cid } = cible;
+    if (!FORMAT_ID_CRITERE.test(cid)) {
+      return c.json({ erreur: `identifiant de critère invalide : ${cid}` }, 400);
+    }
+
+    const rendue = await rendreLeconDe(c, formation, lid);
+    if (rendue instanceof Response) return rendue;
+    const liste = rendue.criteres.liste;
+    if (!liste.some((critere) => critere.id === cid)) {
+      return c.json({ erreur: `critère inconnu : ${cid}` }, 404);
+    }
+
+    const compteId = c.get("compte").id;
+    deps.criteres.basculer(compteId, formation.id, lid, cid, coche);
+    const etats = deps.criteres.etatsDe(compteId, formation.id, lid);
+    const criteres = liste.map((critere) => ({
+      ...critere,
+      coche: etats.get(critere.id) ?? critere.coche,
+    }));
+
+    // CR-R10 : cocher le dernier critère termine la leçon. CR-R12 : décocher
+    // ensuite ne la défait pas — revenir sur un détail ne doit pas coûter son
+    // avancement.
+    if (criteres.length > 0 && criteres.every((critere) => critere.coche)) {
+      deps.base.cocher(compteId, formation.id, lid);
+    }
+    const cochees = deps.base.leconsCochees(compteId, formation.id);
+    const reponse: ReponseCritere = {
+      faite: cochees.has(lid),
+      avancement: calculerAvancement(formation.manifeste, cochees),
+      criteres,
+    };
+    return c.json(reponse);
+  }
+
+  app.put("/api/progression/:fid/:lid/criteres/:cid", (c) =>
+    basculerCritere(c, c.req.param(), true),
+  );
+  app.delete("/api/progression/:fid/:lid/criteres/:cid", (c) =>
+    basculerCritere(c, c.req.param(), false),
+  );
 
   app.get("/api/formations/:fid/recherche", async (c) => {
     const resolu = await resoudre(c, c.req.param("fid"));
@@ -642,6 +742,9 @@ export function creerApi(deps: DependancesApi): AppParcours {
     if (resolu instanceof Response) return resolu;
     const { formation } = resolu;
     const supprimees = deps.base.reinitialiser(c.get("compte").id, formation.id);
+    // CR-R8 : repartir de zéro efface aussi le détail, sinon une leçon
+    // décochée garderait ses critères cochés.
+    deps.criteres.reinitialiser(c.get("compte").id, formation.id);
     return c.json(reponseSuppression(deps, c.get("compte").id, formation, supprimees));
   });
 

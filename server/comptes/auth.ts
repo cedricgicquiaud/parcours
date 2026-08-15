@@ -9,6 +9,7 @@ import {
   messageInscriptionExistante,
   messageReinitialisation,
 } from "../courriel/messages";
+import type { BaseCriteres } from "../progression/criteres";
 import type { BaseProgression } from "../progression/db";
 import type { BaseReglages } from "../reglages";
 import {
@@ -34,6 +35,7 @@ export interface VariablesParcours {
 export interface DependancesAuth {
   comptes: BaseComptes;
   progression: BaseProgression;
+  criteres: BaseCriteres;
   jetons: BaseJetons;
   reglages: BaseReglages;
   expediteur: Expediteur;

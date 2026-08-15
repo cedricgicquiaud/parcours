@@ -135,6 +135,7 @@ describe("GET /api/formations (C-R2, C-R3)", () => {
     const vide = creerApi({
       dossierFormations: path.join(racine, "nulle-part"),
       base,
+      criteres: contexte.criteres,
       comptes: contexte.comptes,
       jetons: contexte.jetons,
       reglages: contexte.reglages,

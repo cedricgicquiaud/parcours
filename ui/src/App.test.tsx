@@ -58,6 +58,8 @@ const lecon: ReponseLecon = {
   moduleId: "decouverte",
   moduleTitre: "Découverte",
   html: "<p>Une formation est un dossier.</p>",
+  criteres: [],
+  criteresTronques: false,
   faite: false,
   position: 2,
   total: 2,

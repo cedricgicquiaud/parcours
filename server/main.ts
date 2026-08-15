@@ -11,6 +11,7 @@ import { creerExpediteur } from "./courriel/envoi";
 import { BaseReglages } from "./reglages";
 import { cheminBaseProgression, dossierFormations, HOTE, PORT, RACINE_PROJET } from "./config";
 import { MoteurRendu } from "./markdown/rendu";
+import { BaseCriteres } from "./progression/criteres";
 import { BaseProgression } from "./progression/db";
 import { MoteurRecherche } from "./recherche/moteur";
 
@@ -25,6 +26,7 @@ async function demarrer(): Promise<void> {
     ouverte.reinitialisee,
     ouverte.sauvegardeCorrompue,
   );
+  const criteres = new BaseCriteres(ouverte.db);
   const comptes = new BaseComptes(ouverte.db);
   const jetons = new BaseJetons(ouverte.db);
   const reglages = new BaseReglages(ouverte.db);
@@ -38,6 +40,7 @@ async function demarrer(): Promise<void> {
     creerApi({
       dossierFormations: formations,
       base,
+      criteres,
       comptes,
       jetons,
       reglages,
