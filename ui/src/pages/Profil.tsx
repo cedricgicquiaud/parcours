@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { api, type Compte } from "../api";
-import { Bandeau, BlocErreur, Icone, PiedPlateforme } from "../composants/communs";
+import { Bandeau, BlocErreur, Icone } from "../composants/communs";
 import type { Route } from "../routeur";
 
 /** Profil personnel : nom affiché et mot de passe (CO-R4, CO-R5). */
@@ -158,7 +158,6 @@ export function Profil({
         </button>
       ) : null}
 
-      <PiedPlateforme />
     </div>
   );
 }

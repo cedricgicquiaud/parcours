@@ -7,7 +7,6 @@ import {
   Barre,
   BlocErreur,
   Icone,
-  PiedPlateforme,
   Squelette,
 } from "../composants/communs";
 import { ZoneDepot } from "../composants/ZoneDepot";
@@ -47,7 +46,6 @@ export function Catalogue({
             </button>
           }
         />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -68,7 +66,6 @@ export function Catalogue({
           <div className="carte squelette-carte" />
           <div className="carte squelette-carte" />
         </div>
-        <PiedPlateforme />
       </div>
     );
   }
@@ -213,7 +210,6 @@ export function Catalogue({
         </SectionRepliable>
       ) : null}
 
-      <PiedPlateforme />
     </div>
   );
 }

@@ -4,7 +4,6 @@ import {
   Bandeau,
   BlocErreur,
   Icone,
-  PiedPlateforme,
   Squelette,
 } from "../composants/communs";
 
@@ -185,7 +184,6 @@ export function ConsoleComptes({ moi }: { moi: Compte }) {
         )}
       </div>
 
-      <PiedPlateforme />
     </div>
   );
 }

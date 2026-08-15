@@ -52,7 +52,12 @@ export function Squelette({
   return <div className="squelette" style={{ width: largeur, height: hauteur }} />;
 }
 
-/** Pied de page présent sur tous les écrans (U-R8). */
+/**
+ * Mention de non-affiliation (U-R8, révisée). Elle ne vit plus que sur les
+ * écrans vus AVANT connexion — connexion et liens reçus par courriel : c'est
+ * là qu'un tiers arrive, donc là qu'elle protège. La répéter sur les écrans
+ * de travail n'ajoutait aucune protection et volait une ligne à chaque page.
+ */
 export function PiedPlateforme() {
   return (
     <footer className="pied-plateforme">

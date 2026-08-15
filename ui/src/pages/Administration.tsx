@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, ErreurApi, type StructureFormation } from "../api";
-import { Bandeau, BlocErreur, Icone, PiedPlateforme, Squelette } from "../composants/communs";
+import { Bandeau, BlocErreur, Icone, Squelette } from "../composants/communs";
 import type { Route } from "../routeur";
 
 /** Une leçon en cours de saisie. `id` absent = leçon nouvelle. */
@@ -166,7 +166,6 @@ export function Administration({
             </button>
           }
         />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -177,7 +176,6 @@ export function Administration({
         <Squelette largeur="45%" hauteur={26} />
         <Squelette largeur="70%" />
         <Squelette largeur="55%" />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -440,7 +438,6 @@ export function Administration({
         </button>
       </div>
 
-      <PiedPlateforme />
     </form>
   );
 }

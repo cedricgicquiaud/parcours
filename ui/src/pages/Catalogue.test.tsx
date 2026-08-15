@@ -98,11 +98,9 @@ describe("Catalogue (U-R1, U-R8)", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("affiche la mention de non-affiliation (U-R8)", () => {
+  it("ne répète pas la mention de non-affiliation une fois connecté (U-R8 révisée)", () => {
     render(<Catalogue {...proprietes} catalogue={catalogue()} />);
-    expect(
-      screen.getByText(/non affilié à Anthropic/),
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/non affilié à Anthropic/)).not.toBeInTheDocument();
   });
 
   it("propose de réessayer quand le serveur ne répond pas", async () => {

@@ -59,6 +59,14 @@ describe("inscription depuis l'écran de connexion (EM-R6)", () => {
     expect(screen.getByRole("button", { name: "Mot de passe oublié" })).toBeInTheDocument();
   });
 
+  it("porte la mention de non-affiliation, seul écran vu avant connexion (U-R8)", async () => {
+    simuler();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Se connecter" });
+
+    expect(screen.getByText(/non affilié à Anthropic/)).toBeInTheDocument();
+  });
+
   it("est proposée quand elle est ouverte, et renvoie un message neutre", async () => {
     etat = { installationRequise: false, compte: null, inscriptionOuverte: true };
     simuler((url) =>

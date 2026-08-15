@@ -4,7 +4,6 @@ import {
   Barre,
   BlocErreur,
   Icone,
-  PiedPlateforme,
   Squelette,
 } from "../composants/communs";
 import type { Route } from "../routeur";
@@ -52,7 +51,6 @@ export function PageFormation({
             </button>
           }
         />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -63,7 +61,6 @@ export function PageFormation({
         <Squelette largeur="45%" hauteur={26} />
         <Squelette largeur="70%" />
         <Squelette largeur="55%" />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -219,7 +216,6 @@ export function PageFormation({
         Réinitialiser ma progression
       </button>
 
-      <PiedPlateforme />
     </div>
   );
 }

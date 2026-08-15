@@ -4,7 +4,6 @@ import {
   Bandeau,
   BlocErreur,
   Icone,
-  PiedPlateforme,
   Squelette,
 } from "../composants/communs";
 import { estClicSimple, type Route } from "../routeur";
@@ -95,7 +94,6 @@ export function PageLecon({
             </button>
           }
         />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -108,7 +106,6 @@ export function PageLecon({
         <Squelette />
         <Squelette largeur="96%" />
         <Squelette largeur="70%" />
-        <PiedPlateforme />
       </div>
     );
   }
@@ -157,7 +154,6 @@ export function PageLecon({
           dangerouslySetInnerHTML={{ __html: lecon.html }}
         />
 
-        <PiedPlateforme />
       </article>
 
       <div className="barre-actions">
