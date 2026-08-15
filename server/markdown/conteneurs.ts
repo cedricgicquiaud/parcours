@@ -85,7 +85,7 @@ export function pluginConteneurs(md: MarkdownIt): void {
       const ouvrant = state.push("conteneur_open", "div", 1);
       ouvrant.markup = MARQUEUR;
       ouvrant.block = true;
-      ouvrant.meta = analyse;
+      ouvrant.meta = analyse as unknown as Record<string, unknown>;
       ouvrant.map = [ligneDebut, ligneFin];
 
       const lineMaxPrecedent = state.lineMax;
@@ -96,7 +96,7 @@ export function pluginConteneurs(md: MarkdownIt): void {
       const fermant = state.push("conteneur_close", "div", -1);
       fermant.markup = MARQUEUR;
       fermant.block = true;
-      fermant.meta = analyse;
+      fermant.meta = analyse as unknown as Record<string, unknown>;
 
       state.line = ferme ? ligneFin + 1 : ligneFin;
       return true;

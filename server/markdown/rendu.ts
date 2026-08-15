@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import MarkdownIt from "markdown-it";
-import type { Token } from "markdown-it";
+import type { MarkdownIt as InstanceMd, Token } from "markdown-it";
 import { createHighlighter, type Highlighter } from "shiki";
 import { cheminConfine } from "../formations/manifeste";
 import { pluginConteneurs, type EnteteConteneur } from "./conteneurs";
@@ -56,9 +56,25 @@ const ICONES: Record<string, string> = {
   prerequis: "ph-arrow-square-out",
 };
 
-function etat(env: Record<string, unknown>): EtatRendu {
-  if (!env.__parcours) env.__parcours = { compteurIndices: 0, liens: [] };
-  return env.__parcours as EtatRendu;
+function etat(env: unknown): EtatRendu {
+  const sac = (env ?? {}) as Record<string, unknown>;
+  if (!sac.__parcours) sac.__parcours = { compteurIndices: 0, liens: [] };
+  return sac.__parcours as EtatRendu;
+}
+
+function enteteDe(token: Token): EnteteConteneur {
+  return token.meta as unknown as EnteteConteneur;
+}
+
+function contexteDe(env: unknown): ContexteRendu | undefined {
+  return (env as Record<string, unknown> | undefined)?.contexte as
+    | ContexteRendu
+    | undefined;
+}
+
+function attribut(token: Token, nom: string): string {
+  const valeur = token.attrGet(nom);
+  return valeur === null || valeur === undefined ? "" : String(valeur);
 }
 
 /**
@@ -74,7 +90,7 @@ export class MoteurRendu {
   private readonly cacheColoration = new Map<string, string>();
 
   private constructor(
-    private readonly md: MarkdownIt,
+    private readonly md: InstanceMd,
     private readonly coloriste: Highlighter,
   ) {}
 
@@ -100,18 +116,18 @@ export class MoteurRendu {
     return this.md.parse(markdown, {});
   }
 
-  private installerRenderers(md: MarkdownIt): void {
+  private installerRenderers(md: InstanceMd): void {
     const regles = md.renderer.rules;
 
     regles.conteneur_open = (tokens, i, _options, env) =>
-      this.ouvrirConteneur(tokens[i]!.meta as EnteteConteneur, etat(env));
+      this.ouvrirConteneur(enteteDe(tokens[i]!), etat(env));
     regles.conteneur_close = (tokens, i) =>
-      fermerConteneur(tokens[i]!.meta as EnteteConteneur);
+      fermerConteneur(enteteDe(tokens[i]!));
 
     regles.link_open = (tokens, i, options, env, self) => {
-      const contexte = env.contexte as ContexteRendu | undefined;
+      const contexte = contexteDe(env);
       const token = tokens[i]!;
-      const classe = classerLien(token.attrGet("href") ?? "");
+      const classe = classerLien(attribut(token, "href"));
       const etatRendu = etat(env);
       switch (classe.genre) {
         case "externe":
@@ -159,9 +175,9 @@ export class MoteurRendu {
 
     regles.image = (tokens, i, _options, env) => {
       const token = tokens[i]!;
-      const contexte = env.contexte as ContexteRendu | undefined;
+      const contexte = contexteDe(env);
       const alt = token.content ?? "";
-      const classe = classerImage(token.attrGet("src") ?? "");
+      const classe = classerImage(attribut(token, "src"));
       if (classe.genre !== "relatif" || !contexte) return imageAbsente(alt);
       const confine = cheminConfine(classe.chemin);
       if (!confine.ok) return imageAbsente(alt);
@@ -169,7 +185,7 @@ export class MoteurRendu {
         return imageAbsente(alt);
       }
       const src = urlAsset(contexte.formationId, confine.valeur);
-      const titre = token.attrGet("title");
+      const titre = attribut(token, "title");
       const attrTitre = titre ? ` title="${echapper(titre)}"` : "";
       return `<img src="${echapper(src)}" alt="${echapper(alt)}"${attrTitre} loading="lazy">`;
     };

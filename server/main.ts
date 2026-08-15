@@ -1,12 +1,65 @@
+import fs from "node:fs";
+import path from "node:path";
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
+import { creerApi } from "./api";
+import { cheminBaseProgression, dossierFormations, HOTE, PORT, RACINE_PROJET } from "./config";
+import { MoteurRendu } from "./markdown/rendu";
+import { BaseProgression } from "./progression/db";
+import { MoteurRecherche } from "./recherche/moteur";
 
-const PORT = 4620;
+const DOSSIER_UI = path.join(RACINE_PROJET, "dist", "ui");
 
-const app = new Hono();
+async function demarrer(): Promise<void> {
+  const formations = dossierFormations();
+  const base = BaseProgression.ouvrir(cheminBaseProgression());
+  const rendu = await MoteurRendu.creer();
+  const recherche = new MoteurRecherche(rendu);
 
-app.get("/api/health", (c) => c.json({ status: "ok", app: "parcours" }));
+  const app = new Hono();
+  app.route("/", creerApi({ dossierFormations: formations, base, rendu, recherche }));
 
-serve({ fetch: app.fetch, port: PORT, hostname: "127.0.0.1" }, (info) => {
-  console.log(`Parcours server listening on http://127.0.0.1:${info.port}`);
+  // En production, le même process sert l'UI construite (1 process, PRD).
+  if (fs.existsSync(DOSSIER_UI)) {
+    app.use("/*", serveStatic({ root: path.relative(process.cwd(), DOSSIER_UI) }));
+    app.get("*", (c) => {
+      const index = path.join(DOSSIER_UI, "index.html");
+      return c.html(fs.readFileSync(index, "utf8"));
+    });
+  }
+
+  const serveur = serve({ fetch: app.fetch, port: PORT, hostname: HOTE }, () => {
+    console.log(`Parcours écoute sur http://${HOTE}:${PORT}`);
+    console.log(`Formations : ${formations}`);
+    if (base.reinitialisee) {
+      console.warn(
+        `Progression réinitialisée — base corrompue sauvegardée : ${base.sauvegardeCorrompue}`,
+      );
+    }
+  });
+
+  // F-R1 : port occupé → message clair sur stderr, sortie en erreur.
+  serveur.on("error", (erreur: NodeJS.ErrnoException) => {
+    if (erreur.code === "EADDRINUSE") {
+      console.error(
+        `Le port ${PORT} est déjà utilisé : Parcours tourne peut-être déjà. Arrêtez l'autre process puis relancez.`,
+      );
+    } else {
+      console.error(`Démarrage impossible : ${erreur.message}`);
+    }
+    process.exit(1);
+  });
+
+  for (const signal of ["SIGINT", "SIGTERM"] as const) {
+    process.on(signal, () => {
+      base.fermer();
+      process.exit(0);
+    });
+  }
+}
+
+demarrer().catch((erreur: unknown) => {
+  console.error("Démarrage impossible :", erreur);
+  process.exit(1);
 });

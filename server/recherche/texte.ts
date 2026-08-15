@@ -15,7 +15,7 @@ export function texteIndexable(tokens: Token[]): string {
 
   for (const token of tokens) {
     if (token.type === "conteneur_open") {
-      const entete = token.meta as EnteteConteneur;
+      const entete = token.meta as unknown as EnteteConteneur;
       if (profondeurExclue > 0 || (entete.type && TYPES_EXCLUS.has(entete.type))) {
         profondeurExclue += 1;
       }
