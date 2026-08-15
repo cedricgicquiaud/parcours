@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/nocturne-0cc673e3-55db-479a-9b3b-ca304a6d7713/styles.css">
+<script src="_ds/nocturne-0cc673e3-55db-479a-9b3b-ca304a6d7713/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f0eee9;font-family:Inter,system-ui,sans-serif;color:#1a1a1a}
+a{color:#5b4fa8}a:hover{color:#3f3579}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 6px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:500 13px/1.2 Inter,system-ui,sans-serif;color:#1a1a1a}
+.dv-sub{font:400 12px/1.5 Inter,system-ui,sans-serif;color:rgba(0,0,0,.5);margin:0 0 22px;max-width:70ch}
+.dv-grp{font:500 11px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.42);margin:28px 0 14px;display:flex;align-items:center;gap:10px}
+.dv-grp:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(0,0,0,.14),transparent)}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Inter,system-ui,sans-serif;color:rgba(0,0,0,.55);max-width:440px}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#9184d9;color:#fff}
+.dv-next{margin:26px 0 0;font:12px/1.6 Inter,system-ui,sans-serif;color:rgba(0,0,0,.5)}
+.w{font-family:'Patrick Hand',cursive;font-size:15px;line-height:1.35;color:#1a1a1a}
+.w-bar{display:flex;align-items:center;gap:9px;padding:9px 13px;border-bottom:1.5px solid #1a1a1a}
+.w-p{padding:14px 13px}
+.w-btn{border:1.5px solid #1a1a1a;border-radius:6px;padding:3px 9px;font-size:14px;display:inline-flex;align-items:center;gap:6px;background:#fff;white-space:nowrap}
+.w-acc{border-color:#9184d9;color:#4e4293;background:rgba(145,132,217,.09)}
+.w-box{border:1.5px solid #1a1a1a;border-radius:8px}
+.w-dash{border:1.5px dashed #9a958d;border-radius:8px}
+.w-prog{height:9px;border:1.5px solid #1a1a1a;border-radius:5px;overflow:hidden;background:#fff;flex:1}
+.w-prog i{display:block;height:100%;background:#9184d9}
+.w-l{height:8px;border-radius:2px;background:#dcd8d1}
+.w-row{display:flex;align-items:center;gap:9px}
+.w-mut{color:#7d7871;font-size:13.5px}
+.w-side{border-right:1.5px solid #1a1a1a}
+.w-code{background:#eceae5;border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.w-item{display:flex;align-items:center;gap:8px;padding:5px 0}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Le triplet retenu — <a class="dv-oid" href="#1c">1c</a> + <a class="dv-oid" href="#1f">1f</a> + <a class="dv-oid" href="#1j">1j</a>, avec menu latéral rétractable</span></div>
+<p class="dv-sub">Nom de travail : <strong style="font-weight:500">Primer</strong>. Le latéral est le même composant sur les deux écrans : ouvert par défaut à ≥ 1100 px, entièrement masqué quand on le replie (état mémorisé), et en tiroir superposé sous 720 px. Replié, il ne laisse aucun rail derrière lui : c'est l'en-tête qui porte « ☰ Sommaire » et la progression.</p>
+
+<div class="dv-grp">Catalogue</div>
+<div class="dv-opts">
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Reprise en tête, avec la prochaine leçon nommée. Le latéral n'existe pas ici : le catalogue est la racine.</div>
+<div class="dv-card w" style="width:460px">
+  <div class="w-bar"><strong style="font-weight:400">Primer</strong><span class="w-mut" style="margin-left:auto">3 formations · 47 leçons</span></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:16px">
+    <div class="w-box" style="padding:13px;display:flex;flex-direction:column;gap:10px;border-color:#9184d9;background:rgba(145,132,217,.06)">
+      <div class="w-mut" style="font-size:12.5px">EN COURS</div>
+      <div style="font-size:19px;text-decoration:underline">Formation pratique Claude</div>
+      <div class="w-row"><div class="w-prog"><i style="width:39%"></i></div><span class="w-mut">12/31 — 39 %</span></div>
+      <div class="w-row" style="justify-content:space-between;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:3px"><div class="w-mut" style="font-size:12.5px">Prochaine leçon</div><div>Module 1 · Les hooks</div></div>
+        <div class="w-btn w-acc">Reprendre →</div>
+      </div>
+    </div>
+    <div>
+      <div class="w-mut" style="margin-bottom:9px">Toutes mes formations</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+        <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:7px"><div style="text-decoration:underline">Titre</div><div class="w-prog"><i style="width:0"></i></div><div class="w-mut">0/12 · Commencer</div></div>
+        <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:7px"><div style="text-decoration:underline">Titre</div><div class="w-prog"><i style="width:100%"></i></div><div class="w-mut">12/12 · Revoir</div></div>
+        <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:7px;background:rgba(0,0,0,.05);border-style:dashed"><div>⚠ mauvais-dossier</div><div class="w-mut" style="font-size:12.5px">modules[0].id manquant</div></div>
+        <div class="w-dash" style="padding:10px;display:flex;align-items:center"><span class="w-mut" style="font-size:12.5px">déposez un dossier dans formations/</span></div>
+      </div>
+    </div>
+    <div class="w-mut" style="font-size:12px;border-top:1px solid #ddd9d2;padding-top:9px">Projet indépendant, non affilié à Anthropic.</div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Formation — latéral ouvert / masqué</div>
+<div class="dv-opts">
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Latéral ouvert : sommaire complet + champ de recherche. « ☰ Sommaire » dans l'en-tête le masque.</div>
+<div class="dv-card w" style="width:470px">
+  <div class="w-bar" style="gap:11px">
+    <div class="w-btn w-acc" style="font-size:13.5px">☰ Sommaire</div>
+    <span class="w-mut" style="font-size:13.5px">Formation pratique Claude</span>
+    <div class="w-row" style="margin-left:auto;gap:8px"><div class="w-prog" style="width:64px;flex:none"><i style="width:39%"></i></div><span class="w-mut" style="font-size:12.5px">12/31</span></div>
+  </div>
+  <div style="display:flex;min-height:340px">
+    <div class="w-side" style="width:196px;display:flex;flex-direction:column">
+      <div class="w-row" style="padding:7px 9px;border-bottom:1px solid #ccc8c1"><span class="w-mut" style="font-size:13px">🔍 Rechercher…</span></div>
+      <div style="padding:10px;display:flex;flex-direction:column;gap:11px">
+        <div>
+          <div class="w-mut" style="font-size:12.5px;margin-bottom:4px">MODULE 1 · 4/5</div>
+          <div class="w-item" style="font-size:14px">✓ Installer Claude Code</div>
+          <div class="w-item" style="font-size:14px">✓ Le mode plan</div>
+          <div class="w-item" style="font-size:14px">✓ Les sous-agents</div>
+          <div class="w-item" style="font-size:14px;background:rgba(145,132,217,.12);border-radius:5px;padding:4px 5px">○ Les hooks</div>
+          <div class="w-item" style="font-size:14px">○ Clôture</div>
+        </div>
+        <div>
+          <div class="w-mut" style="font-size:12.5px;margin-bottom:4px">MODULE 2 · 0/4</div>
+          <div class="w-item" style="font-size:14px">○ <span class="w-l" style="width:100px"></span></div>
+          <div class="w-item" style="font-size:14px">○ <span class="w-l" style="width:112px"></span></div>
+        </div>
+        <div class="w-mut" style="font-size:12px;margin-top:auto">Réinitialiser ma progression</div>
+      </div>
+    </div>
+    <div class="w-p" style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:19px">Formation pratique Claude</div>
+      <div class="w-l" style="width:100%"></div><div class="w-l" style="width:92%"></div><div class="w-l" style="width:58%"></div>
+      <div class="w-row"><div class="w-prog"><i style="width:39%"></i></div><span class="w-mut" style="font-size:13px">39 %</span></div>
+      <div class="w-btn w-acc" style="align-self:flex-start">Reprendre → Les hooks</div>
+      <div class="w-row" style="background:rgba(0,0,0,.05);border-radius:6px;padding:8px;margin-top:auto"><span>⚠</span><span class="w-mut" style="font-size:12.5px">2 leçons hors programme</span><div class="w-btn" style="margin-left:auto;font-size:12px;padding:1px 6px">Nettoyer</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="2c">
+<div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Latéral masqué : plus rien à gauche, la prose se centre (plafond 72ch). « ☰ Sommaire » le rouvre.</div>
+<div class="dv-card w" style="width:470px">
+  <div class="w-bar" style="gap:11px">
+    <div class="w-btn" style="font-size:13.5px">☰ Sommaire</div>
+    <span class="w-mut" style="font-size:13.5px">Formation pratique Claude</span>
+    <div class="w-row" style="margin-left:auto;gap:8px"><div class="w-prog" style="width:64px;flex:none"><i style="width:39%"></i></div><span class="w-mut" style="font-size:12.5px">12/31</span></div>
+  </div>
+  <div style="display:flex;min-height:340px">
+    <div class="w-p" style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:19px">Formation pratique Claude</div>
+      <div class="w-l" style="width:100%"></div><div class="w-l" style="width:96%"></div><div class="w-l" style="width:88%"></div><div class="w-l" style="width:52%"></div>
+      <div class="w-row"><div class="w-prog"><i style="width:39%"></i></div><span class="w-mut" style="font-size:13px">12/31</span></div>
+      <div class="w-row" style="gap:9px"><div class="w-btn w-acc">Reprendre → Les hooks</div><div class="w-btn">Ouvrir le sommaire</div></div>
+      <div class="w-dash" style="padding:9px;margin-top:auto"><span class="w-mut" style="font-size:12.5px">Latéral masqué : la colonne de prose se centre et reste plafonnée à 72ch.</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Leçon — latéral masqué / recherche dans le latéral / mobile</div>
+<div class="dv-opts">
+<div class="dv-opt" id="2d">
+<div class="dv-olabel"><a class="dv-oid" href="#2d">2d</a>Lecture latéral masqué : la leçon a toute la largeur ; la position (« Module 1 — leçon 4/5 ») et la progression passent dans l'en-tête.</div>
+<div class="dv-card w" style="width:470px">
+  <div class="w-bar" style="gap:11px">
+    <div class="w-btn" style="font-size:13.5px">☰ Sommaire</div>
+    <span class="w-mut" style="font-size:13.5px">Module 1 — leçon 4/5</span>
+    <div class="w-row" style="margin-left:auto;gap:8px"><div class="w-prog" style="width:64px;flex:none"><i style="width:39%"></i></div><span class="w-mut" style="font-size:12.5px">12/31</span></div>
+  </div>
+  <div style="display:flex;min-height:350px">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="w-p" style="display:flex;flex-direction:column;gap:11px;flex:1">
+        <div style="font-size:21px">Les hooks</div>
+        <div class="w-box" style="padding:9px;display:flex;flex-direction:column;gap:5px"><span class="w-mut" style="font-size:12px">AVANT CETTE LEÇON</span><span style="font-size:14px">↗ Cours Academy : Claude Code in Action</span></div>
+        <div class="w-l" style="width:100%"></div><div class="w-l" style="width:94%"></div><div class="w-l" style="width:66%"></div>
+        <div class="w-code"><div class="w-l" style="width:58%;background:#c3bfb7"></div><div class="w-l" style="width:74%;background:#c3bfb7"></div><div class="w-l" style="width:42%;background:#c3bfb7"></div></div>
+        <div class="w-l" style="width:97%"></div><div class="w-l" style="width:80%"></div>
+        <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ <span>Indice 1 — La direction</span><span class="w-mut" style="margin-left:auto;font-size:12px">replié</span></div>
+        <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ <span>Solution</span><span class="w-mut" style="margin-left:auto;font-size:12px">replié</span></div>
+      </div>
+      <div class="w-row" style="padding:10px 13px;border-top:1.5px solid #1a1a1a;gap:8px">
+        <div class="w-btn" style="font-size:13px">← Précédente</div><div class="w-btn w-acc" style="flex:1;justify-content:center;font-size:13.5px">✓ Marquer terminé</div><div class="w-btn" style="font-size:13px">Suivante →</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="2e">
+<div class="dv-olabel"><a class="dv-oid" href="#2e">2e</a>Recherche depuis la leçon : les résultats remplacent le sommaire <em>dans le latéral</em>, la leçon lue reste à l'écran. Écart assumé avec U-R9 (qui parle de l'écran formation).</div>
+<div class="dv-card w" style="width:470px">
+  <div class="w-bar" style="gap:11px">
+    <div class="w-btn w-acc" style="font-size:13.5px">☰ Sommaire</div>
+    <span class="w-mut" style="font-size:13.5px">Module 1 — leçon 4/5</span>
+    <div class="w-row" style="margin-left:auto;gap:8px"><div class="w-prog" style="width:64px;flex:none"><i style="width:39%"></i></div><span class="w-mut" style="font-size:12.5px">12/31</span></div>
+  </div>
+  <div style="display:flex;min-height:340px">
+    <div class="w-side" style="width:196px;display:flex;flex-direction:column">
+      <div class="w-row" style="padding:7px 9px;border-bottom:1.5px solid #1a1a1a;background:rgba(145,132,217,.07);gap:7px"><span style="font-size:13px">🔍</span><span style="font-size:14px">hooks</span><span class="w-btn" style="margin-left:auto;padding:0 5px;font-size:12px">×</span></div>
+      <div style="padding:10px;display:flex;flex-direction:column;gap:12px">
+        <div class="w-mut" style="font-size:12.5px">3 résultats</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="w-row" style="font-size:14px">○ <span style="text-decoration:underline">Les hooks</span></div>
+          <div class="w-mut" style="font-size:12.5px">…un <span style="background:rgba(145,132,217,.35);color:#1a1a1a">hook</span> se déclenche à chaque écriture…</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="w-row" style="font-size:14px">✓ <span style="text-decoration:underline">Le mode plan</span></div>
+          <div class="w-mut" style="font-size:12.5px">…contrairement aux <span style="background:rgba(145,132,217,.35);color:#1a1a1a">hooks</span>, le mode plan…</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="w-row" style="font-size:14px">○ <span style="text-decoration:underline">Journaliser les sessions</span></div>
+          <div class="w-mut" style="font-size:12.5px">…brancher un <span style="background:rgba(145,132,217,.35);color:#1a1a1a">hook</span> de fin de session…</div>
+        </div>
+        <div class="w-mut" style="font-size:12px;margin-top:auto">Échap · retour au sommaire</div>
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="w-p" style="display:flex;flex-direction:column;gap:11px;flex:1;opacity:.85">
+        <div class="w-mut" style="font-size:12.5px">MODULE 1 — LEÇON 4/5</div>
+        <div style="font-size:21px">Les hooks</div>
+        <div class="w-l" style="width:100%"></div><div class="w-l" style="width:92%"></div>
+        <div class="w-code"><div class="w-l" style="width:60%;background:#c3bfb7"></div><div class="w-l" style="width:46%;background:#c3bfb7"></div></div>
+        <div class="w-l" style="width:95%"></div><div class="w-l" style="width:70%"></div>
+        <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ Indice 1</div>
+      </div>
+      <div class="w-row" style="padding:10px 13px;border-top:1.5px solid #1a1a1a;gap:8px">
+        <div class="w-btn" style="font-size:13px">←</div><div class="w-btn w-acc" style="flex:1;justify-content:center;font-size:13.5px">✓ Marquer terminé</div><div class="w-btn" style="font-size:13px">→</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="2f">
+<div class="dv-olabel"><a class="dv-oid" href="#2f">2f</a>Sous 720 px (U-R6) : le latéral devient un tiroir appelé par « ☰ Sommaire », les actions de pied passent pleine largeur.</div>
+<div class="dv-card w" style="width:280px">
+  <div class="w-bar" style="gap:7px"><span class="w-btn" style="padding:1px 7px;font-size:13px">☰</span><span class="w-mut" style="font-size:13px">Leçon 4/5</span><span class="w-mut" style="margin-left:auto;font-size:12.5px">39 %</span></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:10px">
+    <div style="font-size:19px">Les hooks</div>
+    <div class="w-box" style="padding:8px"><span class="w-mut" style="font-size:12.5px">↗ Avant cette leçon : Cours Academy</span></div>
+    <div class="w-l" style="width:100%"></div><div class="w-l" style="width:93%"></div><div class="w-l" style="width:60%"></div>
+    <div class="w-code"><div class="w-l" style="width:70%;background:#c3bfb7"></div><div class="w-l" style="width:50%;background:#c3bfb7"></div></div>
+    <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ Indice 1</div>
+    <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ Solution</div>
+  </div>
+  <div style="padding:10px;border-top:1.5px solid #1a1a1a;display:flex;flex-direction:column;gap:7px">
+    <div class="w-btn w-acc" style="justify-content:center">✓ Marquer terminé</div>
+    <div class="w-row" style="gap:7px"><div class="w-btn" style="flex:1;justify-content:center;font-size:13px">← Préc.</div><div class="w-btn" style="flex:1;justify-content:center;font-size:13px">Suiv. →</div></div>
+  </div>
+</div>
+</div>
+</div>
+
+<p class="dv-next">Essayez ensuite : « passe <a class="dv-oid" href="#2b">2b</a> et <a class="dv-oid" href="#2d">2d</a> en haute fidélité sur le thème sombre » · « ajoute l'état vide du latéral rouvert par-dessus la leçon (tiroir desktop) » · « ajoute l'état 100 % terminé »</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Parcours V1 — les 4 écrans de la SPEC §5, en pistes</span></div>
+<p class="dv-sub">Croquis basse fidélité tirés directement de la SPEC (U-R1 → U-R9). Copie et messages repris du document. Un seul accent, le reste en gris : à ce stade on juge la structure et le flux, pas le style.</p>
+
+<div class="dv-grp">Écran catalogue — <span style="text-transform:none;letter-spacing:0">/</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Grille de cartes — la piste littérale de la SPEC. Marche dès 3-4 formations.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><strong style="font-weight:400">Parcours</strong></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:20px">Mes formations</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="w-box" style="padding:11px;display:flex;flex-direction:column;gap:9px">
+        <div style="text-decoration:underline">Formation pratique Claude</div>
+        <div class="w-l" style="width:100%"></div><div class="w-l" style="width:70%"></div>
+        <div class="w-row"><div class="w-prog"><i style="width:39%"></i></div></div>
+        <div class="w-mut">12/31 leçons — 39 %</div>
+        <div class="w-btn w-acc" style="align-self:flex-start">Reprendre →</div>
+      </div>
+      <div class="w-box" style="padding:11px;display:flex;flex-direction:column;gap:9px;background:rgba(0,0,0,.05);border-style:dashed">
+        <div class="w-row">⚠ <span>mauvais-dossier</span></div>
+        <div class="w-mut" style="line-height:1.4">formation.json :<br>modules[0].id manquant</div>
+        <div class="w-mut" style="font-size:12px">non cliquable</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="w-box" style="padding:11px;display:flex;flex-direction:column;gap:9px">
+        <div style="text-decoration:underline">Titre de formation</div>
+        <div class="w-l" style="width:85%"></div>
+        <div class="w-row"><div class="w-prog"><i style="width:0%"></i></div></div>
+        <div class="w-mut">0/12 leçons</div>
+        <div class="w-btn" style="align-self:flex-start">Commencer →</div>
+      </div>
+      <div class="w-dash" style="padding:11px;display:flex;align-items:center;justify-content:center;min-height:96px"><span class="w-mut">déposez un dossier<br>dans formations/</span></div>
+    </div>
+    <div class="w-mut" style="font-size:12px;border-top:1px solid #ddd9d2;padding-top:9px">Projet indépendant, non affilié à Anthropic.</div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Liste dense — une ligne par formation, la progression alignée en colonne. Tient à 20 formations sans scroll infini.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><strong style="font-weight:400">Parcours</strong><span class="w-mut" style="margin-left:auto">3 formations · 47 leçons</span></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:0">
+    <div style="font-size:20px;margin-bottom:12px">Mes formations</div>
+    <div class="w-item" style="border-top:1.5px solid #1a1a1a;padding:11px 0;gap:12px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+        <div style="text-decoration:underline">Formation pratique Claude</div>
+        <div class="w-mut">Compagnon pratique de l'Anthropic Academy…</div>
+      </div>
+      <div style="width:96px;display:flex;flex-direction:column;gap:5px;align-items:flex-end">
+        <div class="w-prog" style="width:100%"><i style="width:39%"></i></div>
+        <div class="w-mut" style="font-size:12.5px">12/31</div>
+      </div>
+      <div class="w-btn w-acc">Reprendre →</div>
+    </div>
+    <div class="w-item" style="border-top:1px solid #ccc8c1;padding:11px 0;gap:12px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+        <div style="text-decoration:underline">Titre de formation</div>
+        <div class="w-l" style="width:60%"></div>
+      </div>
+      <div style="width:96px;display:flex;flex-direction:column;gap:5px;align-items:flex-end">
+        <div class="w-prog" style="width:100%"><i style="width:100%"></i></div>
+        <div class="w-mut" style="font-size:12.5px">12/12</div>
+      </div>
+      <div class="w-btn">Revoir</div>
+    </div>
+    <div class="w-item" style="border-top:1px solid #ccc8c1;padding:11px 0;gap:12px;background:rgba(0,0,0,.04)">
+      <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+        <div class="w-row">⚠ mauvais-dossier</div>
+        <div class="w-mut">formation.json : modules[0].id manquant</div>
+      </div>
+      <div class="w-mut" style="font-size:12px">non cliquable</div>
+    </div>
+    <div class="w-mut" style="font-size:12px;border-top:1.5px solid #1a1a1a;padding-top:9px;margin-top:12px">Projet indépendant, non affilié à Anthropic.</div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Reprise en tête — la formation en cours occupe le haut avec sa prochaine leçon nommée ; les autres passent en rangée basse.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><strong style="font-weight:400">Parcours</strong></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:16px">
+    <div class="w-box" style="padding:13px;display:flex;flex-direction:column;gap:10px;border-color:#9184d9;background:rgba(145,132,217,.06)">
+      <div class="w-mut" style="font-size:12.5px">EN COURS</div>
+      <div style="font-size:19px;text-decoration:underline">Formation pratique Claude</div>
+      <div class="w-row"><div class="w-prog"><i style="width:39%"></i></div><span class="w-mut">12/31 — 39 %</span></div>
+      <div class="w-row" style="justify-content:space-between;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div class="w-mut" style="font-size:12.5px">Prochaine leçon</div>
+          <div>Module 1 · Les hooks</div>
+        </div>
+        <div class="w-btn w-acc">Reprendre →</div>
+      </div>
+    </div>
+    <div>
+      <div class="w-mut" style="margin-bottom:9px">Toutes mes formations</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+        <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:7px">
+          <div style="text-decoration:underline">Titre</div><div class="w-prog"><i style="width:0"></i></div><div class="w-mut">0/12 · Commencer</div>
+        </div>
+        <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:7px">
+          <div style="text-decoration:underline">Titre</div><div class="w-prog"><i style="width:100%"></i></div><div class="w-mut">12/12 · Revoir</div>
+        </div>
+        <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:7px;background:rgba(0,0,0,.05);border-style:dashed">
+          <div>⚠ mauvais-dossier</div><div class="w-mut" style="font-size:12.5px">modules[0].id manquant</div>
+        </div>
+        <div class="w-dash" style="padding:10px;display:flex;align-items:center"><span class="w-mut" style="font-size:12.5px">déposez un dossier dans formations/</span></div>
+      </div>
+    </div>
+    <div class="w-mut" style="font-size:12px;border-top:1px solid #ddd9d2;padding-top:9px">Projet indépendant, non affilié à Anthropic.</div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Écran formation — <span style="text-transform:none;letter-spacing:0">/formation/:fid</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Sommaire linéaire, tout déplié (mécanique Odin Project). On voit la formation entière d'un regard ; U-R2 au mot.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><span class="w-mut">← Catalogue</span><span>Formation pratique Claude</span></div>
+  <div class="w-row" style="padding:11px 13px;border-bottom:1.5px solid #1a1a1a;gap:11px">
+    <div class="w-prog"><i style="width:39%"></i></div><span class="w-mut">12/31 — 39 %</span><div class="w-btn w-acc">Reprendre →</div>
+  </div>
+  <div class="w-row" style="padding:9px 13px;border-bottom:1px solid #ccc8c1"><span class="w-mut">🔍 Rechercher dans cette formation…</span><span class="w-mut" style="margin-left:auto;font-size:12px">/</span></div>
+  <div class="w-row" style="padding:8px 13px;background:rgba(0,0,0,.05);border-bottom:1px solid #ccc8c1"><span>⚠</span><span class="w-mut">2 leçons cochées ne sont plus au programme</span><div class="w-btn" style="margin-left:auto;font-size:12.5px;padding:2px 7px">Nettoyer</div></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:18px">
+    <div>
+      <div class="w-row" style="margin-bottom:6px"><span>Module 1 — Fondations Claude Code</span><span class="w-mut" style="margin-left:auto">4/5</span><div class="w-prog" style="max-width:56px;flex:none;width:56px"><i style="width:80%"></i></div></div>
+      <div style="padding-left:6px">
+        <div class="w-item">✓ <span style="text-decoration:underline">Installer Claude Code</span></div>
+        <div class="w-item">✓ <span style="text-decoration:underline">Le mode plan</span></div>
+        <div class="w-item">✓ <span style="text-decoration:underline">Les sous-agents</span></div>
+        <div class="w-item">○ <span style="text-decoration:underline">Les hooks</span><span class="w-mut" style="margin-left:auto;font-size:12px">prochaine</span></div>
+        <div class="w-item">○ <span style="text-decoration:underline">Clôture du module</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="w-row" style="margin-bottom:6px"><span>Module 2 — Agent Skills</span><span class="w-mut" style="margin-left:auto">0/4</span><div class="w-prog" style="flex:none;width:56px"><i style="width:0"></i></div></div>
+      <div style="padding-left:6px">
+        <div class="w-item">○ <span class="w-l" style="width:150px"></span></div>
+        <div class="w-item">○ <span class="w-l" style="width:120px"></span></div>
+        <div class="w-item">○ <span class="w-l" style="width:170px"></span></div>
+        <div class="w-item">○ <span class="w-l" style="width:110px"></span></div>
+      </div>
+    </div>
+    <div class="w-mut" style="font-size:12.5px;border-top:1px solid #ddd9d2;padding-top:10px">Réinitialiser ma progression</div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1e">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Modules repliables + anneau de progression. Une formation de 31 leçons tient sans scroll ; le module en cours est le seul ouvert.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><span class="w-mut">← Catalogue</span><span>Formation pratique Claude</span><div class="w-btn w-acc" style="margin-left:auto">Reprendre →</div></div>
+  <div class="w-row" style="padding:13px;border-bottom:1.5px solid #1a1a1a;gap:13px">
+    <div class="w-box" style="width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border-color:#9184d9">39 %</div>
+    <div style="display:flex;flex-direction:column;gap:4px"><span>12 leçons sur 31</span><span class="w-mut">4 modules · reprendre à « Les hooks »</span></div>
+  </div>
+  <div class="w-row" style="padding:9px 13px;border-bottom:1px solid #ccc8c1"><span class="w-mut">🔍 Rechercher dans cette formation…</span></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:9px">
+    <div class="w-box" style="padding:0;border-color:#9184d9">
+      <div class="w-row" style="padding:10px 11px;gap:9px"><span>▾</span><span>Module 1 — Fondations</span><span class="w-mut" style="margin-left:auto">4/5</span></div>
+      <div style="padding:0 11px 10px 28px">
+        <div class="w-item">✓ <span style="text-decoration:underline">Installer Claude Code</span></div>
+        <div class="w-item">✓ <span style="text-decoration:underline">Le mode plan</span></div>
+        <div class="w-item">✓ <span style="text-decoration:underline">Les sous-agents</span></div>
+        <div class="w-item" style="background:rgba(145,132,217,.1);border-radius:5px;padding:5px 6px;margin-left:-6px">○ <span style="text-decoration:underline">Les hooks</span></div>
+        <div class="w-item">○ <span style="text-decoration:underline">Clôture du module</span></div>
+      </div>
+    </div>
+    <div class="w-box w-row" style="padding:10px 11px;gap:9px"><span>▸</span><span>Module 2 — Agent Skills</span><span class="w-mut" style="margin-left:auto">0/4</span><div class="w-prog" style="flex:none;width:44px"><i style="width:0"></i></div></div>
+    <div class="w-box w-row" style="padding:10px 11px;gap:9px"><span>▸</span><span>Module 3 — MCP</span><span class="w-mut" style="margin-left:auto">0/9</span><div class="w-prog" style="flex:none;width:44px"><i style="width:0"></i></div></div>
+    <div class="w-box w-row" style="padding:10px 11px;gap:9px"><span>▸</span><span>Module 4 — Mise en production</span><span class="w-mut" style="margin-left:auto">0/13</span><div class="w-prog" style="flex:none;width:44px"><i style="width:0"></i></div></div>
+    <div class="w-row" style="padding:8px 0;background:rgba(0,0,0,.05);border-radius:6px;padding:8px"><span>⚠</span><span class="w-mut" style="font-size:12.5px">2 leçons cochées ne sont plus au programme</span><div class="w-btn" style="margin-left:auto;font-size:12px;padding:2px 7px">Nettoyer</div></div>
+    <div class="w-mut" style="font-size:12.5px;border-top:1px solid #ddd9d2;padding-top:10px">Réinitialiser ma progression</div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1f">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Sommaire persistant à gauche, aperçu à droite — la structure reste visible pendant la lecture (voir <a class="dv-oid" href="#1j">1j</a>).</div>
+<div class="dv-card w" style="width:460px">
+  <div class="w-bar"><span class="w-mut">← Catalogue</span><span>Formation pratique Claude</span><span class="w-mut" style="margin-left:auto">12/31 — 39 %</span></div>
+  <div style="display:flex;min-height:330px">
+    <div class="w-side" style="width:190px;display:flex;flex-direction:column">
+      <div class="w-row" style="padding:8px 10px;border-bottom:1px solid #ccc8c1"><span class="w-mut" style="font-size:13px">🔍 Rechercher…</span></div>
+      <div style="padding:10px;display:flex;flex-direction:column;gap:11px">
+        <div>
+          <div class="w-mut" style="font-size:12.5px;margin-bottom:4px">MODULE 1 · 4/5</div>
+          <div class="w-item" style="font-size:14px">✓ Installer Claude Code</div>
+          <div class="w-item" style="font-size:14px">✓ Le mode plan</div>
+          <div class="w-item" style="font-size:14px">✓ Les sous-agents</div>
+          <div class="w-item" style="font-size:14px;background:rgba(145,132,217,.12);border-radius:5px;padding:4px 5px">○ Les hooks</div>
+          <div class="w-item" style="font-size:14px">○ Clôture</div>
+        </div>
+        <div>
+          <div class="w-mut" style="font-size:12.5px;margin-bottom:4px">MODULE 2 · 0/4</div>
+          <div class="w-item" style="font-size:14px">○ <span class="w-l" style="width:96px"></span></div>
+          <div class="w-item" style="font-size:14px">○ <span class="w-l" style="width:110px"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="w-p" style="flex:1;display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:19px">Formation pratique Claude</div>
+      <div class="w-l" style="width:100%"></div><div class="w-l" style="width:92%"></div><div class="w-l" style="width:60%"></div>
+      <div class="w-row"><div class="w-prog"><i style="width:39%"></i></div></div>
+      <div class="w-btn w-acc" style="align-self:flex-start">Reprendre → Les hooks</div>
+      <div class="w-dash" style="padding:10px;margin-top:auto"><span class="w-mut" style="font-size:12.5px">Réinitialiser ma progression · Nettoyer 2 leçons hors programme</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Recherche dans la formation — <span style="text-transform:none;letter-spacing:0">U-R9 / §3B</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1g">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>Les résultats remplacent le sommaire, comme le prescrit U-R9. Échap ou × ramène au sommaire.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><span class="w-mut">← Catalogue</span><span>Formation pratique Claude</span></div>
+  <div class="w-row" style="padding:11px 13px;border-bottom:1.5px solid #1a1a1a;gap:11px">
+    <div class="w-prog"><i style="width:39%"></i></div><span class="w-mut">12/31 — 39 %</span><div class="w-btn w-acc">Reprendre →</div>
+  </div>
+  <div class="w-row" style="padding:9px 13px;border-bottom:1.5px solid #1a1a1a;gap:9px;background:rgba(145,132,217,.07)">
+    <span>🔍</span><span>hooks</span><span class="w-btn" style="margin-left:auto;font-size:12px;padding:1px 7px">×</span>
+  </div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:14px">
+    <div class="w-mut">3 résultats</div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div class="w-row">○ <span style="text-decoration:underline">Les hooks</span><span class="w-mut" style="margin-left:auto;font-size:12.5px">Module 1</span></div>
+      <div class="w-mut" style="padding-left:20px">…un <span style="background:rgba(145,132,217,.35);color:#1a1a1a">hook</span> se déclenche à chaque écriture de fichier…</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div class="w-row">✓ <span style="text-decoration:underline">Le mode plan</span><span class="w-mut" style="margin-left:auto;font-size:12.5px">Module 1</span></div>
+      <div class="w-mut" style="padding-left:20px">…contrairement aux <span style="background:rgba(145,132,217,.35);color:#1a1a1a">hooks</span>, le mode plan n'écrit…</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div class="w-row">○ <span style="text-decoration:underline">Journaliser les sessions</span><span class="w-mut" style="margin-left:auto;font-size:12.5px">Module 4</span></div>
+      <div class="w-mut" style="padding-left:20px">…brancher un <span style="background:rgba(145,132,217,.35);color:#1a1a1a">hook</span> de fin de session pour écrire…</div>
+    </div>
+    <div class="w-dash" style="padding:9px"><span class="w-mut" style="font-size:12.5px">Cas limites : « saisir au moins 2 caractères » · « Aucun résultat pour "xyz" » + effacer · « 50 premiers résultats sur N » · indices et solutions jamais indexés (S-R2)</span></div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1h">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>États du catalogue et de la leçon : vide, erreur serveur, chargement, leçon illisible.</div>
+<div class="dv-card w" style="width:440px;padding:13px;display:flex;flex-direction:column;gap:11px">
+  <div class="w-box" style="padding:12px;display:flex;flex-direction:column;gap:7px;align-items:flex-start"><span class="w-mut" style="font-size:12px">CATALOGUE · EMPTY</span><span>Aucune formation.</span><span class="w-mut">Déposez un dossier dans formations/</span><div class="w-btn">Doc du format →</div></div>
+  <div class="w-box" style="padding:12px;display:flex;flex-direction:column;gap:7px;align-items:flex-start;background:rgba(0,0,0,.05)"><span class="w-mut" style="font-size:12px">CATALOGUE · ERROR</span><span>⚠ Parcours ne répond pas</span><div class="w-btn">Réessayer</div></div>
+  <div class="w-box" style="padding:12px;display:flex;flex-direction:column;gap:7px"><span class="w-mut" style="font-size:12px">CATALOGUE · LOADING</span><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><div class="w-dash" style="height:62px"></div><div class="w-dash" style="height:62px"></div></div></div>
+  <div class="w-box" style="padding:12px;display:flex;flex-direction:column;gap:7px"><span class="w-mut" style="font-size:12px">LEÇON · LOADING</span><div class="w-l" style="width:45%;height:12px"></div><div class="w-l" style="width:100%"></div><div class="w-l" style="width:96%"></div><div class="w-l" style="width:70%"></div></div>
+  <div class="w-box" style="padding:12px;display:flex;flex-direction:column;gap:7px;align-items:flex-start;background:rgba(0,0,0,.05)"><span class="w-mut" style="font-size:12px">LEÇON · ERROR (A-R3)</span><span class="w-mut">fichier de leçon introuvable ou illisible : lecons/hooks.md</span><div class="w-btn">← Retour au sommaire</div></div>
+  <div class="w-box" style="padding:12px;display:flex;flex-direction:column;gap:7px;align-items:flex-start"><span class="w-mut" style="font-size:12px">BANDEAU GLOBAL (P-R1)</span><span class="w-mut">progression réinitialisée (base corrompue sauvegardée)</span></div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Écran leçon — <span style="text-transform:none;letter-spacing:0">/formation/:fid/lecon/:lid</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1i">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Colonne de prose centrée, ≤ 72ch, barre d'actions en pied — la piste de la SPEC. Lecture d'abord.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><span class="w-mut">← Sommaire</span><span class="w-mut">Module 1 — leçon 4/5</span><div class="w-prog" style="flex:none;width:60px;margin-left:auto"><i style="width:39%"></i></div></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:12px">
+    <div style="font-size:22px">Les hooks</div>
+    <div class="w-box" style="padding:10px;display:flex;flex-direction:column;gap:6px"><span class="w-mut" style="font-size:12.5px">AVANT CETTE LEÇON</span><span>↗ Cours Academy : Claude Code in Action</span></div>
+    <div class="w-l" style="width:100%"></div><div class="w-l" style="width:97%"></div><div class="w-l" style="width:64%"></div>
+    <div class="w-code"><div class="w-l" style="width:55%;background:#c3bfb7"></div><div class="w-l" style="width:78%;background:#c3bfb7"></div><div class="w-l" style="width:40%;background:#c3bfb7"></div></div>
+    <div class="w-l" style="width:92%"></div><div class="w-l" style="width:100%"></div>
+    <div class="w-box" style="padding:10px;border-color:#9184d9;background:rgba(145,132,217,.07)"><span class="w-mut" style="font-size:12.5px">💡 ASTUCE — toujours ouvert</span></div>
+    <div class="w-row w-box" style="padding:9px 10px">▸ <span>Indice 1 — La direction</span><span class="w-mut" style="margin-left:auto;font-size:12px">replié</span></div>
+    <div class="w-row w-box" style="padding:9px 10px">▸ <span>Solution</span><span class="w-mut" style="margin-left:auto;font-size:12px">replié</span></div>
+  </div>
+  <div class="w-row" style="padding:11px 13px;border-top:1.5px solid #1a1a1a;gap:9px">
+    <div class="w-btn">← Précédente</div><div class="w-btn w-acc" style="flex:1;justify-content:center">✓ Marquer terminé</div><div class="w-btn">→</div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1j">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Sommaire persistant à gauche pendant la lecture (paire de <a class="dv-oid" href="#1f">1f</a>) : on avance sans repasser par l'écran formation.</div>
+<div class="dv-card w" style="width:460px">
+  <div class="w-bar"><span class="w-mut">← Catalogue</span><span>Formation pratique Claude</span><span class="w-mut" style="margin-left:auto">12/31</span></div>
+  <div style="display:flex;min-height:340px">
+    <div class="w-side" style="width:168px;padding:10px;display:flex;flex-direction:column;gap:10px">
+      <div class="w-mut" style="font-size:13px">🔍 Rechercher…</div>
+      <div>
+        <div class="w-mut" style="font-size:12.5px;margin-bottom:3px">MODULE 1 · 4/5</div>
+        <div class="w-item" style="font-size:14px">✓ Installer</div>
+        <div class="w-item" style="font-size:14px">✓ Le mode plan</div>
+        <div class="w-item" style="font-size:14px">✓ Les sous-agents</div>
+        <div class="w-item" style="font-size:14px;background:rgba(145,132,217,.14);border-radius:5px;padding:4px 5px">● Les hooks</div>
+        <div class="w-item" style="font-size:14px">○ Clôture</div>
+      </div>
+      <div>
+        <div class="w-mut" style="font-size:12.5px;margin-bottom:3px">MODULE 2 · 0/4</div>
+        <div class="w-item" style="font-size:14px">○ <span class="w-l" style="width:86px"></span></div>
+        <div class="w-item" style="font-size:14px">○ <span class="w-l" style="width:96px"></span></div>
+      </div>
+      <div class="w-mut" style="font-size:12px;margin-top:auto">Réinitialiser</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="w-p" style="display:flex;flex-direction:column;gap:11px;flex:1">
+        <div style="font-size:20px">Les hooks</div>
+        <div class="w-box" style="padding:9px"><span class="w-mut" style="font-size:12.5px">↗ Avant cette leçon : Cours Academy</span></div>
+        <div class="w-l" style="width:100%"></div><div class="w-l" style="width:88%"></div>
+        <div class="w-code"><div class="w-l" style="width:60%;background:#c3bfb7"></div><div class="w-l" style="width:44%;background:#c3bfb7"></div></div>
+        <div class="w-l" style="width:95%"></div>
+        <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ Indice 1</div>
+        <div class="w-row w-box" style="padding:8px 9px;font-size:14px">▸ Solution</div>
+      </div>
+      <div class="w-row" style="padding:10px 13px;border-top:1.5px solid #1a1a1a;gap:8px">
+        <div class="w-btn" style="font-size:13px">←</div><div class="w-btn w-acc" style="flex:1;justify-content:center;font-size:13.5px">✓ Terminé</div><div class="w-btn" style="font-size:13px">→</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dv-opt" id="1k">
+<div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>Leçon-exercice en étapes (Total TypeScript) : énoncé, critères cochables, puis indice et solution comme étapes assumées.</div>
+<div class="dv-card w" style="width:440px">
+  <div class="w-bar"><span class="w-mut">← Sommaire</span><span class="w-mut">Module 1 — leçon 4/5</span><span class="w-mut" style="margin-left:auto;font-size:12.5px">Exercice</span></div>
+  <div class="w-p" style="display:flex;flex-direction:column;gap:13px">
+    <div style="font-size:22px">Les hooks</div>
+    <div class="w-row" style="gap:7px"><span class="w-btn w-acc" style="font-size:12.5px">1 · Énoncé</span><span class="w-btn" style="font-size:12.5px">2 · Indice</span><span class="w-btn" style="font-size:12.5px">3 · Solution</span></div>
+    <div class="w-l" style="width:100%"></div><div class="w-l" style="width:93%"></div><div class="w-l" style="width:58%"></div>
+    <div class="w-code"><div class="w-l" style="width:62%;background:#c3bfb7"></div><div class="w-l" style="width:48%;background:#c3bfb7"></div><div class="w-l" style="width:70%;background:#c3bfb7"></div></div>
+    <div class="w-box" style="padding:11px;display:flex;flex-direction:column;gap:7px">
+      <span class="w-mut" style="font-size:12.5px">CRITÈRES DE RÉUSSITE (visuels, non persistés — F-R6)</span>
+      <div class="w-row" style="font-size:14px">☐ <span class="w-l" style="width:200px"></span></div>
+      <div class="w-row" style="font-size:14px">☐ <span class="w-l" style="width:170px"></span></div>
+      <div class="w-row" style="font-size:14px">☐ <span class="w-l" style="width:210px"></span></div>
+    </div>
+    <div class="w-dash" style="padding:11px;display:flex;flex-direction:column;gap:6px"><span class="w-mut" style="font-size:12.5px">ÉTAPE 2 — masquée jusqu'au clic (details natif, U-R4)</span><div class="w-btn" style="align-self:flex-start">Voir l'indice</div></div>
+  </div>
+  <div class="w-row" style="padding:11px 13px;border-top:1.5px solid #1a1a1a;gap:9px">
+    <div class="w-btn">← Précédente</div><div class="w-btn w-acc" style="flex:1;justify-content:center">✓ Marquer terminé</div><div class="w-btn">→</div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="dv-grp">Pistes de nom</div>
+<div class="dv-opts">
+<div class="dv-opt" id="1l">
+<div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>Six directions, du descriptif au dénominatif. Un mot, prononçable en français, libre de connotation LMS.</div>
+<div class="dv-card w" style="width:440px;padding:13px;display:flex;flex-direction:column;gap:0">
+  <div style="display:flex;flex-direction:column;gap:0">
+    <div class="w-row" style="padding:10px 0;border-bottom:1px solid #ddd9d2;gap:12px"><span style="font-size:19px;width:104px">Sillon</span><span class="w-mut">la trace qu'on creuse en avançant ; court, concret, jamais pris par un LMS</span></div>
+    <div class="w-row" style="padding:10px 0;border-bottom:1px solid #ddd9d2;gap:12px"><span style="font-size:19px;width:104px">Marge</span><span class="w-mut">la note dans la marge — un lecteur de cours, pas une plateforme</span></div>
+    <div class="w-row" style="padding:10px 0;border-bottom:1px solid #ddd9d2;gap:12px"><span style="font-size:19px;width:104px">Cahier</span><span class="w-mut">dit exactement ce que c'est : le cahier d'exercices qu'on ouvre</span></div>
+    <div class="w-row" style="padding:10px 0;border-bottom:1px solid #ddd9d2;gap:12px"><span style="font-size:19px;width:104px">Étape</span><span class="w-mut">l'unité de la progression ; se prête au vocabulaire produit (« étape suivante »)</span></div>
+    <div class="w-row" style="padding:10px 0;border-bottom:1px solid #ddd9d2;gap:12px"><span style="font-size:19px;width:104px">Balise</span><span class="w-mut">le repère de sentier ; rime avec markdown sans être geek</span></div>
+    <div class="w-row" style="padding:10px 0;gap:12px"><span style="font-size:19px;width:104px">Parcours</span><span class="w-mut">le nom actuel : juste, un peu générique, très pris dans la formation pro</span></div>
+  </div>
+</div>
+</div>
+</div>
+
+<p class="dv-next">Essayez ensuite : « garde <a class="dv-oid" href="#1e">1e</a> pour la formation et <a class="dv-oid" href="#1i">1i</a> pour la leçon, montre-moi le mobile » · « creuse <a class="dv-oid" href="#1k">1k</a> avec un exercice long » · « nouvelles directions pour le catalogue »</p>
+</section>
+
+</x-dc>
+</body>
+</html>

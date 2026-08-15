@@ -317,10 +317,12 @@ function niveauTitre(tag: string): string {
 function transformerCasesACocher(tokens: Token[]): void {
   for (const [i, token] of tokens.entries()) {
     if (token.type !== "inline") continue;
+    // Premier contenu d'un élément de liste, que la liste soit serrée
+    // (paragraphe masqué) ou lâche (paragraphe rendu).
     const precedent = tokens[i - 1];
-    if (!precedent || precedent.type !== "paragraph_open" || !precedent.hidden) {
-      continue;
-    }
+    const avantPrecedent = tokens[i - 2];
+    if (!precedent || precedent.type !== "paragraph_open") continue;
+    if (!avantPrecedent || avantPrecedent.type !== "list_item_open") continue;
     const premier = token.children?.[0];
     if (!premier || premier.type !== "text") continue;
     const correspondance = /^\[([ xX])\]\s+/.exec(premier.content);

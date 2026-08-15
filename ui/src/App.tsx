@@ -1,3 +1,218 @@
+import { useCallback, useEffect, useState } from "react";
+import { api, type ReponseCatalogue, type ReponseFormation, type ReponseLecon } from "./api";
+import { ColonneLaterale } from "./composants/ColonneLaterale";
+import { Icone } from "./composants/communs";
+import { useMode, useRafraichirAuFocus, useRailReplie } from "./preferences";
+import { Catalogue } from "./pages/Catalogue";
+import { PageFormation } from "./pages/Formation";
+import { PageLecon } from "./pages/Lecon";
+import { useRecherche } from "./recherche";
+import { useRoute, type Route } from "./routeur";
+
+const SEUIL_MOBILE = 720;
+
 export function App() {
-  return <h1>Parcours</h1>;
+  const { route, naviguer } = useRoute();
+  const { mode, basculer: basculerMode } = useMode();
+  const { replie, basculer: basculerReplie } = useRailReplie();
+  const [tiroirOuvert, setTiroirOuvert] = useState(false);
+
+  const fid = route.nom === "formation" || route.nom === "lecon" ? route.fid : null;
+  const lid = route.nom === "lecon" ? route.lid : null;
+
+  const [catalogue, setCatalogue] = useState<ReponseCatalogue | null>(null);
+  const [formation, setFormation] = useState<ReponseFormation | null>(null);
+  const [lecon, setLecon] = useState<ReponseLecon | null>(null);
+  const [chargement, setChargement] = useState(true);
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [erreurCoche, setErreurCoche] = useState<string | null>(null);
+
+  const recherche = useRecherche(fid);
+
+  const charger = useCallback(async () => {
+    setErreur(null);
+    setChargement(true);
+    try {
+      const promesses: [
+        Promise<ReponseCatalogue>,
+        Promise<ReponseFormation> | null,
+        Promise<ReponseLecon> | null,
+      ] = [
+        api.catalogue(),
+        fid ? api.formation(fid) : null,
+        fid && lid ? api.lecon(fid, lid) : null,
+      ];
+      const [resultatCatalogue, resultatFormation, resultatLecon] = await Promise.all([
+        promesses[0],
+        promesses[1] ?? Promise.resolve(null),
+        promesses[2] ?? Promise.resolve(null),
+      ]);
+      setCatalogue(resultatCatalogue);
+      setFormation(resultatFormation);
+      setLecon(resultatLecon);
+    } catch (cause: unknown) {
+      setErreur(cause instanceof Error ? cause.message : "erreur inconnue");
+    } finally {
+      setChargement(false);
+    }
+  }, [fid, lid]);
+
+  // Refetch à chaque navigation (P-R7).
+  useEffect(() => {
+    void charger();
+  }, [charger]);
+
+  // …et au retour sur la fenêtre (P-R7).
+  useRafraichirAuFocus(useCallback(() => void charger(), [charger]));
+
+  const naviguerEtFermer = useCallback(
+    (cible: Route) => {
+      setTiroirOuvert(false);
+      naviguer(cible);
+    },
+    [naviguer],
+  );
+
+  /** Coche optimiste avec retour arrière visible si l'API échoue (U-R3). */
+  const basculerFaite = useCallback(async () => {
+    if (!lecon) return;
+    const cible = !lecon.faite;
+    setErreurCoche(null);
+    setLecon({ ...lecon, faite: cible });
+    try {
+      const reponse = cible
+        ? await api.cocher(lecon.formationId, lecon.leconId)
+        : await api.decocher(lecon.formationId, lecon.leconId);
+      setFormation((courante) =>
+        courante && courante.id === lecon.formationId
+          ? { ...courante, avancement: reponse.avancement }
+          : courante,
+      );
+      void api.catalogue().then(setCatalogue).catch(() => undefined);
+    } catch (cause: unknown) {
+      setLecon((courante) =>
+        courante && courante.leconId === lecon.leconId
+          ? { ...courante, faite: !cible }
+          : courante,
+      );
+      setErreurCoche(
+        cause instanceof Error
+          ? `Progression non enregistrée : ${cause.message}`
+          : "Progression non enregistrée",
+      );
+    }
+  }, [lecon]);
+
+  const nettoyer = useCallback(async () => {
+    if (!formation) return;
+    const nombre = formation.avancement.orphelines.length;
+    const confirme = window.confirm(
+      `Supprimer ${nombre} progression${nombre > 1 ? "s" : ""} de leçon${nombre > 1 ? "s" : ""} qui ne ${nombre > 1 ? "sont" : "est"} plus au programme ?`,
+    );
+    if (!confirme) return;
+    const reponse = await api.nettoyer(formation.id);
+    setFormation({ ...formation, avancement: reponse.avancement });
+  }, [formation]);
+
+  const reinitialiser = useCallback(async () => {
+    if (!formation) return;
+    const confirme = window.confirm(
+      `Réinitialiser toute la progression de « ${formation.titre} » ? Cette action est définitive.`,
+    );
+    if (!confirme) return;
+    const reponse = await api.reinitialiser(formation.id);
+    setFormation({ ...formation, avancement: reponse.avancement });
+    setLecon((courante) => (courante ? { ...courante, faite: false } : courante));
+    void api.catalogue().then(setCatalogue).catch(() => undefined);
+  }, [formation]);
+
+  const proprietesRail = {
+    route,
+    naviguer: naviguerEtFermer,
+    catalogue,
+    formation,
+    leconCourante: lid,
+    recherche,
+    mode,
+    basculerMode,
+    replie,
+    basculerReplie,
+    surReinitialiser: () => void reinitialiser(),
+  };
+
+  return (
+    <div className={`app p-${mode}`}>
+      {tiroirOuvert ? (
+        <>
+          <button
+            type="button"
+            className="voile-tiroir"
+            aria-label="Fermer le sommaire"
+            onClick={() => setTiroirOuvert(false)}
+          />
+          <ColonneLaterale
+            {...proprietesRail}
+            enTiroir
+            fermerTiroir={() => setTiroirOuvert(false)}
+          />
+        </>
+      ) : (
+        <ColonneLaterale {...proprietesRail} />
+      )}
+
+      <main className="principal">
+        <button
+          type="button"
+          className="bouton-tiroir"
+          onClick={() => setTiroirOuvert(true)}
+        >
+          <Icone nom="list" taille={16} />
+          Sommaire
+        </button>
+
+        {route.nom === "catalogue" ? (
+          <Catalogue
+            catalogue={catalogue}
+            chargement={chargement}
+            erreur={erreur}
+            recharger={() => void charger()}
+            naviguer={naviguerEtFermer}
+          />
+        ) : route.nom === "formation" ? (
+          <PageFormation
+            formation={formation}
+            chargement={chargement}
+            erreur={erreur}
+            naviguer={naviguerEtFermer}
+            surNettoyer={() => void nettoyer()}
+            surReinitialiser={() => void reinitialiser()}
+          />
+        ) : route.nom === "lecon" ? (
+          <PageLecon
+            lecon={lecon}
+            chargement={chargement}
+            erreur={erreur}
+            erreurCoche={erreurCoche}
+            naviguer={naviguerEtFermer}
+            surBasculerFaite={() => void basculerFaite()}
+          />
+        ) : (
+          <div className="page">
+            <h1>Page introuvable</h1>
+            <button
+              type="button"
+              className="bouton bouton-petit"
+              style={{ alignSelf: "flex-start" }}
+              onClick={() => naviguer({ nom: "catalogue" })}
+            >
+              Retour au catalogue
+            </button>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }
+
+/** Exporté pour les tests : seuil de bascule mobile (U-R6). */
+export const SEUIL_RESPONSIVE = SEUIL_MOBILE;
