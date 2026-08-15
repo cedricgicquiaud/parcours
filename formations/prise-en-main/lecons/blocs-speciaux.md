@@ -39,10 +39,15 @@ inconnu n'est pas une erreur : le contenu s'affiche normalement, sans encadré.
 - Les liens internes s'écrivent `[texte](lecon:identifiant)`.
 - Les images sont relatives au dossier de la formation : `![alt](assets/image.png)`.
 
-Les cases à cocher du contenu sont décoratives :
+Les cases à cocher du contenu sont des **critères de réussite** : cochez-les,
+Parcours retient. Essayez sur celles-ci.
 
-- [x] elles gardent l'état écrit dans le fichier
-- [ ] elles ne sont jamais enregistrées
+- [ ] j'ai coché ce critère, et le décompte ci-dessus est passé à 1
+- [ ] j'ai rechargé la page : mon état est toujours là
+- [x] cette case est cochée dans le fichier, mais je peux la décocher
+
+Cocher le dernier critère ouvert marque la leçon terminée. Décocher ensuite ne
+la défait pas : revenir vérifier un détail ne coûte pas son avancement.
 
 :::attention
 Une image absente n'est pas une page cassée : son texte alternatif s'affiche
