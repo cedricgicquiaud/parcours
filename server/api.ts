@@ -619,7 +619,12 @@ export function creerApi(deps: DependancesApi): AppParcours {
     const { formation } = resolu;
     const { lid, cid } = cible;
     if (!FORMAT_ID_CRITERE.test(cid)) {
-      return c.json({ erreur: `identifiant de critère invalide : ${cid}` }, 400);
+      // Valeur d'URL bornée avant d'être reflétée : un message d'erreur ne
+      // renvoie jamais une entrée arbitraire de longueur libre.
+      return c.json(
+        { erreur: `identifiant de critère invalide : ${cid.slice(0, 40)}` },
+        400,
+      );
     }
 
     const rendue = await rendreLeconDe(c, formation, lid);
