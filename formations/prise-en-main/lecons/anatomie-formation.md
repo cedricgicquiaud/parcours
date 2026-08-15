@@ -56,5 +56,6 @@ le ménage, il ne le fait jamais dans votre dos.
 ## Quand quelque chose cloche
 
 Une formation dont le manifeste est invalide reste visible au catalogue, avec le
-message d'erreur exact et le chemin JSON fautif. Regardez la carte
-`exemple-invalide` : elle vous dit précisément ce qui manque.
+message d'erreur exact et le chemin JSON fautif — par exemple
+`modules[0].id manquant`. Rien n'échoue en silence : corrigez le manifeste,
+rechargez, la carte redevient normale.

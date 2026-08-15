@@ -50,7 +50,7 @@ choses différentes (A-R7).
       "action": "reprendre",
       "prochaine": { "id": "anatomie-formation", "titre": "…", "moduleTitre": "Découverte" }
     },
-    { "statut": "invalide", "id": "exemple-invalide", "erreur": "modules[0].id manquant" }
+    { "statut": "invalide", "id": "un-dossier-fautif", "erreur": "modules[0].id manquant" }
   ],
   "progressionReinitialisee": false,
   "erreurGlobale": "dossier introuvable : /chemin"
