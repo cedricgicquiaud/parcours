@@ -1,8 +1,20 @@
 # Le format des formations Parcours
 
-Une formation est un dossier posé dans `formations/`. Parcours le lit, ne l'écrit
-jamais. Le dossier peut être déplacé ailleurs avec la variable d'environnement
-`PARCOURS_FORMATIONS_DIR`.
+Une formation est un dossier posé dans `formations/`. Le dossier peut être
+déplacé ailleurs avec la variable d'environnement `PARCOURS_FORMATIONS_DIR`.
+
+Deux façons de créer une formation, au choix :
+
+- **Depuis l'application** : « Nouvelle formation » sur le catalogue. Vous
+  saisissez le titre, les modules et les leçons ; Parcours crée le dossier, le
+  manifeste et les fichiers markdown vides. « Modifier la structure », sur la
+  page d'une formation, sert ensuite à renommer, réordonner, ajouter ou retirer.
+- **À la main** (ou avec Claude Code) : vous écrivez vous-même le manifeste et
+  les fichiers, comme décrit ci-dessous.
+
+Le **texte** des leçons s'écrit toujours dans votre éditeur : l'administration
+ne touche jamais au contenu d'un fichier existant, et retirer une leçon du
+sommaire ne supprime pas sa prose.
 
 ```
 formations/

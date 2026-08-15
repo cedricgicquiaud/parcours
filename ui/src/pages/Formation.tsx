@@ -163,6 +163,17 @@ export function PageFormation({
         ))}
       </div>
 
+      <div className="actions-formulaire">
+        <button
+          type="button"
+          className="bouton bouton-petit bouton-neutre"
+          onClick={() => naviguer({ nom: "structure", fid: formation.id })}
+        >
+          <Icone nom="pencil-simple" taille={14} />
+          Modifier la structure
+        </button>
+      </div>
+
       <button
         type="button"
         className="lien"

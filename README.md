@@ -30,11 +30,22 @@ En développement, ouvrez `http://localhost:5173`. En production, `npm run build
 puis `npm start` : un seul process sert l'API et l'interface sur
 `http://127.0.0.1:4620`.
 
-## Écrire une formation
+## Créer une formation
 
-Déposez un dossier dans `formations/` avec un `formation.json` et des fichiers
-markdown : la formation apparaît au rechargement du catalogue, sans redémarrer le
-serveur. Une formation invalide reste visible avec son erreur exacte.
+Deux voies, au choix :
+
+- **Depuis l'application** : bouton « Nouvelle formation » sur le catalogue.
+  Vous saisissez le titre, les modules et les leçons ; Parcours crée le dossier,
+  le manifeste et les fichiers markdown. « Modifier la structure » permet
+  ensuite de renommer, réordonner, ajouter ou retirer des leçons.
+- **À la main** : déposez un dossier dans `formations/` avec un `formation.json`
+  et des fichiers markdown. La formation apparaît au rechargement du catalogue,
+  sans redémarrer le serveur. Une formation invalide reste visible avec son
+  erreur exacte.
+
+Dans les deux cas, le **texte** des leçons s'écrit dans votre éditeur (ou avec
+Claude Code) : l'administration gère la structure, jamais le contenu. Elle ne
+réécrit aucun fichier existant et ne supprime jamais de prose.
 
 Le format complet est décrit dans **`docs/FORMAT.md`**, et la formation
 « Prise en main de Parcours » (livrée dans `formations/`) le montre en pratique.
@@ -47,9 +58,11 @@ PARCOURS_FORMATIONS_DIR=~/mes-formations npm start
 
 ## Ce que Parcours écrit
 
-Uniquement la progression, dans
+La progression, dans
 `~/Library/Application Support/Parcours/parcours.db` (SQLite, mode WAL). Les
-dossiers de formation ne sont jamais modifiés. Si la base est trouvée corrompue
+dossiers de formation ne sont modifiés que par l'espace d'administration, et
+seulement leur structure (manifeste et création de fichiers vides). Si la base
+de progression est trouvée corrompue
 au démarrage, elle est mise de côté, une base neuve est créée et l'interface
 l'annonce — jamais de plantage silencieux.
 

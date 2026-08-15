@@ -14,6 +14,9 @@ Sur une mutation (`PUT`, `DELETE`, `POST`), un en-tête `Origin` non local répo
 |---------|-------|------|
 | GET | `/api/health` | Sonde de vie |
 | GET | `/api/formations` | Catalogue : formations valides et invalides |
+| POST | `/api/formations` | Créer une formation (administration) |
+| GET | `/api/formations/:fid/structure` | Structure éditable |
+| PUT | `/api/formations/:fid/structure` | Enregistrer titres, ordre et composition |
 | GET | `/api/formations/:fid` | Sommaire, progression et orphelines |
 | GET | `/api/formations/:fid/lecons/:lid` | Leçon rendue en HTML assaini |
 | GET | `/api/formations/:fid/recherche?q=` | Recherche plein texte dans la formation |
@@ -159,6 +162,56 @@ répond `403`. Extensions servies : `png`, `jpg`, `jpeg`, `gif`, `svg`, `webp`,
 
 Cocher une leçon absente du manifeste répond `404` : l'API ne fabrique jamais
 d'orpheline.
+
+## Administration : créer et modifier une formation
+
+Ces deux routes sont les **seules** qui écrivent dans `formations/` (décision
+P008). Elles écrivent la structure, jamais le texte des leçons.
+
+`POST /api/formations` — corps :
+
+```json
+{
+  "id": "ecrire-pour-le-web",
+  "titre": "Écrire pour le web",
+  "description": "Structure, ton et relecture.",
+  "modules": [
+    { "titre": "Les bases", "lecons": [{ "titre": "Structurer un texte" }] }
+  ]
+}
+```
+
+`id` est optionnel : sans lui, il est dérivé du titre. Les identifiants des
+modules et des leçons sont dérivés de leurs titres, rendus uniques par suffixe
+(`introduction`, `introduction-2`). Réponse `201` :
+
+```json
+{
+  "id": "ecrire-pour-le-web",
+  "titre": "Écrire pour le web",
+  "fichiersCrees": ["lecons/structurer-un-texte.md"]
+}
+```
+
+`PUT /api/formations/:fid/structure` — même corps, sans `id` de formation.
+Trois règles gouvernent l'écriture :
+
+1. **Une leçon qui porte un `id` le conserve** : c'est la clé de progression
+   (P004). Renommer son titre ne crée aucune orpheline. Une leçon **sans** `id`
+   est nouvelle : le serveur lui en dérive un et crée son fichier.
+2. **Aucun fichier existant n'est réécrit.** `fichiersCrees` ne liste que les
+   fichiers créés vides ; les autres ne sont jamais ouverts en écriture.
+3. **Retirer une leçon du manifeste ne supprime pas son fichier.** Elle sort du
+   sommaire, sa prose reste sur le disque.
+
+Le manifeste est écrit de façon atomique (fichier temporaire puis renommage) et
+repasse par la validation du lecteur : l'administration ne peut pas produire une
+formation que le scan refuserait. L'index de recherche de la formation est
+invalidé après écriture.
+
+Erreurs : `400` pour une saisie invalide (message situé, ex.
+`modules[0].lecons : au moins une leçon attendue`), `409` si le dossier existe
+déjà, `403` si l'origine n'est pas locale.
 
 ## Erreurs
 

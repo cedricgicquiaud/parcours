@@ -1,4 +1,5 @@
 import type {
+  ReponseEcriture,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
@@ -8,6 +9,7 @@ import type {
 } from "../../server/types-api";
 
 export type {
+  ReponseEcriture,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
@@ -15,6 +17,20 @@ export type {
   ReponseRechercheApi,
   ReponseSuppression,
 };
+
+/** Structure éditable d'une formation, espace d'administration (P008). */
+export interface StructureFormation {
+  id: string;
+  titre: string;
+  description?: string;
+  modules: Array<{
+    id?: string;
+    titre: string;
+    lecons: Array<{ id?: string; titre: string }>;
+  }>;
+}
+
+export type StructureSaisie = Omit<StructureFormation, "id"> & { id?: string };
 
 /** Erreur d'API portant le message exact du serveur (A-R3). */
 export class ErreurApi extends Error {
@@ -74,6 +90,23 @@ export const api = {
   reinitialiser: (fid: string) =>
     appeler<ReponseSuppression>(`/api/progression/${id(fid)}/reset`, {
       method: "POST",
+    }),
+
+  structure: (fid: string) =>
+    appeler<StructureFormation>(`/api/formations/${id(fid)}/structure`),
+
+  creerFormation: (structure: StructureSaisie) =>
+    appeler<ReponseEcriture>("/api/formations", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(structure),
+    }),
+
+  enregistrerStructure: (fid: string, structure: StructureSaisie) =>
+    appeler<ReponseEcriture>(`/api/formations/${id(fid)}/structure`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(structure),
     }),
 
   nettoyer: (fid: string) =>

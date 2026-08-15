@@ -2,7 +2,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Hono } from "hono";
 import type { Context } from "hono";
+import {
+  creerFormation,
+  mettreAJourStructure,
+  type StructureSaisie,
+} from "./formations/ecriture";
 import { cheminConfine, leconsOrdonnees } from "./formations/manifeste";
+import { slugifier } from "./formations/slug";
 import {
   scannerCatalogue,
   trouverFormation,
@@ -17,6 +23,7 @@ import type { BaseProgression } from "./progression/db";
 import type { MoteurRecherche } from "./recherche/moteur";
 import type {
   CarteFormation,
+  ReponseEcriture,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
@@ -101,7 +108,101 @@ export function creerApi(deps: DependancesApi): Hono {
     return { scan, formation };
   }
 
+  /** Corps JSON d'une requête d'administration, ou la réponse d'erreur. */
+  async function lireCorps(c: Context): Promise<unknown | Response> {
+    try {
+      const corps: unknown = await c.req.json();
+      if (typeof corps !== "object" || corps === null || Array.isArray(corps)) {
+        return c.json({ erreur: "objet JSON attendu" }, 400);
+      }
+      return corps;
+    } catch {
+      return c.json({ erreur: "corps JSON illisible" }, 400);
+    }
+  }
+
   app.get("/api/health", (c) => c.json({ status: "ok", app: "parcours" }));
+
+  // --- Espace d'administration (P008) : écriture de la STRUCTURE seulement ---
+
+  app.post("/api/formations", async (c) => {
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+
+    const demande = corps as { id?: unknown } & StructureSaisie;
+    const identifiant =
+      typeof demande.id === "string" && demande.id.trim().length > 0
+        ? demande.id.trim()
+        : slugifier(typeof demande.titre === "string" ? demande.titre : "");
+    if (!identifiant) {
+      return c.json({ erreur: "identifiant : impossible de le dériver du titre" }, 400);
+    }
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(identifiant) || identifiant.length > 64) {
+      return c.json({ erreur: `identifiant invalide : ${identifiant}` }, 400);
+    }
+
+    const ecrit = await creerFormation(deps.dossierFormations, identifiant, demande);
+    if (!ecrit.ok) {
+      const conflit = ecrit.erreur.includes("existe déjà");
+      return c.json({ erreur: ecrit.erreur }, conflit ? 409 : 400);
+    }
+    return c.json(
+      {
+        id: identifiant,
+        titre: ecrit.valeur.manifeste.titre,
+        fichiersCrees: ecrit.valeur.fichiersCrees,
+      } satisfies ReponseEcriture,
+      201,
+    );
+  });
+
+  app.get("/api/formations/:fid/structure", async (c) => {
+    const resolu = await resoudre(c, c.req.param("fid"));
+    if (resolu instanceof Response) return resolu;
+    const { manifeste } = resolu.formation;
+    const reponse: StructureSaisie & { id: string } = {
+      id: manifeste.id,
+      titre: manifeste.titre,
+      modules: manifeste.modules.map((module) => ({
+        id: module.id,
+        titre: module.titre,
+        lecons: module.lecons.map((lecon) => ({ id: lecon.id, titre: lecon.titre })),
+      })),
+    };
+    if (manifeste.description) reponse.description = manifeste.description;
+    return c.json(reponse);
+  });
+
+  app.put("/api/formations/:fid/structure", async (c) => {
+    const resolu = await resoudre(c, c.req.param("fid"));
+    if (resolu instanceof Response) return resolu;
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+    const { formation } = resolu;
+
+    // Les leçons déjà présentes gardent leur fichier : leur contenu ne doit
+    // jamais être orphelin d'un renommage automatique (P008).
+    const fichiersExistants = new Map(
+      leconsOrdonnees(formation.manifeste).map(({ lecon }) => [
+        lecon.id,
+        lecon.fichier,
+      ]),
+    );
+    const ecrit = await mettreAJourStructure(
+      formation.dossier,
+      formation.id,
+      corps as StructureSaisie,
+      fichiersExistants,
+    );
+    if (!ecrit.ok) return c.json({ erreur: ecrit.erreur }, 400);
+
+    deps.recherche.oublier(formation.id);
+    return c.json({
+      id: formation.id,
+      titre: ecrit.valeur.manifeste.titre,
+      fichiersCrees: ecrit.valeur.fichiersCrees,
+    } satisfies ReponseEcriture);
+  });
 
   app.get("/api/formations", async (c) => {
     const scan = await scanner();

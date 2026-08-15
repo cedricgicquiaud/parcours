@@ -73,6 +73,14 @@ export interface ReponseSuppression {
   avancement: Avancement;
 }
 
+/** Réponse des routes d'écriture de l'espace d'administration (P008). */
+export interface ReponseEcriture {
+  id: string;
+  titre: string;
+  /** Fichiers de leçons créés vides — jamais un fichier existant. */
+  fichiersCrees: string[];
+}
+
 export interface ReponseErreur {
   erreur: string;
 }

@@ -739,6 +739,122 @@ summary::-webkit-details-marker {
   background: var(--accent-soft);
 }
 
+/* ---------- Formulaires (espace d'administration) ---------- */
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.champ-etiquette {
+  font-size: 11px;
+  letter-spacing: 0.11em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+.champ input,
+.champ textarea {
+  width: 100%;
+  padding: 10px 13px;
+  font: 400 14.5px/1.5 var(--font);
+  color: var(--text);
+  background: var(--pane);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  outline: none;
+}
+
+.champ input:hover,
+.champ textarea:hover {
+  border-color: var(--faint);
+}
+
+.champ input:focus,
+.champ textarea:focus {
+  border-color: var(--accent);
+}
+
+.champ textarea {
+  resize: vertical;
+  min-height: 76px;
+}
+
+.champ-aide {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.champ-mono input {
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.bloc-module {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 17px;
+  background: var(--pane);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+
+.bloc-module-entete {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.bloc-module-entete .champ {
+  flex: 1;
+  min-width: 0;
+}
+
+.liste-lecons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+
+.ligne-saisie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ligne-saisie input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 11px;
+  font: 400 13.5px var(--font);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  outline: none;
+}
+
+.ligne-saisie input:focus {
+  border-color: var(--accent);
+}
+
+.identifiant-fige {
+  font: 400 11.5px var(--mono);
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.actions-formulaire {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 /* ---------- Bandeaux ---------- */
 
 .bandeau {

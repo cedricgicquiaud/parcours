@@ -128,7 +128,17 @@ export function ColonneLaterale(props: ProprietesRail) {
           <button type="button" className="lien" onClick={props.surReinitialiser}>
             Réinitialiser
           </button>
-        ) : null}
+        ) : (
+          <a
+            href="/administration"
+            onClick={(evenement) => {
+              evenement.preventDefault();
+              props.naviguer({ nom: "administration" });
+            }}
+          >
+            Nouvelle formation
+          </a>
+        )}
         <button
           type="button"
           className="bouton-icone"

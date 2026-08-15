@@ -85,6 +85,15 @@ export function Catalogue({
           {valides.length} formation{valides.length > 1 ? "s" : ""} · {totalLecons} leçon
           {totalLecons > 1 ? "s" : ""}
         </span>
+        <button
+          type="button"
+          className="bouton bouton-petit"
+          style={{ marginLeft: "auto" }}
+          onClick={() => naviguer({ nom: "administration" })}
+        >
+          <Icone nom="plus" taille={14} />
+          Nouvelle formation
+        </button>
       </div>
 
       {catalogue?.progressionReinitialisee ? (
@@ -105,9 +114,17 @@ export function Catalogue({
             Aucune formation.
           </strong>
           <span>
-            Déposez un dossier dans <code>formations/</code> : un{" "}
-            <code>formation.json</code> et des fichiers markdown suffisent.
+            Créez-en une ici, ou déposez un dossier dans <code>formations/</code> :
+            un <code>formation.json</code> et des fichiers markdown suffisent.
           </span>
+          <button
+            type="button"
+            className="bouton bouton-petit"
+            onClick={() => naviguer({ nom: "administration" })}
+          >
+            <Icone nom="plus" taille={14} />
+            Créer une formation
+          </button>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>

@@ -3,6 +3,7 @@ import { api, type ReponseCatalogue, type ReponseFormation, type ReponseLecon } 
 import { ColonneLaterale } from "./composants/ColonneLaterale";
 import { Icone } from "./composants/communs";
 import { useMode, useRafraichirAuFocus, useRailReplie } from "./preferences";
+import { Administration } from "./pages/Administration";
 import { Catalogue } from "./pages/Catalogue";
 import { PageFormation } from "./pages/Formation";
 import { PageLecon } from "./pages/Lecon";
@@ -17,7 +18,10 @@ export function App() {
   const { replie, basculer: basculerReplie } = useRailReplie();
   const [tiroirOuvert, setTiroirOuvert] = useState(false);
 
-  const fid = route.nom === "formation" || route.nom === "lecon" ? route.fid : null;
+  const fid =
+    route.nom === "formation" || route.nom === "lecon" || route.nom === "structure"
+      ? route.fid
+      : null;
   const lid = route.nom === "lecon" ? route.lid : null;
 
   const [catalogue, setCatalogue] = useState<ReponseCatalogue | null>(null);
@@ -192,6 +196,10 @@ export function App() {
             surNettoyer={() => void nettoyer()}
             surReinitialiser={() => void reinitialiser()}
           />
+        ) : route.nom === "administration" ? (
+          <Administration fid={null} naviguer={naviguerEtFermer} />
+        ) : route.nom === "structure" ? (
+          <Administration fid={route.fid} naviguer={naviguerEtFermer} />
         ) : route.nom === "lecon" ? (
           <PageLecon
             lecon={lecon}

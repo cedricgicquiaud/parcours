@@ -41,7 +41,10 @@ docs/          # Intrants FIND : références UX
 complet (scan/validation, rendu markdown assaini, progression SQLite, recherche
 plein texte, API locale) et interface complète (catalogue, formation, leçon,
 colonne latérale repliable, recherche, mode clair/sombre, responsive).
-156 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+**Espace d'administration ajouté (2026-08-15, décision P008)** : création d'une
+formation et modification de sa structure depuis l'interface — Parcours écrit
+désormais dans `formations/`, mais jamais le texte des leçons.
+207 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
@@ -57,14 +60,15 @@ Documentation du format pour les auteurs : `docs/FORMAT.md`. API : `docs/API.md`
 
 Voir .workflow/DECISIONS.md — P001 (lecteur, pas CMS : création = markdown +
 Claude Code, aucun outil auteur), P002 (mono-utilisateur local, ouverture future
-bornée : rien de multi-user, pas d'impasses), P003 (légal : contenu Academy
+bornée : rien de multi-user, pas d'impasses), **P008 qui renverse P001 : espace
+d'administration de la STRUCTURE (le contenu des leçons reste hors de portée)**, P003 (légal : contenu Academy
 jamais intégré, liens sortants + non-affiliation), P004 (ids stables de leçons =
 clé de progression ; formatVersion obligatoire), P005 (alias anglais des blocs
 `:::`), P006 (manifeste seul, aucun frontmatter), P007 (recherche plein texte
 dans la V1, indices et solutions exclus de l'index).
 
-Non négociables du PRD : tout local par défaut ; plateforme en lecture seule sur
-les dossiers de formation (seule la base de progression est écrite) ; solutions
+Non négociables du PRD : tout local par défaut ; lecture seule sur le CONTENU
+des leçons (P008 : seules la structure et la base de progression sont écrites) ; solutions
 d'exercices repliées par défaut ; formation invalide toujours signalée avec son
 erreur.
 
