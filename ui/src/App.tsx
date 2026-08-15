@@ -68,7 +68,11 @@ export function App() {
     } finally {
       setChargement(false);
     }
-  }, [fid, lid]);
+    // `route.nom` fait partie des dépendances : on passe de l'éditeur à la
+    // leçon sans changer de formation ni de leçon, et le contenu doit malgré
+    // tout être relu — sinon la leçon resterait affichée telle qu'avant
+    // modification.
+  }, [fid, lid, route.nom]);
 
   // Refetch à chaque navigation (P-R7).
   useEffect(() => {

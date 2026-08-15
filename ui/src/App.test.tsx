@@ -72,9 +72,12 @@ function reponse(corps: unknown, statut = 200): Response {
 }
 
 let appels: string[] = [];
+/** Permet à un test de simuler un contenu de leçon modifié côté serveur. */
+let htmlLecon: string | null = null;
 
 beforeEach(() => {
   appels = [];
+  htmlLecon = null;
   window.history.pushState(null, "", "/");
   vi.spyOn(globalThis, "fetch").mockImplementation(
     async (entree: RequestInfo | URL, init?: RequestInit) => {
@@ -82,8 +85,24 @@ beforeEach(() => {
       appels.push(`${init?.method ?? "GET"} ${url}`);
       if (url === "/api/formations") return reponse(catalogue);
       if (url === "/api/formations/prise-en-main") return reponse(formation);
+      if (url === "/api/formations/prise-en-main/apercu") {
+        return reponse({ html: "<p>aperçu</p>" });
+      }
+      if (url.endsWith("/source")) {
+        return init?.method === "PUT"
+          ? reponse({ jeton: "2-2" })
+          : reponse({
+              formationId: "prise-en-main",
+              leconId: "anatomie",
+              titre: "Anatomie",
+              fichier: "lecons/anatomie.md",
+              markdown: "Une formation est un dossier.",
+              jeton: "1-1",
+            });
+      }
       if (url.startsWith("/api/formations/prise-en-main/lecons/")) {
-        return reponse(lecon);
+        // Après enregistrement, le serveur renvoie le contenu à jour.
+        return reponse(htmlLecon ? { ...lecon, html: htmlLecon } : lecon);
       }
       if (url.startsWith("/api/progression/")) {
         return reponse({ faite: true, avancement: formation.avancement });
@@ -156,6 +175,28 @@ describe("App — parcours complet (§ 6)", () => {
 
     await waitFor(() => expect(window.location.pathname).toBe("/"));
     expect(await screen.findByText("EN COURS")).toBeInTheDocument();
+  });
+
+  it("réaffiche le contenu à jour en fermant l'éditeur de leçon", async () => {
+    window.history.pushState(null, "", "/formation/prise-en-main/lecon/anatomie/editer");
+    render(<App />);
+
+    const saisie = await screen.findByLabelText("Markdown");
+    await userEvent.clear(saisie);
+    await userEvent.type(saisie, "Texte réécrit.");
+    await userEvent.click(screen.getByRole("button", { name: /Enregistrer/ }));
+    await waitFor(() =>
+      expect(appels).toContain(
+        "PUT /api/formations/prise-en-main/lecons/anatomie/source",
+      ),
+    );
+
+    // Le serveur renvoie désormais le contenu réécrit.
+    htmlLecon = "<p>Texte réécrit.</p>";
+    await userEvent.click(screen.getByRole("button", { name: "Fermer" }));
+
+    expect(await screen.findByText("Texte réécrit.")).toBeInTheDocument();
+    expect(screen.queryByText("Une formation est un dossier.")).not.toBeInTheDocument();
   });
 
   it("affiche une page introuvable sur une URL inconnue", async () => {
