@@ -70,9 +70,31 @@ Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
 l'écran formation est absorbé par la colonne latérale, où vit aussi la recherche.
 
+**Orientation produit (2026-08-15, décision P013)** : si Parcours donne lieu un
+jour à une activité commerciale, ce sont les **formations** qui se vendent, pas
+le lecteur. Conséquence sur les priorités : le contenu passe devant les features
+de l'outil. Aucun chantier de commercialisation n'est ouvert (hébergement,
+paiement, RGPD : rien n'est tranché).
+
+**En attente de décision** : la phase 05 « Critères de réussite cochables »
+(`.workflow/phases/05-criteres/` — SPEC commitée, PLAN écrit et non commité) est
+gelée à la PAUSE de fin de REFINE. C'est du travail sur l'outil ; P013 la fait
+passer derrière le contenu. À reprendre ou à verser au backlog.
+
 Restent : la recette manuelle (UAT), puis la conversion éditoriale de
 FORMATION_CLAUDE au format Parcours (chantier dédié — après conversion,
-Parcours = seule référence du contenu, FORMATION_CLAUDE gelé).
+Parcours = seule référence du contenu, FORMATION_CLAUDE gelé). **C'est ce
+chantier que P013 met en tête.**
+
+## Mode de travail
+
+**Mode autonome ACTIVÉ sur ce projet (2026-08-15, demande explicite de Cédric).**
+Les PAUSE de FORGE (fin de FIND, SPEC, REFINE) deviennent des points
+d'information : poster le PRD / SPEC / PLAN et enchaîner sans attendre. Fin de
+DELIVER → merge de la PR si et seulement si la gate est verte (tests + typecheck,
+sortie réelle collée) → LEARN → phase suivante du backlog. Seuls arrêts : blocage
+réel (3 échecs, `blocked.md`) ou décision hors plan. Jamais de push direct sur
+`main`.
 
 Documentation du format pour les auteurs : `docs/FORMAT.md`. API : `docs/API.md`.
 
@@ -91,7 +113,10 @@ P003 (légal : contenu Academy
 jamais intégré, liens sortants + non-affiliation), P004 (ids stables de leçons =
 clé de progression ; formatVersion obligatoire), P005 (alias anglais des blocs
 `:::`), P006 (manifeste seul, aucun frontmatter), P007 (recherche plein texte
-dans la V1, indices et solutions exclus de l'index).
+dans la V1, indices et solutions exclus de l'index), **P013 (orientation
+produit : si quelque chose se vend, ce sont les formations, pas le lecteur —
+le contenu passe devant les features ; aucun chantier de commercialisation
+ouvert)**.
 
 Non négociables du PRD : tout local par défaut (serveur sur 127.0.0.1, aucune
 requête sortante depuis l'interface ; **seule exception, P012 : l'envoi SMTP,
