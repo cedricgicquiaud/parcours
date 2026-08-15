@@ -1,33 +1,23 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { Hono } from "hono";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { creerApi } from "./api";
 import { MoteurRendu } from "./markdown/rendu";
-import { BaseProgression } from "./progression/db";
-import { MoteurRecherche } from "./recherche/moteur";
+import type { BaseProgression } from "./progression/db";
+import { creerContexteTest, type ContexteTest } from "./test-utils";
 
 let rendu: MoteurRendu;
+let contexte: ContexteTest;
 let racine: string;
-let dossierDb: string;
 let base: BaseProgression;
-let app: Hono;
 
 beforeAll(async () => {
   rendu = await MoteurRendu.creer();
 }, 30_000);
 
 beforeEach(async () => {
-  racine = await fs.mkdtemp(path.join(os.tmpdir(), "parcours-editeur-"));
-  dossierDb = await fs.mkdtemp(path.join(os.tmpdir(), "parcours-editeur-db-"));
-  base = BaseProgression.ouvrir(path.join(dossierDb, "parcours.db"));
-  app = creerApi({
-    dossierFormations: racine,
-    base,
-    rendu,
-    recherche: new MoteurRecherche(rendu),
-  });
+  contexte = await creerContexteTest({ rendu, prefixe: "parcours-editeur-" });
+  ({ racine, base } = contexte);
   await appeler("/api/formations", {
     method: "POST",
     body: JSON.stringify({
@@ -39,21 +29,11 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  base.fermer();
-  await fs.rm(racine, { recursive: true, force: true });
-  await fs.rm(dossierDb, { recursive: true, force: true });
+  await contexte.fermer();
 });
 
-function appeler(chemin: string, init: RequestInit = {}) {
-  return app.request(`http://127.0.0.1:4620${chemin}`, {
-    ...init,
-    headers: {
-      host: "127.0.0.1:4620",
-      "content-type": "application/json",
-      ...(init.headers ?? {}),
-    },
-  });
-}
+const appeler = (chemin: string, init: RequestInit = {}) =>
+  contexte.appeler(chemin, init);
 
 const ROUTE = "/api/formations/formation-claude/lecons/les-hooks/source";
 const fichier = () =>

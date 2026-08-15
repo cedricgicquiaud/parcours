@@ -7,6 +7,9 @@ import type { Manifeste } from "../formations/manifeste";
 import { calculerAvancement, voisines } from "./calculs";
 import { BaseProgression } from "./db";
 
+/** Compte de test : la progression est rattachée à un utilisateur (CO-R3). */
+const MOI = 1;
+
 let dossier: string;
 let chemin: string;
 let base: BaseProgression;
@@ -45,33 +48,33 @@ const manifeste: Manifeste = {
 
 describe("BaseProgression — coche (P-R2)", () => {
   it("coche et décoche de façon idempotente", () => {
-    base.cocher("f", "l");
-    base.cocher("f", "l");
-    expect([...base.leconsCochees("f")]).toEqual(["l"]);
-    base.decocher("f", "l");
-    base.decocher("f", "l");
-    expect([...base.leconsCochees("f")]).toEqual([]);
+    base.cocher(MOI, "f", "l");
+    base.cocher(MOI, "f", "l");
+    expect([...base.leconsCochees(MOI, "f")]).toEqual(["l"]);
+    base.decocher(MOI, "f", "l");
+    base.decocher(MOI, "f", "l");
+    expect([...base.leconsCochees(MOI, "f")]).toEqual([]);
   });
 
   it("sépare les formations", () => {
-    base.cocher("f1", "l");
-    base.cocher("f2", "autre");
-    expect([...base.leconsCochees("f1")]).toEqual(["l"]);
-    expect(base.toutesLesCoches().get("f2")).toEqual(new Set(["autre"]));
+    base.cocher(MOI, "f1", "l");
+    base.cocher(MOI, "f2", "autre");
+    expect([...base.leconsCochees(MOI, "f1")]).toEqual(["l"]);
+    expect(base.toutesLesCoches(MOI).get("f2")).toEqual(new Set(["autre"]));
   });
 });
 
 describe("BaseProgression — persistance (P-R6)", () => {
   it("relit la progression après réouverture", () => {
-    base.cocher("f", "l");
+    base.cocher(MOI, "f", "l");
     base.fermer();
     base = BaseProgression.ouvrir(chemin);
-    expect([...base.leconsCochees("f")]).toEqual(["l"]);
+    expect([...base.leconsCochees(MOI, "f")]).toEqual(["l"]);
     expect(base.reinitialisee).toBe(false);
   });
 
   it("active le mode WAL", () => {
-    base.cocher("f", "l");
+    base.cocher(MOI, "f", "l");
     expect(fsSync.existsSync(`${chemin}-wal`)).toBe(true);
   });
 });
@@ -84,31 +87,31 @@ describe("BaseProgression — base corrompue (P-R1)", () => {
     expect(base.reinitialisee).toBe(true);
     expect(base.sauvegardeCorrompue).toMatch(/parcours\.db\.corrupt-/);
     expect(fsSync.existsSync(base.sauvegardeCorrompue!)).toBe(true);
-    base.cocher("f", "l");
-    expect([...base.leconsCochees("f")]).toEqual(["l"]);
+    base.cocher(MOI, "f", "l");
+    expect([...base.leconsCochees(MOI, "f")]).toEqual(["l"]);
   });
 });
 
 describe("BaseProgression — reset et nettoyage (P-R4, P-R5)", () => {
   it("réinitialise une formation, orphelines incluses", () => {
-    base.cocher("f", "installer");
-    base.cocher("f", "disparue");
-    base.cocher("autre", "installer");
-    expect(base.reinitialiser("f")).toBe(2);
-    expect([...base.leconsCochees("f")]).toEqual([]);
-    expect([...base.leconsCochees("autre")]).toEqual(["installer"]);
+    base.cocher(MOI, "f", "installer");
+    base.cocher(MOI, "f", "disparue");
+    base.cocher(MOI, "autre", "installer");
+    expect(base.reinitialiser(MOI, "f")).toBe(2);
+    expect([...base.leconsCochees(MOI, "f")]).toEqual([]);
+    expect([...base.leconsCochees(MOI, "autre")]).toEqual(["installer"]);
   });
 
   it("ne purge que les orphelines", () => {
-    base.cocher("f", "installer");
-    base.cocher("f", "disparue");
-    expect(base.nettoyerOrphelines("f", new Set(["installer"]))).toBe(1);
-    expect([...base.leconsCochees("f")]).toEqual(["installer"]);
+    base.cocher(MOI, "f", "installer");
+    base.cocher(MOI, "f", "disparue");
+    expect(base.nettoyerOrphelines(MOI, "f", new Set(["installer"]))).toBe(1);
+    expect([...base.leconsCochees(MOI, "f")]).toEqual(["installer"]);
   });
 
   it("est idempotent quand il n'y a rien à supprimer", () => {
-    expect(base.reinitialiser("vide")).toBe(0);
-    expect(base.nettoyerOrphelines("vide", new Set())).toBe(0);
+    expect(base.reinitialiser(MOI, "vide")).toBe(0);
+    expect(base.nettoyerOrphelines(MOI, "vide", new Set())).toBe(0);
   });
 });
 

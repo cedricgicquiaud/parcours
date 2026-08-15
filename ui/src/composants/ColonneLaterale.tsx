@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { ReponseCatalogue, ReponseFormation } from "../api";
+import type { Compte, ReponseCatalogue, ReponseFormation } from "../api";
 import type { Mode } from "../preferences";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
@@ -17,6 +17,9 @@ export interface ProprietesRail {
   replie: boolean;
   basculerReplie: () => void;
   surReinitialiser: () => void;
+  /** Compte connecté (P011) : son nom et ses actions vivent au pied du rail. */
+  compte: Compte;
+  surDeconnexion: () => void;
   /** Vrai quand le latéral est affiché en tiroir mobile (U-R6). */
   enTiroir?: boolean;
   fermerTiroir?: () => void;
@@ -113,6 +116,42 @@ export function ColonneLaterale(props: ProprietesRail) {
       ) : (
         <ListeFormations {...props} />
       )}
+
+      <div className="rail-compte">
+        <a
+          className="rail-compte-identite"
+          href="/profil"
+          onClick={(evenement) => {
+            evenement.preventDefault();
+            props.naviguer({ nom: "profil" });
+          }}
+        >
+          <Icone nom="user-circle" taille={17} />
+          <span className="rail-compte-nom">{props.compte.nom}</span>
+        </a>
+        {props.compte.role === "admin" ? (
+          <a
+            className="rail-compte-lien"
+            href="/comptes"
+            title="Gérer les comptes"
+            onClick={(evenement) => {
+              evenement.preventDefault();
+              props.naviguer({ nom: "comptes" });
+            }}
+          >
+            <Icone nom="users-three" taille={15} />
+          </a>
+        ) : null}
+        <button
+          type="button"
+          className="rail-compte-lien"
+          title="Se déconnecter"
+          aria-label="Se déconnecter"
+          onClick={props.surDeconnexion}
+        >
+          <Icone nom="sign-out" taille={15} />
+        </button>
+      </div>
 
       <div className="rail-pied">
         <a
@@ -430,6 +469,18 @@ function Spine(props: ProprietesRail) {
             <Icone nom="magnifying-glass" taille={16} />
           </button>
         ) : null}
+        <a
+          href="/profil"
+          className="bouton-icone"
+          title={props.compte.nom}
+          aria-label="Mon profil"
+          onClick={(evenement) => {
+            evenement.preventDefault();
+            props.naviguer({ nom: "profil" });
+          }}
+        >
+          <Icone nom="user-circle" taille={16} />
+        </a>
         <button
           type="button"
           className="bouton-icone"

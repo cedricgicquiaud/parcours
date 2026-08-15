@@ -1,20 +1,110 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAdministration } from "./administration";
-import { api, type ReponseCatalogue, type ReponseFormation, type ReponseLecon } from "./api";
+import {
+  api,
+  ErreurApi,
+  type Compte,
+  type ReponseCatalogue,
+  type ReponseFormation,
+  type ReponseLecon,
+} from "./api";
 import { ColonneLaterale } from "./composants/ColonneLaterale";
-import { Icone } from "./composants/communs";
+import { BlocErreur, Icone, Squelette } from "./composants/communs";
 import { useMode, useRafraichirAuFocus, useRailReplie } from "./preferences";
 import { Administration } from "./pages/Administration";
 import { Catalogue } from "./pages/Catalogue";
+import { Connexion } from "./pages/Connexion";
+import { ConsoleComptes } from "./pages/ConsoleComptes";
 import { EditeurLecon } from "./pages/EditeurLecon";
 import { PageFormation } from "./pages/Formation";
 import { PageLecon } from "./pages/Lecon";
+import { Profil } from "./pages/Profil";
 import { useRecherche } from "./recherche";
 import { useRoute, type Route } from "./routeur";
+import { useSession } from "./session";
 
 const SEUIL_MOBILE = 720;
 
+/**
+ * Racine de l'application : tant que personne n'est connecté, elle ne montre
+ * que l'écran d'authentification — ou celui d'installation au tout premier
+ * démarrage (AU-R1).
+ */
 export function App() {
+  const session = useSession();
+  const { mode } = useMode();
+
+  if (session.etat.phase === "chargement") {
+    return (
+      <div className={`app p-${mode}`}>
+        <main className="principal">
+          <div className="page">
+            <Squelette largeur="35%" hauteur={22} />
+            <Squelette largeur="60%" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (session.etat.phase === "injoignable") {
+    return (
+      <div className={`app p-${mode}`}>
+        <main className="principal">
+          <div className="page">
+            <BlocErreur
+              titre="Parcours ne répond pas"
+              message={session.etat.erreur}
+              action={
+                <button
+                  type="button"
+                  className="bouton bouton-petit"
+                  onClick={() => void session.rafraichir()}
+                >
+                  Réessayer
+                </button>
+              }
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (session.etat.phase !== "connecte") {
+    return (
+      <div className={`app p-${mode}`}>
+        <main className="principal">
+          <Connexion
+            installation={session.etat.phase === "installation"}
+            surConnexion={session.surConnexion}
+          />
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <ApplicationConnectee
+      compte={session.etat.compte}
+      surCompteChange={session.surConnexion}
+      surDeconnexion={() => void session.deconnecter()}
+      surSessionPerdue={() => void session.rafraichir()}
+    />
+  );
+}
+
+function ApplicationConnectee({
+  compte,
+  surCompteChange,
+  surDeconnexion,
+  surSessionPerdue,
+}: {
+  compte: Compte;
+  surCompteChange: (compte: Compte) => void;
+  surDeconnexion: () => void;
+  surSessionPerdue: () => void;
+}) {
   const { route, naviguer } = useRoute();
   const { mode, basculer: basculerMode } = useMode();
   const { replie, basculer: basculerReplie } = useRailReplie();
@@ -65,6 +155,12 @@ export function App() {
       setFormation(resultatFormation);
       setLecon(resultatLecon);
     } catch (cause: unknown) {
+      // Session expirée ou révoquée pendant la navigation (AU-R3, CO-R9) :
+      // on repasse par l'écran de connexion plutôt que d'afficher une erreur.
+      if (cause instanceof ErreurApi && cause.statut === 401) {
+        surSessionPerdue();
+        return;
+      }
       setErreur(cause instanceof Error ? cause.message : "erreur inconnue");
     } finally {
       setChargement(false);
@@ -73,7 +169,7 @@ export function App() {
     // leçon sans changer de formation ni de leçon, et le contenu doit malgré
     // tout être relu — sinon la leçon resterait affichée telle qu'avant
     // modification.
-  }, [fid, lid, route.nom]);
+  }, [fid, lid, route.nom, surSessionPerdue]);
 
   // Refetch à chaque navigation (P-R7).
   useEffect(() => {
@@ -172,6 +268,8 @@ export function App() {
     replie,
     basculerReplie,
     surReinitialiser: () => void reinitialiser(),
+    compte,
+    surDeconnexion,
   };
 
   return (
@@ -229,6 +327,14 @@ export function App() {
               )
             }
           />
+        ) : route.nom === "profil" ? (
+          <Profil
+            compte={compte}
+            surCompteChange={surCompteChange}
+            naviguer={naviguerEtFermer}
+          />
+        ) : route.nom === "comptes" ? (
+          <ConsoleComptes moi={compte} />
         ) : route.nom === "administration" ? (
           <Administration fid={null} naviguer={naviguerEtFermer} />
         ) : route.nom === "structure" ? (

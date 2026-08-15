@@ -1,39 +1,55 @@
 import type { FichierDepose } from "../../server/formations/import";
 import type {
+  Compte,
   EntreeArchive,
   EntreeCorbeille,
   ReponseApercu,
+  ReponseChangementMotDePasse,
+  ReponseCompte,
   ReponseCorbeille,
   ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseEtatAuth,
   ReponseImport,
+  ReponseInstallation,
+  ReponseReinitialisation,
   ReponseSourceLecon,
+  ReponseUtilisateurs,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
   ReponseProgression,
   ReponseRechercheApi,
   ReponseSuppression,
+  Role,
 } from "../../server/types-api";
 
 export type {
+  Compte,
   EntreeArchive,
   EntreeCorbeille,
   FichierDepose,
   ReponseApercu,
+  ReponseChangementMotDePasse,
+  ReponseCompte,
   ReponseCorbeille,
   ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseEtatAuth,
   ReponseImport,
+  ReponseInstallation,
+  ReponseReinitialisation,
   ReponseSourceLecon,
+  ReponseUtilisateurs,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
   ReponseProgression,
   ReponseRechercheApi,
   ReponseSuppression,
+  Role,
 };
 
 /** Structure éditable d'une formation, espace d'administration (P008). */
@@ -179,4 +195,76 @@ export const api = {
     appeler<ReponseSuppression>(`/api/progression/${id(fid)}/nettoyer`, {
       method: "POST",
     }),
+
+  // --- Authentification et comptes (P011) ---
+
+  etatAuth: () => appeler<ReponseEtatAuth>("/api/auth/etat"),
+
+  installer: (saisie: { identifiant: string; nom: string; motDePasse: string }) =>
+    appeler<ReponseInstallation>("/api/auth/installer", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(saisie),
+    }),
+
+  connexion: (identifiant: string, motDePasse: string) =>
+    appeler<ReponseCompte>("/api/auth/connexion", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ identifiant, motDePasse }),
+    }),
+
+  deconnexion: () =>
+    appeler<{ deconnecte: boolean }>("/api/auth/deconnexion", { method: "POST" }),
+
+  profil: () => appeler<ReponseCompte>("/api/profil"),
+
+  renommerProfil: (nom: string) =>
+    appeler<ReponseCompte>("/api/profil", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ nom }),
+    }),
+
+  changerMonMotDePasse: (actuel: string, nouveau: string) =>
+    appeler<ReponseChangementMotDePasse>("/api/profil/motdepasse", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ actuel, nouveau }),
+    }),
+
+  utilisateurs: () => appeler<ReponseUtilisateurs>("/api/utilisateurs"),
+
+  creerUtilisateur: (saisie: {
+    identifiant: string;
+    nom: string;
+    motDePasse: string;
+    role: Role;
+  }) =>
+    appeler<ReponseCompte>("/api/utilisateurs", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(saisie),
+    }),
+
+  modifierUtilisateur: (
+    idCompte: number,
+    changements: { nom?: string; identifiant?: string; role?: Role; actif?: boolean },
+  ) =>
+    appeler<ReponseCompte>(`/api/utilisateurs/${idCompte}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(changements),
+    }),
+
+  reinitialiserMotDePasse: (idCompte: number) =>
+    appeler<ReponseReinitialisation>(`/api/utilisateurs/${idCompte}/motdepasse`, {
+      method: "POST",
+    }),
+
+  supprimerUtilisateur: (idCompte: number) =>
+    appeler<{ supprime: boolean; progressionEffacee: number }>(
+      `/api/utilisateurs/${idCompte}`,
+      { method: "DELETE" },
+    ),
 };

@@ -8,6 +8,56 @@ Toutes les routes vérifient l'en-tête `Host` : un hôte non local répond `403
 Sur une mutation (`PUT`, `DELETE`, `POST`), un en-tête `Origin` non local répond
 `403` ; un `Origin` absent est accepté (curl et scripts locaux n'en envoient pas).
 
+## Authentification (P011)
+
+La garde locale passe en premier, l'authentification ensuite.
+
+- Tant qu'**aucun compte n'existe**, toutes les routes répondent `503` avec
+  `{ "installation": true }`, sauf `/api/health` et `/api/auth/*`.
+- Ensuite, toute route hors `/api/health` et `/api/auth/*` exige une session
+  valide : sans cookie, `401`.
+- Le cookie `parcours_session` est posé à la connexion :
+  `HttpOnly; SameSite=Strict; Path=/`, 30 jours, prolongé à mi-parcours. Pas de
+  `Secure` : le serveur n'écoute qu'en clair sur la boucle locale.
+- Deux rôles. **`lecteur`** lit les formations, gère sa progression et son
+  profil. **`admin`** fait tout cela, plus l'écriture des formations (structure,
+  édition, import, archivage, corbeille), les vues `/structure` et `/source`, et
+  la console des comptes. Un lecteur sur une de ces routes reçoit `403`.
+
+| Méthode | Route | Rôle |
+|---------|-------|------|
+| GET | `/api/auth/etat` | Installation requise ? compte connecté ? |
+| POST | `/api/auth/installer` | Créer le tout premier compte (administrateur) |
+| POST | `/api/auth/connexion` | `{ identifiant, motDePasse }` |
+| POST | `/api/auth/deconnexion` | Révoque la session et efface le cookie |
+| GET | `/api/profil` | Compte connecté |
+| PUT | `/api/profil` | `{ nom }` |
+| PUT | `/api/profil/motdepasse` | `{ actuel, nouveau }` |
+| GET | `/api/utilisateurs` | Liste des comptes (admin) |
+| POST | `/api/utilisateurs` | Créer un compte (admin) |
+| PATCH | `/api/utilisateurs/:id` | Nom, identifiant, rôle, activation (admin) |
+| POST | `/api/utilisateurs/:id/motdepasse` | Mot de passe provisoire (admin) |
+| DELETE | `/api/utilisateurs/:id` | Supprimer un compte désactivé (admin) |
+
+**Connexion.** Identifiant inconnu, mot de passe faux et compte désactivé
+donnent tous `401` avec le même message : rien ne révèle l'existence d'un
+compte. Après 10 échecs sur un même identifiant en 15 minutes, `429`.
+
+**Mots de passe.** Hachés avec scrypt (N=16384, r=8, p=1, sel de 16 octets),
+10 caractères au minimum. **Aucune réponse ne contient jamais d'empreinte.** Un
+mot de passe provisoire créé par un administrateur n'apparaît que dans la
+réponse à ce geste, jamais ailleurs.
+
+**Garde-fous de la console.** Un administrateur ne peut ni changer son propre
+rôle, ni se désactiver, ni se supprimer (`409`). Le dernier administrateur actif
+ne peut être ni rétrogradé ni désactivé (`409`). Un compte ne se supprime que
+désactivé (`409` sinon) ; sa suppression efface sa progression et ses sessions.
+Désactiver un compte révoque ses sessions immédiatement.
+
+**Progression.** Elle est rattachée au compte : deux personnes ont deux
+avancements distincts sur la même formation. Les coches d'une base d'avant les
+comptes sont reprises par le premier administrateur créé.
+
 ## Routes
 
 | Méthode | Route | Rôle |
@@ -333,8 +383,11 @@ toujours un **déplacement de dossier**, jamais une copie ni une suppression :
 
 | Code | Cas |
 |------|-----|
-| 403 | Hôte ou origine non locale ; asset hors formation |
-| 404 | Formation, leçon, asset ou route inconnue ; fichier de leçon illisible |
-| 409 | Formation invalide — le message porte la raison exacte |
+| 401 | Aucune session valide |
+| 403 | Hôte ou origine non locale ; rôle insuffisant ; asset hors formation |
+| 404 | Formation, leçon, asset, compte ou route inconnue |
+| 409 | Formation invalide ; identifiant déjà pris ; garde-fou de la console |
+| 429 | Trop de tentatives de connexion sur cet identifiant |
+| 503 | Aucun compte : installation requise |
 
 Toutes les erreurs ont la même forme : `{ "erreur": "message lisible" }`.

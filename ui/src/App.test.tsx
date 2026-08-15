@@ -65,6 +65,17 @@ const lecon: ReponseLecon = {
   suivante: null,
 };
 
+/** Compte connecté par défaut dans ces tests (P011). */
+const compte = {
+  id: 1,
+  identifiant: "cedric",
+  nom: "Cédric",
+  role: "admin" as const,
+  actif: true,
+  creeLe: "2026-08-15T09:00:00.000Z",
+  derniereConnexion: null,
+};
+
 function reponse(corps: unknown, statut = 200): Response {
   return {
     ok: statut < 400,
@@ -85,6 +96,9 @@ beforeEach(() => {
     async (entree: RequestInfo | URL, init?: RequestInit) => {
       const url = String(entree);
       appels.push(`${init?.method ?? "GET"} ${url}`);
+      if (url === "/api/auth/etat") {
+        return reponse({ installationRequise: false, compte });
+      }
       if (url === "/api/formations") return reponse(catalogue);
       if (url === "/api/formations/prise-en-main") return reponse(formation);
       if (url === "/api/formations/prise-en-main/apercu") {

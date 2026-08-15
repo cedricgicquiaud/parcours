@@ -3,6 +3,15 @@ import path from "node:path";
 import { Hono } from "hono";
 import type { Context } from "hono";
 import {
+  exigerAdmin,
+  gardeSession,
+  monterAuthentification,
+  type AppParcours,
+  type VariablesParcours,
+} from "./comptes/auth";
+import type { BaseComptes } from "./comptes/db";
+import { monterComptes } from "./comptes/routes";
+import {
   archiver,
   cheminArchives,
   cheminCorbeille,
@@ -55,8 +64,28 @@ import type {
 export interface DependancesApi {
   dossierFormations: string;
   base: BaseProgression;
+  comptes: BaseComptes;
   rendu: MoteurRendu;
   recherche: MoteurRecherche;
+}
+
+/**
+ * Routes ouvertes à toute personne connectée : authentification, profil et
+ * progression personnelle. Tout le reste qui écrit — ou qui sert une vue
+ * d'administration — exige le rôle `admin` (CO-R2).
+ */
+const PREFIXES_SANS_ROLE = ["/api/auth/", "/api/profil", "/api/progression/"];
+
+export function exigeRoleAdmin(methode: string, chemin: string): boolean {
+  if (chemin === "/api/health") return false;
+  if (PREFIXES_SANS_ROLE.some((prefixe) => chemin.startsWith(prefixe))) return false;
+  if (chemin.startsWith("/api/archives") || chemin.startsWith("/api/corbeille")) {
+    return true;
+  }
+  if (chemin.startsWith("/api/utilisateurs")) return true;
+  if (methode !== "GET") return true;
+  // Les deux vues qui n'existent que pour éditer.
+  return chemin.endsWith("/structure") || chemin.endsWith("/source");
 }
 
 const HOTES_LOCAUX = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
@@ -88,14 +117,33 @@ export function gardeLocale(c: Context): Response | null {
   return null;
 }
 
-export function creerApi(deps: DependancesApi): Hono {
-  const app = new Hono();
+export function creerApi(deps: DependancesApi): AppParcours {
+  const app = new Hono<{ Variables: VariablesParcours }>();
+  const auth = { comptes: deps.comptes, progression: deps.base };
 
+  // A-R1 : la garde locale passe en premier, avant toute lecture de session.
   app.use("*", async (c, next) => {
     const refus = gardeLocale(c);
     if (refus) return refus;
     await next();
   });
+
+  monterAuthentification(app, auth);
+
+  // AU-R6 : session obligatoire hors `/api/auth/*` et sonde de vie.
+  app.use("*", gardeSession(auth));
+
+  // CO-R2 : rôle administrateur sur tout ce qui écrit une formation ou sert
+  // une vue d'administration. Les routes de comptes le revérifient chacune.
+  app.use("*", async (c, next) => {
+    if (exigeRoleAdmin(c.req.method, c.req.path)) {
+      const refus = exigerAdmin(c);
+      if (refus) return refus;
+    }
+    await next();
+  });
+
+  monterComptes(app, auth);
 
   const scanner = () => scannerCatalogue(deps.dossierFormations);
 
@@ -388,7 +436,7 @@ export function creerApi(deps: DependancesApi): Hono {
 
   app.get("/api/formations", async (c) => {
     const scan = await scanner();
-    const coches = deps.base.toutesLesCoches();
+    const coches = deps.base.toutesLesCoches(c.get("compte").id);
 
     const formations: CarteFormation[] = scan.formations.map((formation) => {
       if (formation.statut === "invalide") {
@@ -431,7 +479,7 @@ export function creerApi(deps: DependancesApi): Hono {
     const { formation } = resolu;
     const avancement = calculerAvancement(
       formation.manifeste,
-      deps.base.leconsCochees(formation.id),
+      deps.base.leconsCochees(c.get("compte").id, formation.id),
     );
     const reponse: ReponseFormation = {
       id: formation.id,
@@ -489,7 +537,7 @@ export function creerApi(deps: DependancesApi): Hono {
       moduleId: entree.module.id,
       moduleTitre: entree.module.titre,
       html,
-      faite: deps.base.leconsCochees(formation.id).has(lid),
+      faite: deps.base.leconsCochees(c.get("compte").id, formation.id).has(lid),
       position: position + 1,
       total: idsLecons.size,
       precedente,
@@ -560,8 +608,8 @@ export function creerApi(deps: DependancesApi): Hono {
     if (!trouverLecon(formation, lid)) {
       return c.json({ erreur: `leçon inconnue : ${lid}` }, 404);
     }
-    deps.base.cocher(formation.id, lid);
-    return c.json(reponseProgression(deps, formation, true));
+    deps.base.cocher(c.get("compte").id, formation.id, lid);
+    return c.json(reponseProgression(deps, c.get("compte").id, formation, true));
   });
 
   app.delete("/api/progression/:fid/:lid", async (c) => {
@@ -572,16 +620,16 @@ export function creerApi(deps: DependancesApi): Hono {
     if (!trouverLecon(formation, lid)) {
       return c.json({ erreur: `leçon inconnue : ${lid}` }, 404);
     }
-    deps.base.decocher(formation.id, lid);
-    return c.json(reponseProgression(deps, formation, false));
+    deps.base.decocher(c.get("compte").id, formation.id, lid);
+    return c.json(reponseProgression(deps, c.get("compte").id, formation, false));
   });
 
   app.post("/api/progression/:fid/reset", async (c) => {
     const resolu = await resoudre(c, c.req.param("fid"));
     if (resolu instanceof Response) return resolu;
     const { formation } = resolu;
-    const supprimees = deps.base.reinitialiser(formation.id);
-    return c.json(reponseSuppression(deps, formation, supprimees));
+    const supprimees = deps.base.reinitialiser(c.get("compte").id, formation.id);
+    return c.json(reponseSuppression(deps, c.get("compte").id, formation, supprimees));
   });
 
   app.post("/api/progression/:fid/nettoyer", async (c) => {
@@ -591,8 +639,12 @@ export function creerApi(deps: DependancesApi): Hono {
     const idsConnus = new Set(
       leconsOrdonnees(formation.manifeste).map(({ lecon }) => lecon.id),
     );
-    const supprimees = deps.base.nettoyerOrphelines(formation.id, idsConnus);
-    return c.json(reponseSuppression(deps, formation, supprimees));
+    const supprimees = deps.base.nettoyerOrphelines(
+      c.get("compte").id,
+      formation.id,
+      idsConnus,
+    );
+    return c.json(reponseSuppression(deps, c.get("compte").id, formation, supprimees));
   });
 
   app.notFound((c) =>
@@ -606,6 +658,7 @@ export function creerApi(deps: DependancesApi): Hono {
 
 function reponseProgression(
   deps: DependancesApi,
+  utilisateurId: number,
   formation: FormationValide,
   faite: boolean,
 ): ReponseProgression {
@@ -613,13 +666,14 @@ function reponseProgression(
     faite,
     avancement: calculerAvancement(
       formation.manifeste,
-      deps.base.leconsCochees(formation.id),
+      deps.base.leconsCochees(utilisateurId, formation.id),
     ),
   };
 }
 
 function reponseSuppression(
   deps: DependancesApi,
+  utilisateurId: number,
   formation: FormationValide,
   supprimees: number,
 ): ReponseSuppression {
@@ -627,7 +681,7 @@ function reponseSuppression(
     supprimees,
     avancement: calculerAvancement(
       formation.manifeste,
-      deps.base.leconsCochees(formation.id),
+      deps.base.leconsCochees(utilisateurId, formation.id),
     ),
   };
 }

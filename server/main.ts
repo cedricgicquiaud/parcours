@@ -4,6 +4,8 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { creerApi } from "./api";
+import { ouvrirBase } from "./base";
+import { BaseComptes } from "./comptes/db";
 import { cheminBaseProgression, dossierFormations, HOTE, PORT, RACINE_PROJET } from "./config";
 import { MoteurRendu } from "./markdown/rendu";
 import { BaseProgression } from "./progression/db";
@@ -13,12 +15,22 @@ const DOSSIER_UI = path.join(RACINE_PROJET, "dist", "ui");
 
 async function demarrer(): Promise<void> {
   const formations = dossierFormations();
-  const base = BaseProgression.ouvrir(cheminBaseProgression());
+  // Progression et comptes partagent l'unique base locale.
+  const ouverte = ouvrirBase(cheminBaseProgression());
+  const base = new BaseProgression(
+    ouverte.db,
+    ouverte.reinitialisee,
+    ouverte.sauvegardeCorrompue,
+  );
+  const comptes = new BaseComptes(ouverte.db);
   const rendu = await MoteurRendu.creer();
   const recherche = new MoteurRecherche(rendu);
 
   const app = new Hono();
-  app.route("/", creerApi({ dossierFormations: formations, base, rendu, recherche }));
+  app.route(
+    "/",
+    creerApi({ dossierFormations: formations, base, comptes, rendu, recherche }),
+  );
 
   // En production, le même process sert l'UI construite (1 process, PRD).
   if (fs.existsSync(DOSSIER_UI)) {
@@ -32,6 +44,9 @@ async function demarrer(): Promise<void> {
   const serveur = serve({ fetch: app.fetch, port: PORT, hostname: HOTE }, () => {
     console.log(`Parcours écoute sur http://${HOTE}:${PORT}`);
     console.log(`Formations : ${formations}`);
+    if (comptes.installationRequise()) {
+      console.log("Aucun compte : ouvrez Parcours pour créer le compte administrateur.");
+    }
     if (base.reinitialisee) {
       console.warn(
         `Progression réinitialisée — base corrompue sauvegardée : ${base.sauvegardeCorrompue}`,

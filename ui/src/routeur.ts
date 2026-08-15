@@ -5,6 +5,8 @@ export type Route =
   | { nom: "formation"; fid: string }
   | { nom: "lecon"; fid: string; lid: string }
   | { nom: "administration" }
+  | { nom: "profil" }
+  | { nom: "comptes" }
   | { nom: "structure"; fid: string }
   | { nom: "editer"; fid: string; lid: string }
   | { nom: "inconnue"; chemin: string };
@@ -13,8 +15,10 @@ export type Route =
 export function analyserChemin(chemin: string): Route {
   const segments = chemin.split("/").filter((segment) => segment.length > 0);
   if (segments.length === 0) return { nom: "catalogue" };
-  if (segments[0] === "administration" && segments.length === 1) {
-    return { nom: "administration" };
+  if (segments.length === 1) {
+    if (segments[0] === "administration") return { nom: "administration" };
+    if (segments[0] === "profil") return { nom: "profil" };
+    if (segments[0] === "comptes") return { nom: "comptes" };
   }
   if (segments[0] === "formation" && segments[1]) {
     const fid = decodeURIComponent(segments[1]);
@@ -43,6 +47,10 @@ export function cheminDe(route: Route): string {
       return `/formation/${encodeURIComponent(route.fid)}/lecon/${encodeURIComponent(route.lid)}`;
     case "administration":
       return "/administration";
+    case "profil":
+      return "/profil";
+    case "comptes":
+      return "/comptes";
     case "structure":
       return `/formation/${encodeURIComponent(route.fid)}/structure`;
     case "editer":

@@ -1,3 +1,4 @@
+import type { Compte, Role } from "./comptes/db";
 import type { EntreeArchive, EntreeCorbeille } from "./formations/cycle";
 import type { ResultatImport } from "./formations/import";
 import type { ActionFormation, Avancement } from "./progression/calculs";
@@ -6,10 +7,43 @@ import type { ResultatRecherche } from "./recherche/moteur";
 export type {
   ActionFormation,
   Avancement,
+  Compte,
   EntreeArchive,
   EntreeCorbeille,
   ResultatRecherche,
+  Role,
 };
+
+/** État d'authentification, interrogé au démarrage de l'interface (AU-R1). */
+export interface ReponseEtatAuth {
+  installationRequise: boolean;
+  compte: Compte | null;
+}
+
+export interface ReponseCompte {
+  compte: Compte;
+}
+
+export interface ReponseInstallation {
+  compte: Compte;
+  /** Coches d'avant les comptes reprises par ce premier administrateur (CO-R3). */
+  progressionHeritee: number;
+}
+
+export interface ReponseUtilisateurs {
+  utilisateurs: Compte[];
+}
+
+/** Mot de passe provisoire montré une seule fois (CO-R10). */
+export interface ReponseReinitialisation {
+  motDePasseProvisoire: string;
+  compte: Compte;
+}
+
+export interface ReponseChangementMotDePasse {
+  change: boolean;
+  sessionsRevoquees: number;
+}
 
 export interface CarteFormationValide {
   statut: "valide";

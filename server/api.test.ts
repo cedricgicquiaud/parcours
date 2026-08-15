@@ -1,40 +1,32 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { Hono } from "hono";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { creerApi } from "./api";
+import { NOM_COOKIE } from "./comptes/auth";
 import { MoteurRendu } from "./markdown/rendu";
-import { BaseProgression } from "./progression/db";
 import { MoteurRecherche } from "./recherche/moteur";
+import type { BaseProgression } from "./progression/db";
+import { creerContexteTest, type ContexteTest } from "./test-utils";
 
 let rendu: MoteurRendu;
+let contexte: ContexteTest;
 let racine: string;
-let dossierDb: string;
 let base: BaseProgression;
-let app: Hono;
+let utilisateurId: number;
 
 beforeAll(async () => {
   rendu = await MoteurRendu.creer();
 }, 30_000);
 
 beforeEach(async () => {
-  racine = await fs.mkdtemp(path.join(os.tmpdir(), "parcours-api-"));
-  dossierDb = await fs.mkdtemp(path.join(os.tmpdir(), "parcours-api-db-"));
-  base = BaseProgression.ouvrir(path.join(dossierDb, "parcours.db"));
+  contexte = await creerContexteTest({ rendu, prefixe: "parcours-api-" });
+  ({ racine, base, utilisateurId } = contexte);
   await creerFormationDemo();
-  app = creerApi({
-    dossierFormations: racine,
-    base,
-    rendu,
-    recherche: new MoteurRecherche(rendu),
-  });
 });
 
 afterEach(async () => {
-  base.fermer();
-  await fs.rm(racine, { recursive: true, force: true });
-  await fs.rm(dossierDb, { recursive: true, force: true });
+  await contexte.fermer();
 });
 
 async function creerFormationDemo() {
@@ -86,21 +78,18 @@ async function creerFormationDemo() {
 const local = { headers: { host: "127.0.0.1:4620" } };
 
 const appeler = (chemin: string, init: RequestInit = {}) =>
-  app.request(`http://127.0.0.1:4620${chemin}`, {
-    ...init,
-    headers: { host: "127.0.0.1:4620", ...(init.headers ?? {}) },
-  });
+  contexte.appeler(chemin, init);
 
 describe("garde locale (A-R1)", () => {
   it("refuse un Host non local", async () => {
-    const reponse = await app.request("http://127.0.0.1:4620/api/health", {
+    const reponse = await contexte.app.request("http://127.0.0.1:4620/api/health", {
       headers: { host: "evil.example" },
     });
     expect(reponse.status).toBe(403);
   });
 
   it("accepte le Host du serveur de développement", async () => {
-    const reponse = await app.request("http://127.0.0.1:4620/api/health", {
+    const reponse = await contexte.app.request("http://127.0.0.1:4620/api/health", {
       headers: { host: "localhost:5173" },
     });
     expect(reponse.status).toBe(200);
@@ -146,10 +135,13 @@ describe("GET /api/formations (C-R2, C-R3)", () => {
     const vide = creerApi({
       dossierFormations: path.join(racine, "nulle-part"),
       base,
+      comptes: contexte.comptes,
       rendu,
       recherche: new MoteurRecherche(rendu),
     });
-    const reponse = await vide.request("http://127.0.0.1:4620/api/formations", local);
+    const reponse = await vide.request("http://127.0.0.1:4620/api/formations", {
+      headers: { ...local.headers, cookie: `${NOM_COOKIE}=${contexte.jeton}` },
+    });
     const corps = await reponse.json();
     expect(corps.formations).toEqual([]);
     expect(corps.erreurGlobale).toMatch(/dossier introuvable/);
@@ -243,7 +235,7 @@ describe("assets (A-R4)", () => {
   });
 
   it("refuse un lien symbolique qui sort de la formation", async () => {
-    const cible = path.join(dossierDb, "dehors.png");
+    const cible = path.join(os.tmpdir(), `dehors-${process.pid}.png`);
     await fs.writeFile(cible, "png", "utf8");
     await fs.symlink(
       cible,
@@ -283,8 +275,8 @@ describe("progression (A-R2, A-R3)", () => {
   });
 
   it("réinitialise et nettoie de façon idempotente", async () => {
-    base.cocher("formation-claude", "hooks");
-    base.cocher("formation-claude", "disparue");
+    base.cocher(utilisateurId, "formation-claude", "hooks");
+    base.cocher(utilisateurId, "formation-claude", "disparue");
 
     const nettoyage = await appeler("/api/progression/formation-claude/nettoyer", {
       method: "POST",
