@@ -262,7 +262,7 @@ export class MoteurRendu {
     if (langue && LANGAGES.includes(langue)) {
       // La colorisation est le poste le plus coûteux du rendu (A-R5) : un même
       // extrait revient souvent dans une formation, on le mémorise.
-      const cle = `${langue} ${code}`;
+      const cle = `${langue}\u0000${code}`;
       const memorise = this.cacheColoration.get(cle);
       if (memorise !== undefined) return memorise;
       const html = this.coloriste.codeToHtml(code, {
