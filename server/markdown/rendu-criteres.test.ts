@@ -78,6 +78,29 @@ describe("état de départ et état enregistré (CR-R7)", () => {
   });
 });
 
+describe("budget de rendu (CR-R17)", () => {
+  it("coûte moins de 5 ms de plus que la même leçon sans critères", () => {
+    const lignes = Array.from(
+      { length: 60 },
+      (_, index) => `- [ ] le critère numéro ${index} est vérifié`,
+    ).join("\n");
+    // Médiane de 9 mesures : une mesure unique dépend de ce que fait la machine
+    // à cet instant (les suites tournent en parallèle), pas du rendu.
+    const mesurer = (avecCriteres: boolean) => {
+      const mesures: number[] = [];
+      for (let essai = 0; essai < 9; essai++) {
+        const debut = performance.now();
+        rendre(lignes, avecCriteres ? collecte() : undefined);
+        mesures.push(performance.now() - debut);
+      }
+      mesures.sort((a, b) => a - b);
+      return mesures[Math.floor(mesures.length / 2)]!;
+    };
+
+    expect(mesurer(true) - mesurer(false)).toBeLessThan(5);
+  });
+});
+
 describe("plafond par leçon (CR-R2b)", () => {
   it("désactive les critères au-delà du plafond et le signale", () => {
     const sac = collecte();
