@@ -1,18 +1,171 @@
-# API Parcours — squelette
+# API Parcours
 
-> Document rempli au fil des phases GENERATE. Contrats définitifs en SPEC.
+Base : `http://127.0.0.1:4620/api` — le serveur n'écoute que sur la boucle locale.
 
-Base : `http://127.0.0.1:4620/api`
+## Garde locale (A-R1)
 
-## Routes prévues (indicatif, à confirmer en SPEC)
+Toutes les routes vérifient l'en-tête `Host` : un hôte non local répond `403`.
+Sur une mutation (`PUT`, `DELETE`, `POST`), un en-tête `Origin` non local répond
+`403` ; un `Origin` absent est accepté (curl et scripts locaux n'en envoient pas).
+
+## Routes
 
 | Méthode | Route | Rôle |
 |---------|-------|------|
-| GET | `/api/health` | Sonde de vie (existe déjà) |
-| GET | `/api/formations` | Catalogue : formations valides + invalides avec erreur |
-| GET | `/api/formations/:id` | Sommaire d'une formation (modules, leçons, progression) |
-| GET | `/api/formations/:id/lecons/:leconId` | Contenu d'une leçon |
-| POST | `/api/progression/...` | Cocher / décocher une leçon |
+| GET | `/api/health` | Sonde de vie |
+| GET | `/api/formations` | Catalogue : formations valides et invalides |
+| GET | `/api/formations/:fid` | Sommaire, progression et orphelines |
+| GET | `/api/formations/:fid/lecons/:lid` | Leçon rendue en HTML assaini |
+| GET | `/api/formations/:fid/recherche?q=` | Recherche plein texte dans la formation |
+| GET | `/api/formations/:fid/assets/*` | Fichier joint d'une formation |
+| PUT | `/api/progression/:fid/:lid` | Marquer une leçon terminée |
+| DELETE | `/api/progression/:fid/:lid` | Décocher une leçon |
+| POST | `/api/progression/:fid/reset` | Réinitialiser une formation |
+| POST | `/api/progression/:fid/nettoyer` | Purger les coches orphelines |
 
-Contraintes transverses (PRD) : lecture seule sur `formations/`, assets servis
-avec validation de chemin, jamais de requête réseau sortante.
+Les identifiants sont résolus par correspondance **exacte** dans le résultat du
+scan, sensible à la casse : `Formation-Claude` et `formation-claude` sont deux
+choses différentes (A-R7).
+
+## GET /api/formations
+
+```json
+{
+  "formations": [
+    {
+      "statut": "valide",
+      "id": "prise-en-main",
+      "titre": "Prise en main de Parcours",
+      "description": "…",
+      "modules": 2,
+      "lecons": 6,
+      "faites": 1,
+      "pourcentage": 17,
+      "action": "reprendre",
+      "prochaine": { "id": "anatomie-formation", "titre": "…", "moduleTitre": "Découverte" }
+    },
+    { "statut": "invalide", "id": "exemple-invalide", "erreur": "modules[0].id manquant" }
+  ],
+  "progressionReinitialisee": false,
+  "erreurGlobale": "dossier introuvable : /chemin"
+}
+```
+
+`action` vaut `commencer` (rien de coché), `reprendre` (en cours) ou `revoir`
+(100 %). `erreurGlobale` n'apparaît que si le dossier de formations lui-même est
+introuvable, illisible ou n'est pas un dossier. `progressionReinitialisee` passe
+à `true` quand la base a été trouvée corrompue au démarrage et sauvegardée.
+
+## GET /api/formations/:fid
+
+```json
+{
+  "id": "prise-en-main",
+  "titre": "Prise en main de Parcours",
+  "description": "…",
+  "avancement": {
+    "faites": 1,
+    "total": 6,
+    "pourcentage": 17,
+    "action": "reprendre",
+    "prochaine": { "id": "…", "titre": "…", "moduleTitre": "…" },
+    "orphelines": ["ancien-id"],
+    "modules": [
+      {
+        "id": "decouverte",
+        "titre": "Découverte",
+        "faites": 1,
+        "total": 3,
+        "lecons": [{ "id": "bienvenue", "titre": "Bienvenue", "faite": true }]
+      }
+    ]
+  }
+}
+```
+
+Les leçons orphelines (cochées en base mais absentes du manifeste) sont exclues
+de tous les calculs et listées à part.
+
+## GET /api/formations/:fid/lecons/:lid
+
+```json
+{
+  "formationId": "prise-en-main",
+  "formationTitre": "Prise en main de Parcours",
+  "leconId": "bienvenue",
+  "titre": "Bienvenue",
+  "moduleId": "decouverte",
+  "moduleTitre": "Découverte",
+  "html": "<p>…</p>",
+  "faite": false,
+  "position": 1,
+  "total": 6,
+  "precedente": null,
+  "suivante": { "id": "anatomie-formation", "titre": "Anatomie d'une formation" }
+}
+```
+
+`html` est **déjà assaini** : le rendu markdown se fait côté serveur, l'interface
+n'en fait jamais (A-R5). Le HTML écrit par l'auteur est échappé, pas interprété.
+
+## GET /api/formations/:fid/recherche?q=
+
+```json
+{
+  "resultats": [
+    {
+      "leconId": "anatomie-formation",
+      "titre": "Anatomie d'une formation",
+      "moduleTitre": "Découverte",
+      "extrait": "…il contient un manifeste, des fichiers…",
+      "occurrences": [{ "debut": 25, "longueur": 9 }]
+    }
+  ],
+  "total": 2,
+  "nonIndexees": 0,
+  "message": "saisir au moins 2 caractères"
+}
+```
+
+- L'extrait est du **texte brut** ; le surlignage est appliqué par l'interface à
+  partir des positions (`occurrences`) — aucun HTML supplémentaire ne traverse le
+  pipeline de rendu.
+- Le contenu des blocs `:::indice` et `:::solution` n'est **jamais** indexé.
+- Résultats ordonnés selon le manifeste, 50 au maximum ; `total` donne le nombre
+  réel de correspondances.
+- `message` n'apparaît que pour une requête de moins de 2 caractères utiles.
+
+## Assets
+
+Servi seulement après résolution du chemin réel (`realpath`) confiné au dossier
+de la formation : toute sortie (`..`, lien symbolique sortant, chemin absolu)
+répond `403`. Extensions servies : `png`, `jpg`, `jpeg`, `gif`, `svg`, `webp`,
+`pdf`, `zip`, `txt` — les autres répondent `404`. Chaque asset part avec
+`Content-Security-Policy: default-src 'none'; sandbox` et `X-Content-Type-Options: nosniff`.
+
+## Progression
+
+`PUT` et `DELETE` sont idempotents et renvoient l'avancement recalculé :
+
+```json
+{ "faite": true, "avancement": { "…": "…" } }
+```
+
+`reset` et `nettoyer` renvoient le nombre de lignes supprimées, `0` compris :
+
+```json
+{ "supprimees": 2, "avancement": { "…": "…" } }
+```
+
+Cocher une leçon absente du manifeste répond `404` : l'API ne fabrique jamais
+d'orpheline.
+
+## Erreurs
+
+| Code | Cas |
+|------|-----|
+| 403 | Hôte ou origine non locale ; asset hors formation |
+| 404 | Formation, leçon, asset ou route inconnue ; fichier de leçon illisible |
+| 409 | Formation invalide — le message porte la raison exacte |
+
+Toutes les erreurs ont la même forme : `{ "erreur": "message lisible" }`.

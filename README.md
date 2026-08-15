@@ -26,20 +26,54 @@ npm install
 - `npm run build` — typecheck + build UI
 - `npm start` — serveur seul (production : sert aussi les assets UI)
 
+En développement, ouvrez `http://localhost:5173`. En production, `npm run build`
+puis `npm start` : un seul process sert l'API et l'interface sur
+`http://127.0.0.1:4620`.
+
+## Écrire une formation
+
+Déposez un dossier dans `formations/` avec un `formation.json` et des fichiers
+markdown : la formation apparaît au rechargement du catalogue, sans redémarrer le
+serveur. Une formation invalide reste visible avec son erreur exacte.
+
+Le format complet est décrit dans **`docs/FORMAT.md`**, et la formation
+« Prise en main de Parcours » (livrée dans `formations/`) le montre en pratique.
+
+Pour ranger vos formations ailleurs :
+
+```bash
+PARCOURS_FORMATIONS_DIR=~/mes-formations npm start
+```
+
+## Ce que Parcours écrit
+
+Uniquement la progression, dans
+`~/Library/Application Support/Parcours/parcours.db` (SQLite, mode WAL). Les
+dossiers de formation ne sont jamais modifiés. Si la base est trouvée corrompue
+au démarrage, elle est mise de côté, une base neuve est créée et l'interface
+l'annonce — jamais de plantage silencieux.
+
+Aucune requête réseau sortante : polices, icônes, coloration syntaxique et
+schémas sont embarqués.
+
 ## Structure
 
 ```
 formations/    # Les formations (markdown + formation.json + assets/) — lecture seule
-server/        # Backend Hono : scan des formations, API, progression (SQLite)
+server/        # Backend Hono : scan, rendu markdown, progression, recherche, API
 ui/            # React + Vite : catalogue, vue formation, vue leçon
-docs/          # Références UX, doc API
+docs/          # Format des formations, doc API, références UX
 .workflow/     # Workflow FORGE : PRD, SPEC, décisions, recettes
 ```
 
 ## Statut
 
-Projet en construction (workflow FORGE). PRD validé le 2026-08-14 —
-voir `.workflow/PRD.md`.
+V1 livrée : catalogue, sommaire, lecture, progression, recherche plein texte,
+mode clair/sombre. PRD validé le 2026-08-14 (`.workflow/PRD.md`), SPEC dans
+`.workflow/SPEC.md`, design dans `design_handoff_parcours_lecteur/`.
+
+Hors V1 : outil d'écriture intégré, comptes, communauté, vidéo, recherche
+multi-formations, reprise à la position exacte dans une leçon.
 
 ## Affiliation
 
