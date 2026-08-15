@@ -3,12 +3,24 @@ import path from "node:path";
 import { Hono } from "hono";
 import type { Context } from "hono";
 import {
+  archiver,
+  cheminArchives,
+  cheminCorbeille,
+  listerArchives,
+  listerCorbeille,
+  mettreEnCorbeille,
+  restaurerArchive,
+  restaurerDeCorbeille,
+} from "./formations/cycle";
+import {
   creerFormation,
   ecrireSource,
   lireSource,
   mettreAJourStructure,
   type StructureSaisie,
 } from "./formations/ecriture";
+import { EXTENSIONS_ASSETS } from "./formations/extensions";
+import { importerFormation, type DemandeImport } from "./formations/import";
 import { cheminConfine, leconsOrdonnees } from "./formations/manifeste";
 import { slugifier } from "./formations/slug";
 import {
@@ -26,8 +38,11 @@ import type { MoteurRecherche } from "./recherche/moteur";
 import type {
   CarteFormation,
   ReponseApercu,
+  ReponseCorbeille,
+  ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseImport,
   ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
@@ -43,19 +58,6 @@ export interface DependancesApi {
   rendu: MoteurRendu;
   recherche: MoteurRecherche;
 }
-
-/** Extensions d'assets servies (A-R4) — tout le reste répond 404. */
-const EXTENSIONS_ASSETS: Record<string, string> = {
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".gif": "image/gif",
-  ".svg": "image/svg+xml",
-  ".webp": "image/webp",
-  ".pdf": "application/pdf",
-  ".zip": "application/zip",
-  ".txt": "text/plain; charset=utf-8",
-};
 
 const HOTES_LOCAUX = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
 
@@ -159,6 +161,109 @@ export function creerApi(deps: DependancesApi): Hono {
       } satisfies ReponseEcriture,
       201,
     );
+  });
+
+  // --- Cycle de vie : import, archivage, corbeille (P010) ---
+
+  /**
+   * Import d'un dossier déposé (G-R2). Le refus d'un `formation.json` invalide
+   * remonte `peutGenerer` : l'interface propose alors d'importer avec un
+   * sommaire déduit, plutôt que d'écraser le choix de l'auteur en silence.
+   */
+  app.post("/api/formations/import", async (c) => {
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+
+    const importe = await importerFormation(
+      deps.dossierFormations,
+      corps as DemandeImport,
+    );
+    if (!importe.ok) {
+      const conflit = importe.erreur.includes("existe déjà");
+      return c.json(
+        importe.peutGenerer
+          ? { erreur: importe.erreur, peutGenerer: true }
+          : { erreur: importe.erreur },
+        conflit ? 409 : 400,
+      );
+    }
+    return c.json(importe.valeur satisfies ReponseImport, 201);
+  });
+
+  /** Résout une formation quel que soit son état de validité (G-R7). */
+  async function resoudreDossier(c: Context, fid: string) {
+    const scan = await scanner();
+    const formation = trouverFormation(scan, fid);
+    if (!formation) return c.json({ erreur: `formation inconnue : ${fid}` }, 404);
+    return formation;
+  }
+
+  app.post("/api/formations/:fid/archiver", async (c) => {
+    const fid = c.req.param("fid");
+    const formation = await resoudreDossier(c, fid);
+    if (formation instanceof Response) return formation;
+
+    const resultat = await archiver(deps.dossierFormations, formation.id);
+    if (!resultat.ok) return c.json({ erreur: resultat.erreur }, 409);
+    deps.recherche.oublier(formation.id);
+    return c.json({ id: formation.id, archivee: true });
+  });
+
+  app.post("/api/archives/:fid/restaurer", async (c) => {
+    const resultat = await restaurerArchive(deps.dossierFormations, c.req.param("fid"));
+    if (!resultat.ok) {
+      const introuvable = resultat.erreur.includes("introuvable");
+      return c.json({ erreur: resultat.erreur }, introuvable ? 404 : 409);
+    }
+    return c.json({ id: c.req.param("fid"), archivee: false });
+  });
+
+  /**
+   * Mise à la corbeille (G-R8) : un DÉPLACEMENT, jamais une suppression. La
+   * progression reste en base pour qu'une restauration retrouve les coches.
+   */
+  async function versCorbeille(c: Context, source: string, id: string) {
+    const resultat = await mettreEnCorbeille(deps.dossierFormations, source);
+    if (!resultat.ok) {
+      const introuvable = resultat.erreur.includes("introuvable");
+      return c.json({ erreur: resultat.erreur }, introuvable ? 404 : 409);
+    }
+    deps.recherche.oublier(id);
+    return c.json(resultat.valeur satisfies ReponseCorbeilleAjout);
+  }
+
+  app.delete("/api/formations/:fid", async (c) => {
+    const formation = await resoudreDossier(c, c.req.param("fid"));
+    if (formation instanceof Response) return formation;
+    return versCorbeille(c, formation.dossier, formation.id);
+  });
+
+  app.delete("/api/archives/:fid", async (c) => {
+    const fid = c.req.param("fid");
+    const archives = await listerArchives(deps.dossierFormations);
+    if (!archives.some((archive) => archive.id === fid)) {
+      return c.json({ erreur: `archive inconnue : ${fid}` }, 404);
+    }
+    return versCorbeille(c, path.join(cheminArchives(deps.dossierFormations), fid), fid);
+  });
+
+  app.get("/api/corbeille", async (c) => {
+    return c.json({
+      entrees: await listerCorbeille(deps.dossierFormations),
+      dossier: cheminCorbeille(deps.dossierFormations),
+    } satisfies ReponseCorbeille);
+  });
+
+  app.post("/api/corbeille/:entree/restaurer", async (c) => {
+    const entree = c.req.param("entree");
+    const resultat = await restaurerDeCorbeille(deps.dossierFormations, entree);
+    if (!resultat.ok) {
+      // Une entrée mal formée est une erreur de saisie (400) ; un identifiant
+      // déjà repris au catalogue est un conflit (409).
+      const conflit = resultat.erreur.includes("existe déjà");
+      return c.json({ erreur: resultat.erreur }, conflit ? 409 : 400);
+    }
+    return c.json(resultat.valeur);
   });
 
   app.get("/api/formations/:fid/structure", async (c) => {
@@ -312,6 +417,8 @@ export function creerApi(deps: DependancesApi): Hono {
 
     const reponse: ReponseCatalogue = {
       formations,
+      archivees: await listerArchives(deps.dossierFormations),
+      corbeille: await listerCorbeille(deps.dossierFormations),
       progressionReinitialisee: deps.base.reinitialisee,
     };
     if (scan.erreurGlobale) reponse.erreurGlobale = scan.erreurGlobale;

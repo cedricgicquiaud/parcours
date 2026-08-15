@@ -6,6 +6,8 @@ import type { ReponseCatalogue, ReponseFormation, ReponseLecon } from "./api";
 
 const catalogue: ReponseCatalogue = {
   progressionReinitialisee: false,
+  archivees: [],
+  corbeille: [],
   formations: [
     {
       statut: "valide",

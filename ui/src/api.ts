@@ -1,7 +1,13 @@
+import type { FichierDepose } from "../../server/formations/import";
 import type {
+  EntreeArchive,
+  EntreeCorbeille,
   ReponseApercu,
+  ReponseCorbeille,
+  ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseImport,
   ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
@@ -12,9 +18,15 @@ import type {
 } from "../../server/types-api";
 
 export type {
+  EntreeArchive,
+  EntreeCorbeille,
+  FichierDepose,
   ReponseApercu,
+  ReponseCorbeille,
+  ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseImport,
   ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
@@ -43,6 +55,8 @@ export class ErreurApi extends Error {
   constructor(
     message: string,
     readonly statut: number,
+    /** Import refusé pour cause de manifeste invalide : déduire est possible (G-R5). */
+    readonly peutGenerer = false,
   ) {
     super(message);
     this.name = "ErreurApi";
@@ -58,11 +72,10 @@ async function appeler<T>(chemin: string, init?: RequestInit): Promise<T> {
   }
   const corps: unknown = await reponse.json().catch(() => null);
   if (!reponse.ok) {
+    const objet = corps && typeof corps === "object" ? (corps as Record<string, unknown>) : {};
     const message =
-      corps && typeof corps === "object" && "erreur" in corps
-        ? String((corps as { erreur: unknown }).erreur)
-        : `erreur ${reponse.status}`;
-    throw new ErreurApi(message, reponse.status);
+      "erreur" in objet ? String(objet.erreur) : `erreur ${reponse.status}`;
+    throw new ErreurApi(message, reponse.status, objet.peutGenerer === true);
   }
   return corps as T;
 }
@@ -134,6 +147,32 @@ export const api = {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ markdown }),
       signal,
+    }),
+
+  importer: (nom: string, fichiers: FichierDepose[], ignorerManifeste = false) =>
+    appeler<ReponseImport>("/api/formations/import", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ nom, fichiers, ignorerManifeste }),
+    }),
+
+  archiver: (fid: string) =>
+    appeler<{ id: string }>(`/api/formations/${id(fid)}/archiver`, { method: "POST" }),
+
+  restaurerArchive: (fid: string) =>
+    appeler<{ id: string }>(`/api/archives/${id(fid)}/restaurer`, { method: "POST" }),
+
+  mettreEnCorbeille: (fid: string) =>
+    appeler<ReponseCorbeilleAjout>(`/api/formations/${id(fid)}`, { method: "DELETE" }),
+
+  mettreArchiveEnCorbeille: (fid: string) =>
+    appeler<ReponseCorbeilleAjout>(`/api/archives/${id(fid)}`, { method: "DELETE" }),
+
+  corbeille: () => appeler<ReponseCorbeille>("/api/corbeille"),
+
+  restaurerDeCorbeille: (entree: string) =>
+    appeler<{ id: string }>(`/api/corbeille/${id(entree)}/restaurer`, {
+      method: "POST",
     }),
 
   nettoyer: (fid: string) =>

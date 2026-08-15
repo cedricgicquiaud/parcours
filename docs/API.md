@@ -13,8 +13,15 @@ Sur une mutation (`PUT`, `DELETE`, `POST`), un en-tête `Origin` non local répo
 | Méthode | Route | Rôle |
 |---------|-------|------|
 | GET | `/api/health` | Sonde de vie |
-| GET | `/api/formations` | Catalogue : formations valides et invalides |
+| GET | `/api/formations` | Catalogue : formations, archives et corbeille |
 | POST | `/api/formations` | Créer une formation (administration) |
+| POST | `/api/formations/import` | Importer un dossier déposé |
+| POST | `/api/formations/:fid/archiver` | Archiver une formation |
+| DELETE | `/api/formations/:fid` | Mettre à la corbeille |
+| POST | `/api/archives/:fid/restaurer` | Restaurer une archive |
+| DELETE | `/api/archives/:fid` | Mettre une archive à la corbeille |
+| GET | `/api/corbeille` | Contenu de la corbeille |
+| POST | `/api/corbeille/:entree/restaurer` | Restaurer depuis la corbeille |
 | GET | `/api/formations/:fid/structure` | Structure éditable |
 | PUT | `/api/formations/:fid/structure` | Enregistrer titres, ordre et composition |
 | GET | `/api/formations/:fid` | Sommaire, progression et orphelines |
@@ -51,6 +58,17 @@ choses différentes (A-R7).
       "prochaine": { "id": "anatomie-formation", "titre": "…", "moduleTitre": "Découverte" }
     },
     { "statut": "invalide", "id": "un-dossier-fautif", "erreur": "modules[0].id manquant" }
+  ],
+  "archivees": [
+    { "statut": "valide", "id": "vieux-cours", "titre": "Vieux cours", "lecons": 4 }
+  ],
+  "corbeille": [
+    {
+      "entree": "vieux-cours--20260815-142530",
+      "id": "vieux-cours",
+      "titre": "Vieux cours",
+      "supprimeeLe": "2026-08-15T12:25:30.000Z"
+    }
   ],
   "progressionReinitialisee": false,
   "erreurGlobale": "dossier introuvable : /chemin"
@@ -245,6 +263,71 @@ le même assainissement. La route n'écrit rien sur le disque.
 
 Ces trois routes sont, avec celles de la structure, les seules qui touchent à
 `formations/`.
+
+## Import d'un dossier déposé
+
+`POST /api/formations/import` — corps :
+
+```json
+{
+  "nom": "Cuisine du dimanche",
+  "fichiers": [
+    { "chemin": "Cuisine du dimanche/01-bases/le-feu.md", "contenu": "# Maîtriser le feu\n" },
+    { "chemin": "Cuisine du dimanche/assets/photo.png", "contenu": "iVBORw0…", "encodage": "base64" }
+  ],
+  "ignorerManifeste": false
+}
+```
+
+Réponse `201` :
+
+```json
+{
+  "id": "cuisine-du-dimanche",
+  "titre": "Cuisine du dimanche",
+  "lecons": 3,
+  "manifesteGenere": true,
+  "ignores": ["Cuisine du dimanche/.DS_Store"]
+}
+```
+
+- L'identifiant est le slug du `nom`, suffixé s'il est déjà pris par une
+  formation active ou archivée (`cuisine-du-dimanche-2`).
+- **Sans `formation.json`**, le sommaire est déduit : un module par sous-dossier
+  de premier niveau (un seul groupe → module « Contenu »), leçons triées par nom
+  en ordre numérique, titre pris au premier `#` du fichier hors bloc de code.
+- **Avec un `formation.json` valide**, l'ordre et les titres de l'auteur sont
+  conservés ; seul son `id` est réaligné sur le dossier d'accueil.
+- **Avec un `formation.json` refusé**, la réponse est `400` avec l'erreur exacte
+  et `"peutGenerer": true`. Renvoyer la requête avec `ignorerManifeste: true`
+  importe alors avec un sommaire déduit. Rien n'est jamais importé en silence.
+- Limites : 500 fichiers, 25 Mo cumulés, 2 Mo par markdown. Extensions acceptées :
+  `.md`, `.markdown`, `.json`, plus celles des assets. Les entrées système
+  (`__MACOSX/`, tout nom commençant par `.`) sont écartées et listées dans
+  `ignores`.
+- Écriture atomique : dossier temporaire caché puis renommage. Un import refusé
+  ne laisse rien dans `formations/`.
+
+## Cycle de vie : archives et corbeille
+
+Trois emplacements, un seul à la fois — le passage de l'un à l'autre est
+toujours un **déplacement de dossier**, jamais une copie ni une suppression :
+
+| État | Emplacement |
+|---|---|
+| active | `formations/<id>/` |
+| archivée | `formations/.archives/<id>/` |
+| en corbeille | `formations/.corbeille/<id>--<AAAAMMJJ-hhmmss>/` |
+
+- **Aucune route ne supprime de fichier.** `DELETE` déplace en corbeille ;
+  vider la corbeille reste un geste manuel de l'utilisateur, hors application.
+- La progression n'est jamais touchée : archiver puis restaurer, ou jeter puis
+  restaurer, rend la formation avec ses coches.
+- Restaurer sur un identifiant repris entre-temps répond `409`.
+- Une entrée de corbeille mal formée (ou qui tente de sortir du dossier) répond
+  `400`.
+- Les dossiers `.archives` et `.corbeille` sont retirés dès qu'ils sont vides —
+  jamais autrement.
 
 ## Erreurs
 

@@ -22,6 +22,9 @@ export function PageFormation({
   naviguer,
   surNettoyer,
   surReinitialiser,
+  surArchiver,
+  surSupprimer,
+  occupe = false,
 }: {
   formation: ReponseFormation | null;
   chargement: boolean;
@@ -29,6 +32,9 @@ export function PageFormation({
   naviguer: (route: Route) => void;
   surNettoyer: () => void;
   surReinitialiser: () => void;
+  surArchiver?: () => void;
+  surSupprimer?: () => void;
+  occupe?: boolean;
 }) {
   if (erreur) {
     return (
@@ -172,6 +178,28 @@ export function PageFormation({
           <Icone nom="pencil-simple" taille={14} />
           Modifier la structure
         </button>
+        {surArchiver ? (
+          <button
+            type="button"
+            className="bouton bouton-petit bouton-neutre"
+            disabled={occupe}
+            onClick={surArchiver}
+          >
+            <Icone nom="archive" taille={14} />
+            Archiver
+          </button>
+        ) : null}
+        {surSupprimer ? (
+          <button
+            type="button"
+            className="bouton bouton-petit bouton-neutre"
+            disabled={occupe}
+            onClick={surSupprimer}
+          >
+            <Icone nom="trash" taille={14} />
+            Mettre à la corbeille
+          </button>
+        ) : null}
       </div>
 
       <button

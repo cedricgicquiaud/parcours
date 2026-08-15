@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { CarteFormation, CarteFormationValide } from "../../../server/types-api";
-import type { ReponseCatalogue } from "../api";
+import type { Administration } from "../administration";
+import type { EntreeArchive, EntreeCorbeille, ReponseCatalogue } from "../api";
 import {
   Bandeau,
   Barre,
@@ -8,6 +10,7 @@ import {
   PiedPlateforme,
   Squelette,
 } from "../composants/communs";
+import { ZoneDepot } from "../composants/ZoneDepot";
 import type { Route } from "../routeur";
 
 const LIBELLES_ACTION = {
@@ -22,12 +25,14 @@ export function Catalogue({
   erreur,
   recharger,
   naviguer,
+  administration,
 }: {
   catalogue: ReponseCatalogue | null;
   chargement: boolean;
   erreur: string | null;
   recharger: () => void;
   naviguer: (route: Route) => void;
+  administration: Administration;
 }) {
   if (erreur) {
     return (
@@ -69,6 +74,8 @@ export function Catalogue({
   }
 
   const formations = catalogue?.formations ?? [];
+  const archivees = catalogue?.archivees ?? [];
+  const corbeille = catalogue?.corbeille ?? [];
   const valides = formations.filter(
     (formation): formation is CarteFormationValide => formation.statut === "valide",
   );
@@ -76,6 +83,12 @@ export function Catalogue({
     valides.find((formation) => formation.action === "reprendre") ?? null;
   const autres = formations.filter((formation) => formation !== enCours);
   const totalLecons = valides.reduce((total, formation) => total + formation.lecons, 0);
+
+  const actions = {
+    modifier: (fid: string) => naviguer({ nom: "structure", fid }),
+    archiver: administration.archiver,
+    supprimer: administration.supprimer,
+  };
 
   return (
     <div className="page">
@@ -106,6 +119,27 @@ export function Catalogue({
         <Bandeau icone="warning">{catalogue.erreurGlobale}</Bandeau>
       ) : null}
 
+      {administration.message ? (
+        <Bandeau
+          icone="check-circle"
+          actions={
+            <button
+              type="button"
+              className="bouton bouton-petit bouton-neutre"
+              onClick={administration.effacer}
+            >
+              Fermer
+            </button>
+          }
+        >
+          {administration.message}
+        </Bandeau>
+      ) : null}
+
+      {administration.erreur ? (
+        <BlocErreur titre="Action impossible" message={administration.erreur} />
+      ) : null}
+
       {enCours ? <CarteEnCours formation={enCours} naviguer={naviguer} /> : null}
 
       {formations.length === 0 ? (
@@ -114,9 +148,9 @@ export function Catalogue({
             Aucune formation.
           </strong>
           <span>
-            Créez-en une ici, ou déposez un dossier dans <code>formations/</code> :
-            un <code>formation.json</code> et des fichiers markdown suffisent.
+            Déposez le dossier d'une formation existante, ou créez-en une de zéro.
           </span>
+          <ZoneDepot surDepot={administration.importer} occupe={administration.occupe} />
           <button
             type="button"
             className="bouton bouton-petit"
@@ -131,18 +165,158 @@ export function Catalogue({
           <span className="kicker-faible">TOUTES MES FORMATIONS</span>
           <div className="grille-formations">
             {autres.map((formation) => (
-              <Carte key={formation.id} formation={formation} naviguer={naviguer} />
+              <Carte
+                key={formation.id}
+                formation={formation}
+                naviguer={naviguer}
+                actions={actions}
+                occupe={administration.occupe}
+              />
             ))}
-            <div className="carte-vide">
-              <span style={{ maxWidth: "20ch" }}>
-                Déposez un dossier dans <code>formations/</code>
-              </span>
-            </div>
+            <ZoneDepot
+              surDepot={administration.importer}
+              occupe={administration.occupe}
+              compacte
+            />
           </div>
         </div>
       )}
 
+      {archivees.length > 0 ? (
+        <SectionRepliable titre="Archivées" nombre={archivees.length}>
+          {archivees.map((archive) => (
+            <LigneArchive
+              key={archive.id}
+              archive={archive}
+              occupe={administration.occupe}
+              surRestaurer={administration.restaurerArchive}
+              surSupprimer={administration.supprimer}
+            />
+          ))}
+        </SectionRepliable>
+      ) : null}
+
+      {corbeille.length > 0 ? (
+        <SectionRepliable titre="Corbeille" nombre={corbeille.length}>
+          <p className="note-corbeille">
+            Parcours ne supprime aucun fichier : ces dossiers sont déplacés dans{" "}
+            <code>formations/.corbeille/</code>. Videz-la vous-même depuis le Finder.
+          </p>
+          {corbeille.map((entree) => (
+            <LigneCorbeille
+              key={entree.entree}
+              entree={entree}
+              occupe={administration.occupe}
+              surRestaurer={administration.restaurerCorbeille}
+            />
+          ))}
+        </SectionRepliable>
+      ) : null}
+
       <PiedPlateforme />
+    </div>
+  );
+}
+
+function SectionRepliable({
+  titre,
+  nombre,
+  children,
+}: {
+  titre: string;
+  nombre: number;
+  children: React.ReactNode;
+}) {
+  const [ouverte, setOuverte] = useState(false);
+  return (
+    <section className="section-repliable">
+      <button
+        type="button"
+        className="section-repliable-entete"
+        aria-expanded={ouverte}
+        onClick={() => setOuverte((valeur) => !valeur)}
+      >
+        <Icone nom={ouverte ? "caret-down" : "caret-right"} taille={13} />
+        {titre}
+        <span className="meta-faible">{nombre}</span>
+      </button>
+      {ouverte ? <div className="section-repliable-corps">{children}</div> : null}
+    </section>
+  );
+}
+
+function LigneArchive({
+  archive,
+  occupe,
+  surRestaurer,
+  surSupprimer,
+}: {
+  archive: EntreeArchive;
+  occupe: boolean;
+  surRestaurer: (fid: string, titre: string) => void;
+  surSupprimer: (fid: string, titre: string, depuisArchives?: boolean) => void;
+}) {
+  const titre = archive.titre ?? archive.id;
+  return (
+    <div className="ligne-cycle">
+      <div className="ligne-cycle-texte">
+        <span className="ligne-cycle-titre">{titre}</span>
+        <span className="meta-faible">
+          {archive.statut === "invalide"
+            ? `Manifeste refusé : ${archive.erreur}`
+            : `${archive.lecons} leçon${(archive.lecons ?? 0) > 1 ? "s" : ""}`}
+        </span>
+      </div>
+      <button
+        type="button"
+        className="bouton bouton-petit bouton-neutre"
+        disabled={occupe}
+        onClick={() => surRestaurer(archive.id, titre)}
+      >
+        Restaurer
+      </button>
+      <button
+        type="button"
+        className="bouton bouton-petit bouton-neutre"
+        disabled={occupe}
+        onClick={() => surSupprimer(archive.id, titre, true)}
+      >
+        Corbeille
+      </button>
+    </div>
+  );
+}
+
+function LigneCorbeille({
+  entree,
+  occupe,
+  surRestaurer,
+}: {
+  entree: EntreeCorbeille;
+  occupe: boolean;
+  surRestaurer: (entree: string, titre: string) => void;
+}) {
+  const titre = entree.titre ?? entree.id;
+  return (
+    <div className="ligne-cycle">
+      <div className="ligne-cycle-texte">
+        <span className="ligne-cycle-titre">{titre}</span>
+        <span className="meta-faible">
+          Mise à la corbeille le{" "}
+          {new Date(entree.supprimeeLe).toLocaleString("fr-FR", {
+            dateStyle: "long",
+            timeStyle: "short",
+          })}
+        </span>
+      </div>
+      <button
+        type="button"
+        className="bouton bouton-petit bouton-neutre"
+        disabled={occupe}
+        onClick={() => surRestaurer(entree.entree, titre)}
+      >
+        Restaurer
+      </button>
     </div>
   );
 }
@@ -206,13 +380,25 @@ function CarteEnCours({
   );
 }
 
+interface ActionsCarte {
+  modifier: (fid: string) => void;
+  archiver: (fid: string, titre: string) => void;
+  supprimer: (fid: string, titre: string) => void;
+}
+
 function Carte({
   formation,
   naviguer,
+  actions,
+  occupe,
 }: {
   formation: CarteFormation;
   naviguer: (route: Route) => void;
+  actions: ActionsCarte;
+  occupe: boolean;
 }) {
+  const titre = formation.statut === "valide" ? formation.titre : formation.id;
+
   if (formation.statut === "invalide") {
     return (
       <div className="carte carte-invalide">
@@ -221,9 +407,18 @@ function Carte({
           <code>{formation.id}</code>
         </div>
         <p>{formation.erreur}</p>
-        <span className="meta-faible" style={{ marginTop: "auto", fontSize: 12 }}>
-          Corrigez le manifeste, puis rechargez.
-        </span>
+        <div className="carte-pied" style={{ marginTop: "auto" }}>
+          <span className="meta-faible" style={{ fontSize: 12 }}>
+            Corrigez le manifeste, puis rechargez.
+          </span>
+          <MenuCarte
+            titre={titre}
+            fid={formation.id}
+            actions={actions}
+            occupe={occupe}
+            modifiable={false}
+          />
+        </div>
       </div>
     );
   }
@@ -252,15 +447,96 @@ function Carte({
         <span className="meta-faible" style={{ fontSize: 12 }}>
           {formation.faites}/{formation.lecons} leçons
         </span>
+        <MenuCarte
+          titre={titre}
+          fid={formation.id}
+          actions={actions}
+          occupe={occupe}
+          modifiable
+        />
         <button
           type="button"
           className={`bouton bouton-petit${formation.action === "revoir" ? " bouton-neutre" : ""}`}
-          style={{ marginLeft: "auto" }}
           onClick={ouvrir}
         >
           {LIBELLES_ACTION[formation.action]}
         </button>
       </div>
+    </div>
+  );
+}
+
+/** Actions d'administration d'une carte — repliées pour ne pas charger l'écran. */
+function MenuCarte({
+  fid,
+  titre,
+  actions,
+  occupe,
+  modifiable,
+}: {
+  fid: string;
+  titre: string;
+  actions: ActionsCarte;
+  occupe: boolean;
+  modifiable: boolean;
+}) {
+  const [ouvert, setOuvert] = useState(false);
+
+  const declencher = (action: () => void) => () => {
+    setOuvert(false);
+    action();
+  };
+
+  return (
+    <div className="menu-carte" style={{ marginLeft: "auto" }}>
+      <button
+        type="button"
+        className="bouton-icone"
+        aria-label={`Administrer « ${titre} »`}
+        aria-expanded={ouvert}
+        disabled={occupe}
+        onClick={() => setOuvert((valeur) => !valeur)}
+      >
+        <Icone nom="dots-three" taille={16} />
+      </button>
+      {ouvert ? (
+        <>
+          <button
+            type="button"
+            className="voile-menu"
+            aria-label="Fermer le menu"
+            onClick={() => setOuvert(false)}
+          />
+          <div className="menu-carte-liste" role="menu">
+            {modifiable ? (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={declencher(() => actions.modifier(fid))}
+              >
+                <Icone nom="pencil-simple" taille={14} />
+                Modifier la structure
+              </button>
+            ) : null}
+            <button
+              type="button"
+              role="menuitem"
+              onClick={declencher(() => actions.archiver(fid, titre))}
+            >
+              <Icone nom="archive" taille={14} />
+              Archiver
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={declencher(() => actions.supprimer(fid, titre))}
+            >
+              <Icone nom="trash" taille={14} />
+              Mettre à la corbeille
+            </button>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

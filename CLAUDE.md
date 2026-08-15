@@ -45,7 +45,12 @@ colonne latérale repliable, recherche, mode clair/sombre, responsive).
 formation et modification de sa structure depuis l'interface.
 **Éditeur de leçon ajouté (2026-08-15, décision P009)** : le markdown s'écrit
 dans l'application, aperçu rendu par le serveur, écriture refusée si le fichier
-a changé sur le disque. 226 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+a changé sur le disque.
+**Administration complète du cycle de vie (2026-08-15, décision P010)** : import
+d'un dossier par glisser-déposer (manifeste déduit s'il manque), archivage,
+corbeille, restauration — aucune suppression de fichier, jamais. Plan et règles
+métier : `.workflow/phases/02-administration/PLAN.md`.
+285 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
@@ -62,15 +67,17 @@ Documentation du format pour les auteurs : `docs/FORMAT.md`. API : `docs/API.md`
 Voir .workflow/DECISIONS.md — P001 (lecteur, pas CMS : création = markdown +
 Claude Code, aucun outil auteur), P002 (mono-utilisateur local, ouverture future
 bornée : rien de multi-user, pas d'impasses), **P008 qui renverse P001 (espace d'administration
-de la structure) et P009 qui lève son dernier garde-fou (édition du contenu des
-leçons, protégée contre l'écrasement)**, P003 (légal : contenu Academy
+de la structure), P009 qui lève son dernier garde-fou (édition du contenu des
+leçons, protégée contre l'écrasement) et P010 qui ouvre le cycle de vie complet
+(import par dépôt, archivage, corbeille — jamais de suppression de fichier)**,
+P003 (légal : contenu Academy
 jamais intégré, liens sortants + non-affiliation), P004 (ids stables de leçons =
 clé de progression ; formatVersion obligatoire), P005 (alias anglais des blocs
 `:::`), P006 (manifeste seul, aucun frontmatter), P007 (recherche plein texte
 dans la V1, indices et solutions exclus de l'index).
 
 Non négociables du PRD : tout local par défaut ; écriture des formations
-limitée aux gestes explicites de l'utilisateur (P008, P009 — jamais de
+limitée aux gestes explicites de l'utilisateur (P008, P009, P010 — jamais de
 suppression de fichier, jamais d'écrasement silencieux) ; solutions
 d'exercices repliées par défaut ; formation invalide toujours signalée avec son
 erreur.

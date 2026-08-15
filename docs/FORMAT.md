@@ -3,14 +3,22 @@
 Une formation est un dossier posé dans `formations/`. Le dossier peut être
 déplacé ailleurs avec la variable d'environnement `PARCOURS_FORMATIONS_DIR`.
 
-Deux façons de créer une formation, au choix :
+Trois façons de créer une formation, au choix :
 
 - **Depuis l'application** : « Nouvelle formation » sur le catalogue. Vous
   saisissez le titre, les modules et les leçons ; Parcours crée le dossier, le
   manifeste et les fichiers markdown vides. « Modifier la structure », sur la
   page d'une formation, sert ensuite à renommer, réordonner, ajouter ou retirer.
+- **En déposant un dossier** sur le catalogue (glisser-déposer ou « Choisir un
+  dossier »). S'il contient un `formation.json`, votre sommaire est repris tel
+  quel. Sinon, Parcours en construit un — voir « Import d'un dossier » plus bas.
 - **À la main** (ou avec Claude Code) : vous écrivez vous-même le manifeste et
   les fichiers, comme décrit ci-dessous.
+
+Une formation peut ensuite être **archivée** (elle sort du catalogue, revient en
+un clic) ou **mise à la corbeille** (son dossier est déplacé dans
+`formations/.corbeille/`). Parcours ne supprime jamais un fichier : vider la
+corbeille est à vous, depuis le Finder.
 
 Le **texte** d'une leçon s'écrit soit dans l'application (bouton « Modifier
 cette leçon », avec aperçu en direct), soit dans votre éditeur habituel — les
@@ -164,6 +172,35 @@ présents dans la leçon.
 **Les indices et les solutions ne sont jamais indexés** — titres compris. Un mot
 présent seulement dans une solution ne produit aucun résultat : une solution ne
 peut pas apparaître sans un geste volontaire.
+
+## Import d'un dossier
+
+Déposez le **dossier** de la formation, pas ses fichiers en vrac : son nom donne
+le titre et l'identifiant de la formation.
+
+Si le dossier contient un `formation.json` valide, il est repris tel quel — vos
+titres, votre ordre, vos identifiants de leçons. Seul le champ `id` est réaligné
+sur le nom du dossier d'accueil.
+
+Sinon, Parcours construit le sommaire à partir des fichiers markdown trouvés :
+
+| Ce qu'il trouve | Ce qu'il en fait |
+|---|---|
+| Des `.md` dans plusieurs sous-dossiers | Un module par sous-dossier, nommé d'après lui |
+| Des `.md` tous au même endroit | Un module unique, « Contenu » |
+| `02-le-feu.md`, `10-le-sel.md` | Ordre numérique : 2 avant 10 |
+| Un `# Titre` en tête de fichier | Le titre de la leçon |
+| Pas de titre de niveau 1 | Le nom du fichier, nettoyé (`03_premiers-pas` → « Premiers pas ») |
+
+Le sommaire déduit est un point de départ : « Modifier la structure » sert à le
+corriger, sans jamais toucher au texte des leçons.
+
+Ce qui est refusé : un dépôt sans aucun `.md`, un chemin qui sort du dossier, une
+extension hors liste (markdown, `json`, et les fichiers joints servis), plus de
+500 fichiers, plus de 25 Mo, un markdown de plus de 2 Mo. Un `formation.json`
+présent mais invalide n'est jamais contourné en douce : Parcours affiche
+l'erreur et demande s'il doit déduire le sommaire à la place. Les fichiers
+système (`.DS_Store`, `__MACOSX/`) sont écartés et comptés.
 
 ## Quand une formation est invalide
 

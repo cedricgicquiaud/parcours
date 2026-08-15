@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useAdministration } from "./administration";
 import { api, type ReponseCatalogue, type ReponseFormation, type ReponseLecon } from "./api";
 import { ColonneLaterale } from "./composants/ColonneLaterale";
 import { Icone } from "./composants/communs";
@@ -89,6 +90,21 @@ export function App() {
       naviguer(cible);
     },
     [naviguer],
+  );
+
+  // Une seule instance pour toute l'application : le message d'une action
+  // lancée depuis l'écran formation doit s'afficher au catalogue, où l'on
+  // atterrit juste après (P010).
+  const administration = useAdministration(rafraichir);
+
+  /** Archiver ou jeter la formation ouverte ramène au catalogue (P010). */
+  const administrerFormation = useCallback(
+    async (action: (fid: string, titre: string) => Promise<boolean>) => {
+      if (!formation) return;
+      const fait = await action(formation.id, formation.titre);
+      if (fait) naviguerEtFermer({ nom: "catalogue" });
+    },
+    [formation, naviguerEtFermer],
   );
 
   /** Coche optimiste avec retour arrière visible si l'API échoue (U-R3). */
@@ -195,6 +211,7 @@ export function App() {
             erreur={erreur}
             recharger={() => void charger()}
             naviguer={naviguerEtFermer}
+            administration={administration}
           />
         ) : route.nom === "formation" ? (
           <PageFormation
@@ -204,6 +221,13 @@ export function App() {
             naviguer={naviguerEtFermer}
             surNettoyer={() => void nettoyer()}
             surReinitialiser={() => void reinitialiser()}
+            occupe={administration.occupe}
+            surArchiver={() => void administrerFormation(administration.archiver)}
+            surSupprimer={() =>
+              void administrerFormation((fid, titre) =>
+                administration.supprimer(fid, titre),
+              )
+            }
           />
         ) : route.nom === "administration" ? (
           <Administration fid={null} naviguer={naviguerEtFermer} />

@@ -1,7 +1,15 @@
+import type { EntreeArchive, EntreeCorbeille } from "./formations/cycle";
+import type { ResultatImport } from "./formations/import";
 import type { ActionFormation, Avancement } from "./progression/calculs";
 import type { ResultatRecherche } from "./recherche/moteur";
 
-export type { ActionFormation, Avancement, ResultatRecherche };
+export type {
+  ActionFormation,
+  Avancement,
+  EntreeArchive,
+  EntreeCorbeille,
+  ResultatRecherche,
+};
 
 export interface CarteFormationValide {
   statut: "valide";
@@ -26,10 +34,28 @@ export type CarteFormation = CarteFormationValide | CarteFormationInvalide;
 
 export interface ReponseCatalogue {
   formations: CarteFormation[];
+  /** Formations archivées, hors des compteurs du catalogue (G-R10). */
+  archivees: EntreeArchive[];
+  /** Formations en corbeille, restaurables (G-R8). */
+  corbeille: EntreeCorbeille[];
   /** Problème sur le dossier de formations lui-même (F-R1). */
   erreurGlobale?: string;
   /** Bandeau « progression réinitialisée » (P-R1). */
   progressionReinitialisee: boolean;
+}
+
+/** Réponse d'un import par dépôt de dossier (G-R2). */
+export type ReponseImport = ResultatImport;
+
+/** Contenu de la corbeille, avec son chemin réel — Parcours ne la vide pas (G-R9). */
+export interface ReponseCorbeille {
+  entrees: EntreeCorbeille[];
+  dossier: string;
+}
+
+/** Réponse d'une mise à la corbeille : la clé pour restaurer. */
+export interface ReponseCorbeilleAjout {
+  entree: string;
 }
 
 export interface ReponseFormation {

@@ -686,17 +686,207 @@ summary::-webkit-details-marker {
   -webkit-line-clamp: none;
 }
 
-.carte-vide {
+/* ---------- Zone d'import par dépôt (G-R2) ---------- */
+
+.zone-depot {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 9px;
   text-align: center;
-  padding: 17px;
+  padding: 20px 17px;
   min-height: 132px;
   border: 1px dashed var(--line);
   border-radius: var(--r-lg);
   font-size: 13px;
   color: var(--faint);
+  transition:
+    border-color 0.14s ease,
+    background 0.14s ease;
+}
+
+.zone-depot-active {
+  border-color: var(--accent);
+  border-style: solid;
+  background: var(--accent-soft);
+  color: var(--muted);
+}
+
+.zone-depot-titre {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.zone-depot-aide {
+  max-width: 34ch;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.zone-depot-compacte {
+  gap: 7px;
+  padding: 17px;
+}
+
+.zone-depot .bouton {
+  cursor: pointer;
+}
+
+/* Le sélecteur natif est piloté par le libellé — invisible mais focusable. */
+.champ-fichier {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Menu d'administration d'une carte ---------- */
+
+.menu-carte {
+  position: relative;
+  display: flex;
+}
+
+.bouton-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.bouton-icone:hover:not(:disabled) {
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.bouton-icone:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.voile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.menu-carte-liste {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  z-index: 21;
+  display: flex;
+  flex-direction: column;
+  min-width: 208px;
+  padding: 5px;
+  background: var(--pane);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.menu-carte-liste button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-carte-liste button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ---------- Sections archivées et corbeille ---------- */
+
+.section-repliable {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border-top: 1px solid var(--line);
+  padding-top: 15px;
+}
+
+.section-repliable-entete {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.section-repliable-entete:hover {
+  color: var(--text);
+}
+
+.section-repliable-corps {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.note-corbeille {
+  margin: 0 0 4px;
+  max-width: 66ch;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--faint);
+}
+
+.ligne-cycle {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 14px;
+  background: var(--pane);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.ligne-cycle-texte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ligne-cycle-titre {
+  font-size: 14px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ---------- Boutons ---------- */
