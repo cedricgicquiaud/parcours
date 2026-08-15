@@ -163,6 +163,37 @@ Une barrière ` ```mermaid ` produit un schéma, rendu côté navigateur en mode
 sécurité strict. Une syntaxe invalide affiche le source avec la mention
 « schéma non rendu ».
 
+## Les critères de réussite
+
+Toute case à cocher markdown d'une leçon est un **critère** : l'apprenant peut la
+cocher, et Parcours retient son état.
+
+```markdown
+**Critères de réussite**
+- [ ] `uv run forma list` affiche les 7 cours
+- [ ] `uv run forma next` affiche le bon cours
+- [x] le dépôt git est initialisé
+```
+
+Il n'y a pas de syntaxe particulière à apprendre : n'importe quelle case compte,
+où qu'elle soit dans la leçon — y compris dans un bloc `:::solution`.
+
+`- [x]` est l'**état de départ**, pas un verrou : l'apprenant peut décocher, et
+c'est son choix qui est retenu.
+
+Quand tous les critères d'une leçon sont cochés, la leçon passe terminée d'elle-
+même. Décocher ensuite ne la fait pas repasser en cours : revenir vérifier un
+détail ne doit pas coûter son avancement.
+
+**Ce qu'il faut savoir en écrivant** : l'identité d'un critère vient de son
+texte. Insérer, déplacer ou supprimer des critères ne dérange rien ; corriger la
+ponctuation, la casse ou des backticks non plus. En revanche, **reformuler un
+critère fait perdre sa coche** — c'est un critère neuf. La coche devenue
+orpheline est oubliée silencieusement, sans message d'erreur.
+
+Une leçon suit au plus 300 critères. Au-delà, les cases restent affichées mais
+ne sont plus cochables, et la leçon le signale.
+
 ## La recherche
 
 Elle porte sur les leçons de la formation ouverte : leur titre et leur contenu,

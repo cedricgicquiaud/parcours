@@ -229,6 +229,10 @@ de tous les calculs et listées à part.
   "moduleTitre": "Découverte",
   "html": "<p>…</p>",
   "faite": false,
+  "criteres": [
+    { "id": "2da6f8e1567a-0", "texte": "la commande affiche les 7 cours", "coche": false }
+  ],
+  "criteresTronques": false,
   "position": 1,
   "total": 6,
   "precedente": null,
@@ -290,6 +294,35 @@ répond `403`. Extensions servies : `png`, `jpg`, `jpeg`, `gif`, `svg`, `webp`,
 
 Cocher une leçon absente du manifeste répond `404` : l'API ne fabrique jamais
 d'orpheline.
+
+### Critères de réussite
+
+```
+PUT    /api/progression/:fid/:lid/criteres/:cid
+DELETE /api/progression/:fid/:lid/criteres/:cid
+```
+
+`:cid` est l'identifiant rendu par `GET .../lecons/:lid` — format
+`<12 hexadécimaux>-<rang>`, dérivé du texte du critère. Les deux méthodes sont
+idempotentes et renvoient l'état complet de la leçon :
+
+```json
+{
+  "faite": false,
+  "avancement": { "…": "…" },
+  "criteres": [{ "id": "2da6f8e1567a-0", "texte": "…", "coche": true }]
+}
+```
+
+- `400` — identifiant hors format, sans écriture.
+- `404` — identifiant absent de la leçon : comme pour les leçons, l'API ne
+  fabrique jamais d'orpheline. C'est le signe que la leçon a changé sur le
+  disque ; rechargez-la.
+
+Cocher le dernier critère ouvert marque la leçon terminée. Décocher ensuite ne
+la défait pas. L'avancement d'une formation reste calculé sur les leçons.
+
+Réinitialiser la progression d'une formation efface aussi ses critères.
 
 ## Administration : créer et modifier une formation
 

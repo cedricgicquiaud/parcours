@@ -64,7 +64,12 @@ adresse e-mail, confirmée par un lien ; inscription libre optionnelle, mot de
 passe oublié autonome. Envoi **opt-in** : sans `PARCOURS_SMTP_URL`, rien ne sort
 de la machine, les liens s'affichent dans le journal du serveur. Règles :
 `.workflow/phases/04-email/PLAN.md`.
-413 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+**Critères de réussite cochables (2026-08-15, décision P014)** : toute case à
+cocher d'une leçon devient un critère mémorisé par compte, avec décompte
+« n/N » ; cocher le dernier termine la leçon. Parcours n'exécute jamais de code
+et ne corrige jamais : les exercices pratiques se font dans un terminal, avec
+Claude Code. Règles : `.workflow/phases/05-criteres/SPEC.md` et son `PLAN.md`.
+466 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
@@ -76,11 +81,14 @@ le lecteur. Conséquence sur les priorités : le contenu passe devant les featur
 de l'outil. Aucun chantier de commercialisation n'est ouvert (hébergement,
 paiement, RGPD : rien n'est tranché).
 
-**À arbitrer** : la phase 05 « Critères de réussite cochables »
-(`.workflow/phases/05-criteres/`) est en cours d'implémentation (GENERATE, sous-
-phase 05a entamée). C'est du travail sur l'outil, et P013 le fait passer derrière
-le contenu — soit on la termine avant de basculer sur la conversion éditoriale,
-soit on l'arrête en l'état.
+La phase 05 « Critères de réussite cochables » (`.workflow/phases/05-criteres/`)
+est **terminée** : SPEC, PLAN, 12 tâches en TDD, gate verte. Elle sert
+directement le contenu (les 107 critères déjà écrits deviennent utilisables),
+donc elle ne contredit pas la priorité posée par P013.
+
+Suite envisagée, non cadrée : la **révision espacée** — ramener les critères
+restés ouverts au bout de quelques jours. Chaque bascule est déjà datée en base ;
+le rythme se décidera après usage réel.
 
 Restent : la recette manuelle (UAT), puis la conversion éditoriale de
 FORMATION_CLAUDE au format Parcours (chantier dédié — après conversion,
@@ -117,7 +125,9 @@ clé de progression ; formatVersion obligatoire), P005 (alias anglais des blocs
 dans la V1, indices et solutions exclus de l'index), **P013 (orientation
 produit : si quelque chose se vend, ce sont les formations, pas le lecteur —
 le contenu passe devant les features ; aucun chantier de commercialisation
-ouvert)**.
+ouvert), P014 (les critères de réussite sont l'unité fine de progression ;
+identité dérivée du texte, donc reformuler un critère perd sa coche ; Parcours
+n'exécute jamais de code et ne corrige jamais)**.
 
 Non négociables du PRD : tout local par défaut (serveur sur 127.0.0.1, aucune
 requête sortante depuis l'interface ; **seule exception, P012 : l'envoi SMTP,
