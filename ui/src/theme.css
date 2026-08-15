@@ -1117,12 +1117,18 @@ summary::-webkit-details-marker {
 }
 
 @media (max-width: 720px) {
+  /* Le latéral n'existe plus qu'en tiroir superposé (U-R6). */
   .rail {
+    display: none;
+  }
+
+  .rail-tiroir {
+    display: flex;
     position: fixed;
     z-index: 20;
     left: 0;
     top: 0;
-    box-shadow: none;
+    max-width: 88vw;
   }
 
   .spine {

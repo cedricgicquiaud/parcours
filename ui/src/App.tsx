@@ -29,9 +29,13 @@ export function App() {
 
   const recherche = useRecherche(fid);
 
-  const charger = useCallback(async () => {
+  /**
+   * `discret` : rafraîchissement sans squelette — au retour sur la fenêtre, les
+   * données déjà affichées restent en place le temps du refetch (P-R7).
+   */
+  const charger = useCallback(async (discret = false) => {
     setErreur(null);
-    setChargement(true);
+    if (!discret) setChargement(true);
     try {
       const promesses: [
         Promise<ReponseCatalogue>,
@@ -62,8 +66,9 @@ export function App() {
     void charger();
   }, [charger]);
 
-  // …et au retour sur la fenêtre (P-R7).
-  useRafraichirAuFocus(useCallback(() => void charger(), [charger]));
+  // …et au retour sur la fenêtre, sans faire clignoter l'écran (P-R7).
+  const rafraichir = useCallback(() => void charger(true), [charger]);
+  useRafraichirAuFocus(rafraichir);
 
   const naviguerEtFermer = useCallback(
     (cible: Route) => {

@@ -37,18 +37,21 @@ docs/          # Intrants FIND : références UX
 
 ## Phase en cours
 
-**FIND terminé (2026-08-14)** : PRD validé après critique advisor (14 findings
-intégrés). **BOOTSTRAP terminé (2026-08-14)** : stack installée (typecheck vert,
-better-sqlite3 et esbuild vérifiés), hooks FORGE actifs, README + docs/API.md.
-**SPEC rédigée (2026-08-14, statut DRAFT)** : `.workflow/SPEC.md`, critique
-advisor appliquée (22 findings), puis **révisée après benchmark marché**
-(`docs/benchmark-marche.md`) : F-R13, F-R14 et § 3B recherche plein texte
-(P005/P006/P007). **Prochaine étape : validation de la SPEC par
-Cédric**, puis ORIENT léger (lib markdown/sanitisation, Shiki pour la
-coloration), REFINE, GENERATE.
-Reprendre via `.workflow/sessions/2026-08-14-benchmark-marche-revision-spec.md`. La conversion de FORMATION_CLAUDE
-au format Parcours est un chantier éditorial dédié (après conversion : Parcours
-= seule référence du contenu, FORMATION_CLAUDE gelé).
+**V1 implémentée (2026-08-15)** sur la branche `feature/lecteur-v1` : serveur
+complet (scan/validation, rendu markdown assaini, progression SQLite, recherche
+plein texte, API locale) et interface complète (catalogue, formation, leçon,
+colonne latérale repliable, recherche, mode clair/sombre, responsive).
+156 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+
+Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
+colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
+l'écran formation est absorbé par la colonne latérale, où vit aussi la recherche.
+
+Restent : la recette manuelle (UAT), puis la conversion éditoriale de
+FORMATION_CLAUDE au format Parcours (chantier dédié — après conversion,
+Parcours = seule référence du contenu, FORMATION_CLAUDE gelé).
+
+Documentation du format pour les auteurs : `docs/FORMAT.md`. API : `docs/API.md`.
 
 ## Decisions
 

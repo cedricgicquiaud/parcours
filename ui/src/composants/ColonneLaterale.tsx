@@ -23,8 +23,11 @@ export interface ProprietesRail {
 }
 
 export function ColonneLaterale(props: ProprietesRail) {
-  const { formation, recherche, replie } = props;
+  const { formation, recherche, replie, basculerReplie } = props;
   const champ = useRef<HTMLInputElement>(null);
+  const aUneFormation = formation !== null;
+  const requeteEnCours = recherche.requete;
+  const effacerRecherche = recherche.effacer;
 
   // Raccourcis clavier : « / » atteint le champ, « Échap » revient au sommaire.
   useEffect(() => {
@@ -32,24 +35,27 @@ export function ColonneLaterale(props: ProprietesRail) {
       const cible = evenement.target as HTMLElement | null;
       const dansUnChamp =
         cible?.tagName === "INPUT" || cible?.tagName === "TEXTAREA";
-      if (evenement.key === "/" && !dansUnChamp && formation) {
+      if (evenement.key === "/" && !dansUnChamp && aUneFormation) {
         evenement.preventDefault();
-        if (replie) props.basculerReplie();
+        if (replie) basculerReplie();
         window.setTimeout(() => champ.current?.focus(), 0);
       }
-      if (evenement.key === "Escape" && recherche.requete) {
-        recherche.effacer();
+      if (evenement.key === "Escape" && requeteEnCours) {
+        effacerRecherche();
         champ.current?.blur();
       }
     };
     window.addEventListener("keydown", surTouche);
     return () => window.removeEventListener("keydown", surTouche);
-  }, [formation, replie, recherche, props]);
+  }, [aUneFormation, replie, basculerReplie, requeteEnCours, effacerRecherche]);
 
   if (replie && !props.enTiroir) return <Spine {...props} />;
 
   return (
-    <aside className="rail" aria-label="Navigation de la formation">
+    <aside
+      className={props.enTiroir ? "rail rail-tiroir" : "rail"}
+      aria-label="Navigation de la formation"
+    >
       <div className="rail-entete">
         <div className="rail-marque">
           <a
@@ -101,7 +107,7 @@ export function ColonneLaterale(props: ProprietesRail) {
       </div>
 
       {formation && recherche.active ? (
-        <Resultats {...props} />
+        <Resultats {...props} formation={formation} />
       ) : formation ? (
         <Sommaire {...props} formation={formation} />
       ) : (
@@ -191,7 +197,7 @@ function ChampRecherche({
   );
 }
 
-function Resultats(props: ProprietesRail) {
+function Resultats(props: ProprietesRail & { formation: ReponseFormation }) {
   const { recherche, formation } = props;
   const reponse = recherche.reponse;
 
@@ -232,12 +238,12 @@ function Resultats(props: ProprietesRail) {
         <a
           key={resultat.leconId}
           className="resultat"
-          href={`/formation/${encodeURIComponent(formation!.id)}/lecon/${encodeURIComponent(resultat.leconId)}`}
+          href={`/formation/${encodeURIComponent(formation.id)}/lecon/${encodeURIComponent(resultat.leconId)}`}
           onClick={(evenement) => {
             evenement.preventDefault();
             props.naviguer({
               nom: "lecon",
-              fid: formation!.id,
+              fid: formation.id,
               lid: resultat.leconId,
             });
           }}

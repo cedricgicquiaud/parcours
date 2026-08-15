@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api, type ReponseRechercheApi } from "./api";
 
 /** Anti-rebond de la recherche, en millisecondes (U-R9). */
@@ -69,10 +69,12 @@ export function useRecherche(fid: string | null): EtatRecherche {
     setRequete("");
   }, [fid]);
 
+  const effacer = useCallback(() => setRequete(""), []);
+
   return {
     requete,
     setRequete,
-    effacer: () => setRequete(""),
+    effacer,
     active,
     chargement,
     reponse,
