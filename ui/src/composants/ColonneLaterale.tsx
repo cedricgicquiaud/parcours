@@ -16,7 +16,6 @@ export interface ProprietesRail {
   basculerMode: () => void;
   replie: boolean;
   basculerReplie: () => void;
-  surReinitialiser: () => void;
   /** Compte connecté (P011) : son nom et ses actions vivent au pied du rail. */
   compte: Compte;
   surDeconnexion: () => void;
@@ -134,6 +133,7 @@ export function ColonneLaterale(props: ProprietesRail) {
             className="rail-compte-lien"
             href="/comptes"
             title="Gérer les comptes"
+            aria-label="Gérer les comptes"
             onClick={(evenement) => {
               evenement.preventDefault();
               props.naviguer({ nom: "comptes" });
@@ -145,48 +145,22 @@ export function ColonneLaterale(props: ProprietesRail) {
         <button
           type="button"
           className="rail-compte-lien"
-          title="Se déconnecter"
-          aria-label="Se déconnecter"
-          onClick={props.surDeconnexion}
-        >
-          <Icone nom="sign-out" taille={15} />
-        </button>
-      </div>
-
-      <div className="rail-pied">
-        <a
-          href="/"
-          onClick={(evenement) => {
-            evenement.preventDefault();
-            props.naviguer({ nom: "catalogue" });
-          }}
-        >
-          Catalogue
-        </a>
-        {formation ? (
-          <button type="button" className="lien" onClick={props.surReinitialiser}>
-            Réinitialiser
-          </button>
-        ) : (
-          <a
-            href="/administration"
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              props.naviguer({ nom: "administration" });
-            }}
-          >
-            Nouvelle formation
-          </a>
-        )}
-        <button
-          type="button"
-          className="bouton-icone"
           onClick={props.basculerMode}
+          title={props.mode === "sombre" ? "Passer en mode clair" : "Passer en mode sombre"}
           aria-label={
             props.mode === "sombre" ? "Passer en mode clair" : "Passer en mode sombre"
           }
         >
           <Icone nom={props.mode === "sombre" ? "sun" : "moon"} taille={15} />
+        </button>
+        <button
+          type="button"
+          className="rail-compte-lien"
+          title="Se déconnecter"
+          aria-label="Se déconnecter"
+          onClick={props.surDeconnexion}
+        >
+          <Icone nom="sign-out" taille={15} />
         </button>
       </div>
     </aside>

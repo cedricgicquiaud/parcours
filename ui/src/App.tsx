@@ -293,7 +293,6 @@ function ApplicationConnectee({
     basculerMode,
     replie,
     basculerReplie,
-    surReinitialiser: () => void reinitialiser(),
     compte,
     surDeconnexion,
   };

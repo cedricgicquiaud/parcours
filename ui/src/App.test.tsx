@@ -183,12 +183,12 @@ describe("App — parcours complet (§ 6)", () => {
     );
   });
 
-  it("revient au catalogue depuis le pied de la colonne latérale", async () => {
+  it("revient au catalogue par la marque de la colonne latérale", async () => {
     window.history.pushState(null, "", "/formation/prise-en-main/lecon/anatomie");
     render(<App />);
 
     await screen.findByRole("heading", { level: 1, name: "Anatomie" });
-    await userEvent.click(screen.getByRole("link", { name: "Catalogue" }));
+    await userEvent.click(screen.getByRole("link", { name: "Parcours" }));
 
     await waitFor(() => expect(window.location.pathname).toBe("/"));
     expect(await screen.findByText("EN COURS")).toBeInTheDocument();

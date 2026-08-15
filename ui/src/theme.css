@@ -250,33 +250,6 @@ summary::-webkit-details-marker {
   gap: 3px;
 }
 
-.rail-pied {
-  padding: 12px 18px 16px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.rail-pied a,
-.rail-pied button.lien {
-  font-size: 12px;
-  color: var(--faint);
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-}
-
-.rail-pied a:hover,
-.rail-pied button.lien:hover {
-  color: var(--text);
-}
-
-.rail-pied .bouton-icone {
-  margin-left: auto;
-}
-
 /* Spine : latéral replié */
 .spine {
   width: 62px;
@@ -1702,13 +1675,13 @@ summary::-webkit-details-marker {
   border-radius: var(--r);
 }
 
-/* Compte connecté, au pied de la colonne latérale */
+/* Pied de la colonne latérale : identité du compte et ses actions */
 
 .rail-compte {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 11px 18px;
+  gap: 2px;
+  padding: 10px 14px 12px;
   border-top: 1px solid var(--line);
 }
 
@@ -1718,6 +1691,8 @@ summary::-webkit-details-marker {
   gap: 9px;
   flex: 1;
   min-width: 0;
+  padding: 4px;
+  border-radius: var(--r-sm);
   font-size: 13px;
   color: var(--muted);
 }
