@@ -76,10 +76,11 @@ le lecteur. Conséquence sur les priorités : le contenu passe devant les featur
 de l'outil. Aucun chantier de commercialisation n'est ouvert (hébergement,
 paiement, RGPD : rien n'est tranché).
 
-**En attente de décision** : la phase 05 « Critères de réussite cochables »
-(`.workflow/phases/05-criteres/` — SPEC commitée, PLAN écrit et non commité) est
-gelée à la PAUSE de fin de REFINE. C'est du travail sur l'outil ; P013 la fait
-passer derrière le contenu. À reprendre ou à verser au backlog.
+**À arbitrer** : la phase 05 « Critères de réussite cochables »
+(`.workflow/phases/05-criteres/`) est en cours d'implémentation (GENERATE, sous-
+phase 05a entamée). C'est du travail sur l'outil, et P013 le fait passer derrière
+le contenu — soit on la termine avant de basculer sur la conversion éditoriale,
+soit on l'arrête en l'état.
 
 Restent : la recette manuelle (UAT), puis la conversion éditoriale de
 FORMATION_CLAUDE au format Parcours (chantier dédié — après conversion,
