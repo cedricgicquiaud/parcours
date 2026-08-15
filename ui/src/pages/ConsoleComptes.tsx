@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { api, type Compte, type Role } from "../api";
+import { api, type Compte, type Reglages, type ReponseReglages, type Role } from "../api";
 import {
   Bandeau,
   BlocErreur,
@@ -11,6 +11,7 @@ import {
 /** Console d'administration des comptes (CO-R6 à CO-R10). */
 export function ConsoleComptes({ moi }: { moi: Compte }) {
   const [comptes, setComptes] = useState<Compte[] | null>(null);
+  const [reglages, setReglages] = useState<ReponseReglages | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [motDePasseProvisoire, setMotDePasseProvisoire] = useState<{
     identifiant: string;
@@ -21,7 +22,12 @@ export function ConsoleComptes({ moi }: { moi: Compte }) {
 
   const charger = useCallback(async () => {
     try {
-      setComptes((await api.utilisateurs()).utilisateurs);
+      const [liste, configuration] = await Promise.all([
+        api.utilisateurs(),
+        api.reglages(),
+      ]);
+      setComptes(liste.utilisateurs);
+      setReglages(configuration);
     } catch (cause: unknown) {
       setErreur(cause instanceof Error ? cause.message : "chargement impossible");
     }
@@ -73,6 +79,24 @@ export function ConsoleComptes({ moi }: { moi: Compte }) {
       return null;
     });
 
+  const confirmerAdresse = (compte: Compte) =>
+    void executer(async () => {
+      await api.confirmerUtilisateur(compte.id);
+      return `Adresse de « ${compte.nom} » marquée comme confirmée.`;
+    });
+
+  const renvoyerLien = (compte: Compte) =>
+    void executer(async () => {
+      await api.renvoyerConfirmationA(compte.id);
+      return `Lien de confirmation renvoyé à ${compte.identifiant}.`;
+    });
+
+  const enregistrerReglages = (changements: Partial<Reglages>) =>
+    void executer(async () => {
+      setReglages(await api.enregistrerReglages(changements));
+      return "Réglages enregistrés.";
+    });
+
   const supprimer = (compte: Compte) =>
     void executer(async () => {
       const accepte = window.confirm(
@@ -119,6 +143,14 @@ export function ConsoleComptes({ moi }: { moi: Compte }) {
         </Bandeau>
       ) : null}
 
+      {reglages ? (
+        <BlocReglages
+          etat={reglages}
+          occupe={occupe}
+          surEnregistrer={enregistrerReglages}
+        />
+      ) : null}
+
       <FormulaireCreation
         occupe={occupe}
         surCreer={(saisie) =>
@@ -146,6 +178,8 @@ export function ConsoleComptes({ moi }: { moi: Compte }) {
               surModifier={modifier}
               surReinitialiser={reinitialiser}
               surSupprimer={supprimer}
+              surConfirmer={confirmerAdresse}
+              surRenvoyerLien={renvoyerLien}
             />
           ))
         )}
@@ -163,6 +197,8 @@ function LigneCompte({
   surModifier,
   surReinitialiser,
   surSupprimer,
+  surConfirmer,
+  surRenvoyerLien,
 }: {
   compte: Compte;
   moi: Compte;
@@ -170,6 +206,8 @@ function LigneCompte({
   surModifier: (compte: Compte, changements: { role?: Role; actif?: boolean }) => void;
   surReinitialiser: (compte: Compte) => void;
   surSupprimer: (compte: Compte) => void;
+  surConfirmer: (compte: Compte) => void;
+  surRenvoyerLien: (compte: Compte) => void;
 }) {
   const soiMeme = compte.id === moi.id;
 
@@ -180,6 +218,9 @@ function LigneCompte({
           {compte.nom}
           {soiMeme ? <span className="etiquette-moi">vous</span> : null}
           {compte.actif ? null : <span className="etiquette-inactif">désactivé</span>}
+          {compte.emailVerifie ? null : (
+            <span className="etiquette-inactif">adresse non confirmée</span>
+          )}
         </span>
         <span className="meta-faible">
           <code>{compte.identifiant}</code> ·{" "}
@@ -203,6 +244,30 @@ function LigneCompte({
           <option value="lecteur">Lecteur</option>
         </select>
       </label>
+
+      {compte.emailVerifie ? null : (
+        <>
+          <button
+            type="button"
+            className="bouton bouton-petit bouton-neutre"
+            disabled={occupe}
+            title="Renvoyer le courriel de confirmation"
+            onClick={() => surRenvoyerLien(compte)}
+          >
+            <Icone nom="envelope-simple" taille={14} />
+            Renvoyer
+          </button>
+          <button
+            type="button"
+            className="bouton bouton-petit bouton-neutre"
+            disabled={occupe}
+            title="Marquer l'adresse comme confirmée, sans courriel"
+            onClick={() => surConfirmer(compte)}
+          >
+            Confirmer
+          </button>
+        </>
+      )}
 
       <button
         type="button"
@@ -328,5 +393,101 @@ function FormulaireCreation({
         </button>
       </div>
     </form>
+  );
+}
+
+/** Réglages de l'instance : inscription, adresse publique, expéditeur (EM-R12). */
+function BlocReglages({
+  etat,
+  occupe,
+  surEnregistrer,
+}: {
+  etat: ReponseReglages;
+  occupe: boolean;
+  surEnregistrer: (changements: Partial<Reglages>) => void;
+}) {
+  const [ouvert, setOuvert] = useState(false);
+  const [urlPublique, setUrlPublique] = useState(etat.reglages.urlPublique);
+  const [expediteur, setExpediteur] = useState(etat.reglages.expediteur);
+
+  return (
+    <section className="carte formulaire-profil">
+      <div className="ligne-reglage">
+        <div className="ligne-cycle-texte">
+          <span className="ligne-cycle-titre">Inscription libre</span>
+          <span className="meta-faible">
+            {etat.reglages.inscriptionOuverte
+              ? "N'importe qui peut créer un compte et recevra un lien de confirmation."
+              : "Seul un administrateur crée les comptes."}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="bouton bouton-petit bouton-neutre"
+          disabled={occupe}
+          onClick={() =>
+            surEnregistrer({ inscriptionOuverte: !etat.reglages.inscriptionOuverte })
+          }
+        >
+          {etat.reglages.inscriptionOuverte ? "Fermer" : "Ouvrir"}
+        </button>
+      </div>
+
+      <div className="ligne-reglage">
+        <div className="ligne-cycle-texte">
+          <span className="ligne-cycle-titre">Envoi des courriels</span>
+          <span className="meta-faible">
+            {etat.envoiCourriel === "smtp"
+              ? "SMTP configuré : les liens partent vraiment."
+              : "Aucun SMTP : les liens s'affichent dans le journal du serveur."}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="bouton bouton-petit bouton-neutre"
+          onClick={() => setOuvert((valeur) => !valeur)}
+          aria-expanded={ouvert}
+        >
+          {ouvert ? "Masquer" : "Régler"}
+        </button>
+      </div>
+
+      {ouvert ? (
+        <>
+          <label className="champ">
+            <span>Adresse publique de Parcours</span>
+            <input
+              value={urlPublique}
+              onChange={(evenement) => setUrlPublique(evenement.target.value)}
+            />
+          </label>
+          <p className="aide-champ">
+            Base des liens envoyés par courriel. Doit être joignable par la
+            personne qui reçoit le message.
+          </p>
+          <label className="champ">
+            <span>Expéditeur</span>
+            <input
+              value={expediteur}
+              onChange={(evenement) => setExpediteur(evenement.target.value)}
+            />
+          </label>
+          <p className="aide-champ">
+            Le serveur d'envoi se configure hors de l'application, par la variable
+            d'environnement <code>PARCOURS_SMTP_URL</code>.
+          </p>
+          <div className="actions-formulaire">
+            <button
+              type="button"
+              className="bouton bouton-petit"
+              disabled={occupe}
+              onClick={() => surEnregistrer({ urlPublique, expediteur })}
+            >
+              Enregistrer
+            </button>
+          </div>
+        </>
+      ) : null}
+    </section>
   );
 }

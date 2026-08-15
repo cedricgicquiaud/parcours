@@ -7,6 +7,8 @@ export type Route =
   | { nom: "administration" }
   | { nom: "profil" }
   | { nom: "comptes" }
+  | { nom: "confirmer" }
+  | { nom: "reinitialiser" }
   | { nom: "structure"; fid: string }
   | { nom: "editer"; fid: string; lid: string }
   | { nom: "inconnue"; chemin: string };
@@ -19,6 +21,8 @@ export function analyserChemin(chemin: string): Route {
     if (segments[0] === "administration") return { nom: "administration" };
     if (segments[0] === "profil") return { nom: "profil" };
     if (segments[0] === "comptes") return { nom: "comptes" };
+    if (segments[0] === "confirmer") return { nom: "confirmer" };
+    if (segments[0] === "reinitialiser") return { nom: "reinitialiser" };
   }
   if (segments[0] === "formation" && segments[1]) {
     const fid = decodeURIComponent(segments[1]);
@@ -51,6 +55,10 @@ export function cheminDe(route: Route): string {
       return "/profil";
     case "comptes":
       return "/comptes";
+    case "confirmer":
+      return "/confirmer";
+    case "reinitialiser":
+      return "/reinitialiser";
     case "structure":
       return `/formation/${encodeURIComponent(route.fid)}/structure`;
     case "editer":

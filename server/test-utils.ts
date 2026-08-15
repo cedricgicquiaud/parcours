@@ -5,6 +5,9 @@ import { creerApi, type DependancesApi } from "./api";
 import { ouvrirBase } from "./base";
 import { NOM_COOKIE } from "./comptes/auth";
 import { BaseComptes, type Role } from "./comptes/db";
+import { BaseJetons } from "./comptes/jetons";
+import { ExpediteurJournal } from "./courriel/envoi";
+import { BaseReglages } from "./reglages";
 import type { MoteurRendu } from "./markdown/rendu";
 import { BaseProgression } from "./progression/db";
 import { MoteurRecherche } from "./recherche/moteur";
@@ -19,12 +22,18 @@ export interface ContexteTest {
   app: ReturnType<typeof creerApi>;
   base: BaseProgression;
   comptes: BaseComptes;
+  jetons: BaseJetons;
+  reglages: BaseReglages;
+  /** Messages « envoyés » pendant le test, dans l'ordre. */
+  courriels: ExpediteurJournal;
   /** Requête authentifiée comme le compte courant (l'admin par défaut). */
   appeler: (chemin: string, init?: RequestInit) => Promise<Response> | Response;
   /** Requête sans cookie de session. */
   appelerAnonyme: (chemin: string, init?: RequestInit) => Promise<Response> | Response;
   /** Ouvre une session pour un autre compte et renvoie son `appeler`. */
-  connecter: (identifiant: string, role?: Role) => Promise<ContexteTest["appeler"]>;
+  connecter: (nom: string, role?: Role) => Promise<ContexteTest["appeler"]>;
+  /** `eleve` → `eleve@parcours.test`, l'adresse réellement enregistrée. */
+  adresseDe: (nom: string) => string;
   utilisateurId: number;
   jeton: string;
   fermer: () => Promise<void>;
@@ -45,10 +54,18 @@ export async function creerContexteTest(options: {
   const ouverte = ouvrirBase(path.join(dossierDb, "parcours.db"));
   const base = new BaseProgression(ouverte.db);
   const comptes = new BaseComptes(ouverte.db);
+  const jetons = new BaseJetons(ouverte.db);
+  const reglages = new BaseReglages(ouverte.db);
+  // Les tests ne parlent à aucun serveur de courriel : les messages sont
+  // collectés en mémoire et inspectables.
+  const expediteur = new ExpediteurJournal(() => undefined);
   const deps: DependancesApi = {
     dossierFormations: racine,
     base,
     comptes,
+    jetons,
+    reglages,
+    expediteur,
     rendu: options.rendu,
     recherche: new MoteurRecherche(options.rendu),
   };
@@ -67,8 +84,15 @@ export async function creerContexteTest(options: {
 
   const anonyme = requete(null);
 
+  /**
+   * L'identifiant est une adresse e-mail depuis P012 : les tests passent des
+   * noms courts, complétés ici sur un domaine réservé aux exemples.
+   */
+  const adresseDe = (nom: string) => (nom.includes("@") ? nom : `${nom}@parcours.test`);
+
   /** Crée un compte via l'API d'installation ou directement, puis se connecte. */
-  async function ouvrirCompte(identifiant: string, role: Role) {
+  async function ouvrirCompte(nom: string, role: Role) {
+    const identifiant = adresseDe(nom);
     if (comptes.installationRequise() && role === "admin") {
       const reponse = await anonyme("/api/auth/installer", {
         method: "POST",
@@ -86,6 +110,9 @@ export async function creerContexteTest(options: {
         nom: identifiant,
         empreinte: await hacher(MOT_DE_PASSE_TEST),
         role,
+        // Les comptes de test sont confirmés : la vérification d'adresse a ses
+        // propres tests, elle n'a pas à gêner tous les autres.
+        emailVerifie: true,
       });
     }
     const compte = comptes.ligneParIdentifiant(identifiant);
@@ -100,12 +127,16 @@ export async function creerContexteTest(options: {
     app,
     base,
     comptes,
+    jetons,
+    reglages,
+    courriels: expediteur,
+    adresseDe,
     appeler: requete(principal.jeton),
     appelerAnonyme: anonyme,
     utilisateurId: principal.id,
     jeton: principal.jeton,
-    connecter: async (identifiant, role = "lecteur") => {
-      const autre = await ouvrirCompte(identifiant, role);
+    connecter: async (nom, role = "lecteur") => {
+      const autre = await ouvrirCompte(nom, role);
       return requete(autre.jeton);
     },
     fermer: async () => {

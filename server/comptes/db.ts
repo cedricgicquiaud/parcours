@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import type Database from "better-sqlite3";
+import { colonnesDe, tableExiste } from "../base";
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS utilisateurs (
@@ -9,6 +10,7 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
   empreinte          TEXT NOT NULL,
   role               TEXT NOT NULL CHECK (role IN ('admin', 'lecteur')),
   actif              INTEGER NOT NULL DEFAULT 1,
+  email_verifie      INTEGER NOT NULL DEFAULT 0,
   cree_le            TEXT NOT NULL,
   derniere_connexion TEXT
 );
@@ -35,6 +37,8 @@ export interface Compte {
   nom: string;
   role: Role;
   actif: boolean;
+  /** L'adresse a-t-elle été confirmée par un lien reçu dessus (EM-R2) ? */
+  emailVerifie: boolean;
   creeLe: string;
   derniereConnexion: string | null;
 }
@@ -46,6 +50,7 @@ interface LigneUtilisateur {
   empreinte: string;
   role: Role;
   actif: number;
+  email_verifie: number;
   cree_le: string;
   derniere_connexion: string | null;
 }
@@ -106,6 +111,7 @@ export function verifierNom(valeur: unknown): Validation<string> {
  */
 export class BaseComptes {
   constructor(private readonly db: Database.Database) {
+    migrer(db);
     db.exec(SCHEMA);
     this.purgerSessionsExpirees();
   }
@@ -130,16 +136,25 @@ export class BaseComptes {
     nom: string;
     empreinte: string;
     role: Role;
+    /** Le premier administrateur est confirmé d'office (EM-R2). */
+    emailVerifie?: boolean;
     date?: Date;
   }): Validation<Compte> {
     const date = (saisie.date ?? new Date()).toISOString();
     try {
       const resultat = this.db
         .prepare(
-          `INSERT INTO utilisateurs (identifiant, nom, empreinte, role, actif, cree_le)
-           VALUES (?, ?, ?, ?, 1, ?)`,
+          `INSERT INTO utilisateurs (identifiant, nom, empreinte, role, actif, email_verifie, cree_le)
+           VALUES (?, ?, ?, ?, 1, ?, ?)`,
         )
-        .run(saisie.identifiant, saisie.nom, saisie.empreinte, saisie.role, date);
+        .run(
+          saisie.identifiant,
+          saisie.nom,
+          saisie.empreinte,
+          saisie.role,
+          saisie.emailVerifie ? 1 : 0,
+          date,
+        );
       const compte = this.parId(Number(resultat.lastInsertRowid));
       if (!compte) return { ok: false, erreur: "création impossible" };
       return { ok: true, valeur: compte };
@@ -211,6 +226,11 @@ export class BaseComptes {
 
   changerRole(id: number, role: Role): void {
     this.db.prepare("UPDATE utilisateurs SET role = ? WHERE id = ?").run(role, id);
+  }
+
+  /** Marque l'adresse comme confirmée (EM-R3). */
+  confirmerEmail(id: number): void {
+    this.db.prepare("UPDATE utilisateurs SET email_verifie = 1 WHERE id = ?").run(id);
   }
 
   changerEmpreinte(id: number, empreinte: string): void {
@@ -353,7 +373,23 @@ function enCompte(ligne: LigneUtilisateur): Compte {
     nom: ligne.nom,
     role: ligne.role,
     actif: ligne.actif === 1,
+    emailVerifie: ligne.email_verifie === 1,
     creeLe: ligne.cree_le,
     derniereConnexion: ligne.derniere_connexion,
   };
+}
+
+/**
+ * Migration des comptes d'avant la vérification d'adresse (EM-R2) : la colonne
+ * est ajoutée et les comptes existants sont considérés comme confirmés — ils
+ * ont été créés à la main par un administrateur, avant que la règle n'existe,
+ * et les verrouiller dehors serait pire que de leur faire confiance.
+ */
+function migrer(db: Database.Database): void {
+  if (!tableExiste(db, "utilisateurs")) return;
+  if (colonnesDe(db, "utilisateurs").has("email_verifie")) return;
+  db.exec(`
+    ALTER TABLE utilisateurs ADD COLUMN email_verifie INTEGER NOT NULL DEFAULT 0;
+    UPDATE utilisateurs SET email_verifie = 1;
+  `);
 }

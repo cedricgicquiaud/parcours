@@ -1,11 +1,14 @@
+import type { Reglages } from "../reglages";
 import {
   creerCompte,
+  envoyerConfirmation,
   exigerAdmin,
   lireCorps,
   type AppParcours,
   type DependancesAuth,
 } from "./auth";
-import { verifierIdentifiant, verifierNom, type Compte, type Role } from "./db";
+import { verifierNom, type Compte, type Role } from "./db";
+import { verifierEmail } from "./email";
 import { hacher, motDePasseProvisoire, verifier, verifierForce } from "./motdepasse";
 
 /**
@@ -77,7 +80,57 @@ export function monterComptes(app: AppParcours, deps: DependancesAuth): void {
       const conflit = cree.erreur.includes("déjà pris");
       return c.json({ erreur: cree.erreur }, conflit ? 409 : 400);
     }
+    // EM-R2 : un compte créé par un administrateur naît non confirmé ; le lien
+    // part à l'adresse saisie, ce qui la valide au passage.
+    await envoyerConfirmation(deps, cree.valeur);
     return c.json({ compte: cree.valeur }, 201);
+  });
+
+  /** Renvoi manuel du lien de confirmation par un administrateur (EM-R5). */
+  app.post("/api/utilisateurs/:id/confirmation", async (c) => {
+    const refus = exigerAdmin(c);
+    if (refus) return refus;
+    const cible = resoudreCible(c, deps);
+    if (cible instanceof Response) return cible;
+
+    if (cible.emailVerifie) {
+      return c.json({ erreur: "cette adresse est déjà confirmée" }, 409);
+    }
+    await envoyerConfirmation(deps, cible);
+    return c.json({ envoye: true });
+  });
+
+  /** Confirmation manuelle, quand l'envoi de courriel n'est pas en place. */
+  app.post("/api/utilisateurs/:id/confirmer", (c) => {
+    const refus = exigerAdmin(c);
+    if (refus) return refus;
+    const cible = resoudreCible(c, deps);
+    if (cible instanceof Response) return cible;
+
+    deps.comptes.confirmerEmail(cible.id);
+    return c.json({ compte: deps.comptes.parId(cible.id) });
+  });
+
+  // --- Réglages de l'instance (EM-R12) ---
+
+  app.get("/api/reglages", (c) => {
+    const refus = exigerAdmin(c);
+    if (refus) return refus;
+    return c.json({
+      reglages: deps.reglages.lire(),
+      envoiCourriel: deps.expediteur.mode,
+    });
+  });
+
+  app.put("/api/reglages", async (c) => {
+    const refus = exigerAdmin(c);
+    if (refus) return refus;
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+
+    const ecrit = deps.reglages.ecrire(corps as Partial<Reglages>);
+    if (!ecrit.ok) return c.json({ erreur: ecrit.erreur }, 400);
+    return c.json({ reglages: ecrit.valeur, envoiCourriel: deps.expediteur.mode });
   });
 
   app.patch("/api/utilisateurs/:id", async (c) => {
@@ -98,7 +151,7 @@ export function monterComptes(app: AppParcours, deps: DependancesAuth): void {
     }
 
     if (corps.identifiant !== undefined) {
-      const identifiant = verifierIdentifiant(corps.identifiant);
+      const identifiant = verifierEmail(corps.identifiant);
       if (!identifiant.ok) return c.json({ erreur: identifiant.erreur }, 400);
       const change = deps.comptes.changerIdentifiant(cible.id, identifiant.valeur);
       if (!change.ok) return c.json({ erreur: change.erreur }, 409);
@@ -174,6 +227,7 @@ export function monterComptes(app: AppParcours, deps: DependancesAuth): void {
     }
 
     const progressionEffacee = deps.progression.effacerCompte(cible.id);
+    deps.jetons.revoquerTous(cible.id);
     deps.comptes.supprimer(cible.id);
     return c.json({ supprime: true, progressionEffacee });
   });

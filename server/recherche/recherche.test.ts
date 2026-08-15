@@ -229,8 +229,17 @@ describe("MoteurRecherche (S-R1 à S-R7)", () => {
     const formation = await creerFormation(lecons);
     const moteur = new MoteurRecherche(rendu);
     await moteur.rechercher(formation, "hook");
-    const debut = performance.now();
-    await moteur.rechercher(formation, "hook");
-    expect(performance.now() - debut).toBeLessThan(50);
+
+    // Médiane de plusieurs mesures : une mesure unique dépend de ce que fait la
+    // machine à cet instant précis (les suites de tests tournent en parallèle),
+    // et faisait échouer ce budget sans que la recherche ait ralenti.
+    const mesures: number[] = [];
+    for (let essai = 0; essai < 9; essai++) {
+      const debut = performance.now();
+      await moteur.rechercher(formation, "hook");
+      mesures.push(performance.now() - debut);
+    }
+    mesures.sort((a, b) => a - b);
+    expect(mesures[Math.floor(mesures.length / 2)]).toBeLessThan(50);
   });
 });

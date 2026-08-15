@@ -10,9 +10,11 @@ import type {
   ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseEnvoiCourriel,
   ReponseEtatAuth,
   ReponseImport,
   ReponseInstallation,
+  ReponseReglages,
   ReponseReinitialisation,
   ReponseSourceLecon,
   ReponseUtilisateurs,
@@ -22,6 +24,7 @@ import type {
   ReponseProgression,
   ReponseRechercheApi,
   ReponseSuppression,
+  Reglages,
   Role,
 } from "../../server/types-api";
 
@@ -37,9 +40,11 @@ export type {
   ReponseCorbeilleAjout,
   ReponseEcriture,
   ReponseEnregistrementSource,
+  ReponseEnvoiCourriel,
   ReponseEtatAuth,
   ReponseImport,
   ReponseInstallation,
+  ReponseReglages,
   ReponseReinitialisation,
   ReponseSourceLecon,
   ReponseUtilisateurs,
@@ -49,6 +54,7 @@ export type {
   ReponseProgression,
   ReponseRechercheApi,
   ReponseSuppression,
+  Reglages,
   Role,
 };
 
@@ -73,6 +79,8 @@ export class ErreurApi extends Error {
     readonly statut: number,
     /** Import refusé pour cause de manifeste invalide : déduire est possible (G-R5). */
     readonly peutGenerer = false,
+    /** Corps JSON complet — certaines erreurs portent une donnée utile (EM-R9). */
+    readonly corps: Record<string, unknown> = {},
   ) {
     super(message);
     this.name = "ErreurApi";
@@ -91,7 +99,7 @@ async function appeler<T>(chemin: string, init?: RequestInit): Promise<T> {
     const objet = corps && typeof corps === "object" ? (corps as Record<string, unknown>) : {};
     const message =
       "erreur" in objet ? String(objet.erreur) : `erreur ${reponse.status}`;
-    throw new ErreurApi(message, reponse.status, objet.peutGenerer === true);
+    throw new ErreurApi(message, reponse.status, objet.peutGenerer === true, objet);
   }
   return corps as T;
 }
@@ -267,4 +275,60 @@ export const api = {
       `/api/utilisateurs/${idCompte}`,
       { method: "DELETE" },
     ),
+
+  // --- Adresse e-mail, inscription et réglages (P012) ---
+
+  inscription: (identifiant: string, motDePasse: string) =>
+    appeler<ReponseEnvoiCourriel>("/api/auth/inscription", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ identifiant, motDePasse }),
+    }),
+
+  confirmer: (jeton: string) =>
+    appeler<ReponseCompte>("/api/auth/confirmer", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jeton }),
+    }),
+
+  renvoyerConfirmation: (identifiant: string) =>
+    appeler<ReponseEnvoiCourriel>("/api/auth/renvoyer-confirmation", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ identifiant }),
+    }),
+
+  motDePasseOublie: (identifiant: string) =>
+    appeler<ReponseEnvoiCourriel>("/api/auth/motdepasse-oublie", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ identifiant }),
+    }),
+
+  reinitialiserAvecJeton: (jeton: string, motDePasse: string) =>
+    appeler<ReponseCompte>("/api/auth/motdepasse-reinitialiser", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jeton, motDePasse }),
+    }),
+
+  confirmerUtilisateur: (idCompte: number) =>
+    appeler<ReponseCompte>(`/api/utilisateurs/${idCompte}/confirmer`, {
+      method: "POST",
+    }),
+
+  renvoyerConfirmationA: (idCompte: number) =>
+    appeler<{ envoye: boolean }>(`/api/utilisateurs/${idCompte}/confirmation`, {
+      method: "POST",
+    }),
+
+  reglages: () => appeler<ReponseReglages>("/api/reglages"),
+
+  enregistrerReglages: (changements: Partial<Reglages>) =>
+    appeler<ReponseReglages>("/api/reglages", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(changements),
+    }),
 };

@@ -15,6 +15,7 @@ import { Administration } from "./pages/Administration";
 import { Catalogue } from "./pages/Catalogue";
 import { Connexion } from "./pages/Connexion";
 import { ConsoleComptes } from "./pages/ConsoleComptes";
+import { LienCourriel } from "./pages/LienCourriel";
 import { EditeurLecon } from "./pages/EditeurLecon";
 import { PageFormation } from "./pages/Formation";
 import { PageLecon } from "./pages/Lecon";
@@ -71,12 +72,37 @@ export function App() {
     );
   }
 
+  // Les liens reçus par courriel (P012) s'ouvrent sans session : ils sont
+  // traités avant l'écran de connexion.
+  const chemin = window.location.pathname;
+  if (chemin === "/confirmer" || chemin === "/reinitialiser") {
+    return (
+      <div className={`app p-${mode}`}>
+        <main className="principal">
+          <LienCourriel
+            action={chemin === "/confirmer" ? "confirmer" : "reinitialiser"}
+            jeton={new URLSearchParams(window.location.search).get("jeton")}
+            surConnexion={(compte) => {
+              window.history.replaceState(null, "", "/");
+              session.surConnexion(compte);
+            }}
+            surRetour={() => {
+              window.history.replaceState(null, "", "/");
+              void session.rafraichir();
+            }}
+          />
+        </main>
+      </div>
+    );
+  }
+
   if (session.etat.phase !== "connecte") {
     return (
       <div className={`app p-${mode}`}>
         <main className="principal">
           <Connexion
             installation={session.etat.phase === "installation"}
+            inscriptionOuverte={session.inscriptionOuverte}
             surConnexion={session.surConnexion}
           />
         </main>

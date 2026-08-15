@@ -6,6 +6,9 @@ import { creerApi, exigeRoleAdmin } from "./api";
 import { ouvrirBase } from "./base";
 import { NOM_COOKIE } from "./comptes/auth";
 import { BaseComptes, MAX_TENTATIVES } from "./comptes/db";
+import { BaseJetons } from "./comptes/jetons";
+import { ExpediteurJournal } from "./courriel/envoi";
+import { BaseReglages } from "./reglages";
 import { MoteurRendu } from "./markdown/rendu";
 import { BaseProgression, UTILISATEUR_HERITE } from "./progression/db";
 import { MoteurRecherche } from "./recherche/moteur";
@@ -23,6 +26,8 @@ describe("installation initiale (AU-R1)", () => {
   let dossier: string;
   let base: BaseProgression;
   let comptes: BaseComptes;
+  let jetons: BaseJetons;
+  let courriels: ExpediteurJournal;
   let app: ReturnType<typeof creerApi>;
 
   const appeler = (chemin: string, init: RequestInit = {}, jeton?: string) =>
@@ -41,10 +46,15 @@ describe("installation initiale (AU-R1)", () => {
     const ouverte = ouvrirBase(path.join(dossier, "parcours.db"));
     base = new BaseProgression(ouverte.db);
     comptes = new BaseComptes(ouverte.db);
+    jetons = new BaseJetons(ouverte.db);
+    courriels = new ExpediteurJournal(() => undefined);
     app = creerApi({
       dossierFormations: path.join(dossier, "formations"),
       base,
       comptes,
+      jetons,
+      reglages: new BaseReglages(ouverte.db),
+      expediteur: courriels,
       rendu,
       recherche: new MoteurRecherche(rendu),
     });
@@ -64,14 +74,18 @@ describe("installation initiale (AU-R1)", () => {
   it("laisse passer la sonde de vie et l'état d'authentification", async () => {
     expect((await appeler("/api/health")).status).toBe(200);
     const etat = await (await appeler("/api/auth/etat")).json();
-    expect(etat).toEqual({ installationRequise: true, compte: null });
+    expect(etat).toEqual({
+      installationRequise: true,
+      compte: null,
+      inscriptionOuverte: false,
+    });
   });
 
   it("crée le premier compte en administrateur et ouvre la session", async () => {
     const reponse = await appeler("/api/auth/installer", {
       method: "POST",
       body: JSON.stringify({
-        identifiant: "Cedric",
+        identifiant: "Cedric@Exemple.fr",
         nom: "Cédric",
         motDePasse: "un-mot-de-passe-solide",
       }),
@@ -80,7 +94,7 @@ describe("installation initiale (AU-R1)", () => {
     expect(reponse.status).toBe(201);
     const corps = await reponse.json();
     expect(corps.compte).toMatchObject({
-      identifiant: "cedric",
+      identifiant: "cedric@exemple.fr",
       nom: "Cédric",
       role: "admin",
       actif: true,
@@ -99,18 +113,18 @@ describe("installation initiale (AU-R1)", () => {
     base.cocher(UTILISATEUR_HERITE, "prise-en-main", "bienvenue");
     const reponse = await appeler("/api/auth/installer", {
       method: "POST",
-      body: JSON.stringify({ identifiant: "cedric", motDePasse: "un-mot-de-passe-solide" }),
+      body: JSON.stringify({ identifiant: "cedric@exemple.fr", motDePasse: "un-mot-de-passe-solide" }),
     });
 
     expect((await reponse.json()).progressionHeritee).toBe(1);
-    const compte = comptes.ligneParIdentifiant("cedric")!;
+    const compte = comptes.ligneParIdentifiant("cedric@exemple.fr")!;
     expect([...base.leconsCochees(compte.id, "prise-en-main")]).toEqual(["bienvenue"]);
   });
 
   it("refuse un mot de passe trop court, et n'installe rien", async () => {
     const reponse = await appeler("/api/auth/installer", {
       method: "POST",
-      body: JSON.stringify({ identifiant: "cedric", motDePasse: "court" }),
+      body: JSON.stringify({ identifiant: "cedric@exemple.fr", motDePasse: "court" }),
     });
     expect(reponse.status).toBe(400);
     expect(comptes.installationRequise()).toBe(true);
@@ -118,7 +132,7 @@ describe("installation initiale (AU-R1)", () => {
 
   it("refuse une seconde installation", async () => {
     const corps = JSON.stringify({
-      identifiant: "cedric",
+      identifiant: "cedric@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
     });
     await appeler("/api/auth/installer", { method: "POST", body: corps });
@@ -160,7 +174,7 @@ describe("connexion et session (AU-R3 à AU-R6)", () => {
   });
 
   it("ouvre une session sur les bons identifiants", async () => {
-    const reponse = await connexion("admin-test", MOT_DE_PASSE_TEST);
+    const reponse = await connexion("admin-test@parcours.test", MOT_DE_PASSE_TEST);
     expect(reponse.status).toBe(200);
     const jeton = cookieDeSession(reponse);
     expect(jeton).toBeTruthy();
@@ -172,8 +186,8 @@ describe("connexion et session (AU-R3 à AU-R6)", () => {
   });
 
   it("donne la même réponse pour un compte inconnu et un mot de passe faux (AU-R4)", async () => {
-    const inconnu = await connexion("personne", "un-mot-de-passe-solide");
-    const faux = await connexion("admin-test", "un-mot-de-passe-faux");
+    const inconnu = await connexion("personne@exemple.fr", "un-mot-de-passe-solide");
+    const faux = await connexion("admin-test@parcours.test", "un-mot-de-passe-faux");
 
     expect(inconnu.status).toBe(401);
     expect(faux.status).toBe(401);
@@ -182,19 +196,19 @@ describe("connexion et session (AU-R3 à AU-R6)", () => {
 
   it("bloque après trop d'échecs (AU-R5)", async () => {
     for (let essai = 0; essai < MAX_TENTATIVES; essai++) {
-      await connexion("admin-test", "toujours-faux-celui-la");
+      await connexion("admin-test@parcours.test", "toujours-faux-celui-la");
     }
-    const bloquee = await connexion("admin-test", MOT_DE_PASSE_TEST);
+    const bloquee = await connexion("admin-test@parcours.test", MOT_DE_PASSE_TEST);
     expect(bloquee.status).toBe(429);
     expect((await bloquee.json()).erreur).toMatch(/réessayez dans 15 minutes/);
   });
 
   it("refuse la connexion d'un compte désactivé, sans le dire", async () => {
     await contexte.connecter("eleve");
-    const eleve = contexte.comptes.ligneParIdentifiant("eleve")!;
+    const eleve = contexte.comptes.ligneParIdentifiant("eleve@parcours.test")!;
     contexte.comptes.changerActivation(eleve.id, false);
 
-    const reponse = await connexion("eleve", MOT_DE_PASSE_TEST);
+    const reponse = await connexion("eleve@parcours.test", MOT_DE_PASSE_TEST);
     expect(reponse.status).toBe(401);
     expect((await reponse.json()).erreur).toMatch(/identifiant ou mot de passe/);
   });
@@ -210,7 +224,7 @@ describe("connexion et session (AU-R3 à AU-R6)", () => {
     const appelerEleve = await contexte.connecter("eleve");
     expect((await appelerEleve("/api/formations")).status).toBe(200);
 
-    const eleve = contexte.comptes.ligneParIdentifiant("eleve")!;
+    const eleve = contexte.comptes.ligneParIdentifiant("eleve@parcours.test")!;
     contexte.comptes.changerActivation(eleve.id, false);
     expect((await appelerEleve("/api/formations")).status).toBe(401);
   });
@@ -308,6 +322,11 @@ describe("couverture de la garde de rôle (CO-R2)", () => {
       "POST /api/auth/installer",
       "POST /api/auth/connexion",
       "POST /api/auth/deconnexion",
+      "POST /api/auth/inscription",
+      "POST /api/auth/confirmer",
+      "POST /api/auth/renvoyer-confirmation",
+      "POST /api/auth/motdepasse-oublie",
+      "POST /api/auth/motdepasse-reinitialiser",
       "PUT /api/profil",
       "PUT /api/profil/motdepasse",
       "PUT /api/progression/:fid/:lid",
@@ -349,7 +368,7 @@ describe("profil (CO-R4, CO-R5)", () => {
 
   it("renvoie le compte connecté, sans empreinte", async () => {
     const corps = await (await contexte.appeler("/api/profil")).json();
-    expect(corps.compte).toMatchObject({ identifiant: "admin-test", role: "admin" });
+    expect(corps.compte).toMatchObject({ identifiant: "admin-test@parcours.test", role: "admin" });
     expect(JSON.stringify(corps)).not.toContain("scrypt");
   });
 
@@ -429,21 +448,21 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
 
   it("crée un compte lecteur", async () => {
     const reponse = await creer({
-      identifiant: "Eleve",
+      identifiant: "eleve@exemple.fr",
       nom: "Un élève",
       motDePasse: "un-mot-de-passe-solide",
       role: "lecteur",
     });
     expect(reponse.status).toBe(201);
     expect((await reponse.json()).compte).toMatchObject({
-      identifiant: "eleve",
+      identifiant: "eleve@exemple.fr",
       role: "lecteur",
     });
   });
 
   it("refuse un identifiant déjà pris", async () => {
     const corps = {
-      identifiant: "eleve",
+      identifiant: "eleve@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "lecteur",
     };
@@ -453,7 +472,7 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
 
   it("refuse un rôle inventé", async () => {
     const reponse = await creer({
-      identifiant: "eleve",
+      identifiant: "eleve@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "roi",
     });
@@ -462,19 +481,19 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
 
   it("change le rôle, le nom et l'identifiant d'un compte", async () => {
     const cree = await (await creer({
-      identifiant: "eleve",
+      identifiant: "eleve@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "lecteur",
     })).json();
 
     const reponse = await modifier(cree.compte.id, {
       nom: "Nouvelle identité",
-      identifiant: "nouvelle-identite",
+      identifiant: "nouvelle-identite@exemple.fr",
       role: "admin",
     });
     expect((await reponse.json()).compte).toMatchObject({
       nom: "Nouvelle identité",
-      identifiant: "nouvelle-identite",
+      identifiant: "nouvelle-identite@exemple.fr",
       role: "admin",
     });
   });
@@ -488,7 +507,7 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
   it("protège le dernier administrateur actif (CO-R7)", async () => {
     // Un second admin, puis on retire le rôle au premier — permis.
     const second = await (await creer({
-      identifiant: "second-admin",
+      identifiant: "second-admin@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "admin",
     })).json();
@@ -496,7 +515,7 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
 
     // Il ne reste qu'un admin actif : on ne peut plus le toucher.
     const troisieme = await (await creer({
-      identifiant: "autre-admin",
+      identifiant: "autre-admin@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "admin",
     })).json();
@@ -506,10 +525,16 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
 
   it("réinitialise un mot de passe et ne le montre qu'une fois (CO-R10)", async () => {
     const cree = await (await creer({
-      identifiant: "eleve",
+      identifiant: "eleve@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "lecteur",
     })).json();
+
+    // EM-R2 : le compte naît non confirmé ; on confirme pour pouvoir tester
+    // la connexion avec le mot de passe provisoire.
+    await contexte.appeler(`/api/utilisateurs/${cree.compte.id}/confirmer`, {
+      method: "POST",
+    });
 
     const reponse = await contexte.appeler(
       `/api/utilisateurs/${cree.compte.id}/motdepasse`,
@@ -522,7 +547,7 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
     const avec = (motDePasse: string) =>
       contexte.appelerAnonyme("/api/auth/connexion", {
         method: "POST",
-        body: JSON.stringify({ identifiant: "eleve", motDePasse }),
+        body: JSON.stringify({ identifiant: "eleve@exemple.fr", motDePasse }),
       });
     expect((await avec(corps.motDePasseProvisoire)).status).toBe(200);
     expect((await avec("un-mot-de-passe-solide")).status).toBe(401);
@@ -534,7 +559,7 @@ describe("console d'administration des comptes (CO-R6 à CO-R10)", () => {
 
   it("ne supprime qu'un compte désactivé, et efface sa progression (CO-R8)", async () => {
     const cree = await (await creer({
-      identifiant: "eleve",
+      identifiant: "eleve@exemple.fr",
       motDePasse: "un-mot-de-passe-solide",
       role: "lecteur",
     })).json();

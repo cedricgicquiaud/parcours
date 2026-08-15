@@ -10,7 +10,10 @@ import {
   type VariablesParcours,
 } from "./comptes/auth";
 import type { BaseComptes } from "./comptes/db";
+import type { BaseJetons } from "./comptes/jetons";
 import { monterComptes } from "./comptes/routes";
+import type { Expediteur } from "./courriel/envoi";
+import type { BaseReglages } from "./reglages";
 import {
   archiver,
   cheminArchives,
@@ -65,6 +68,9 @@ export interface DependancesApi {
   dossierFormations: string;
   base: BaseProgression;
   comptes: BaseComptes;
+  jetons: BaseJetons;
+  reglages: BaseReglages;
+  expediteur: Expediteur;
   rendu: MoteurRendu;
   recherche: MoteurRecherche;
 }
@@ -83,6 +89,7 @@ export function exigeRoleAdmin(methode: string, chemin: string): boolean {
     return true;
   }
   if (chemin.startsWith("/api/utilisateurs")) return true;
+  if (chemin.startsWith("/api/reglages")) return true;
   if (methode !== "GET") return true;
   // Les deux vues qui n'existent que pour éditer.
   return chemin.endsWith("/structure") || chemin.endsWith("/source");
@@ -119,7 +126,13 @@ export function gardeLocale(c: Context): Response | null {
 
 export function creerApi(deps: DependancesApi): AppParcours {
   const app = new Hono<{ Variables: VariablesParcours }>();
-  const auth = { comptes: deps.comptes, progression: deps.base };
+  const auth = {
+    comptes: deps.comptes,
+    progression: deps.base,
+    jetons: deps.jetons,
+    reglages: deps.reglages,
+    expediteur: deps.expediteur,
+  };
 
   // A-R1 : la garde locale passe en premier, avant toute lecture de session.
   app.use("*", async (c, next) => {

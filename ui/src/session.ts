@@ -14,10 +14,13 @@ export type EtatSession =
  */
 export function useSession() {
   const [etat, setEtat] = useState<EtatSession>({ phase: "chargement" });
+  /** Réglage public : l'inscription libre est-elle ouverte (EM-R6) ? */
+  const [inscriptionOuverte, setInscriptionOuverte] = useState(false);
 
   const rafraichir = useCallback(async () => {
     try {
       const reponse = await api.etatAuth();
+      setInscriptionOuverte(reponse.inscriptionOuverte === true);
       if (reponse.installationRequise) return setEtat({ phase: "installation" });
       setEtat(
         reponse.compte
@@ -46,7 +49,7 @@ export function useSession() {
     setEtat({ phase: "anonyme" });
   }, []);
 
-  return { etat, rafraichir, surConnexion, deconnecter, setEtat };
+  return { etat, inscriptionOuverte, rafraichir, surConnexion, deconnecter, setEtat };
 }
 
 export type Session = ReturnType<typeof useSession>;

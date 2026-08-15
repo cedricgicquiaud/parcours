@@ -68,10 +68,11 @@ const lecon: ReponseLecon = {
 /** Compte connecté par défaut dans ces tests (P011). */
 const compte = {
   id: 1,
-  identifiant: "cedric",
+  identifiant: "cedric@exemple.fr",
   nom: "Cédric",
   role: "admin" as const,
   actif: true,
+  emailVerifie: true,
   creeLe: "2026-08-15T09:00:00.000Z",
   derniereConnexion: null,
 };
@@ -97,7 +98,7 @@ beforeEach(() => {
       const url = String(entree);
       appels.push(`${init?.method ?? "GET"} ${url}`);
       if (url === "/api/auth/etat") {
-        return reponse({ installationRequise: false, compte });
+        return reponse({ installationRequise: false, compte, inscriptionOuverte: false });
       }
       if (url === "/api/formations") return reponse(catalogue);
       if (url === "/api/formations/prise-en-main") return reponse(formation);

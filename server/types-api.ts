@@ -2,6 +2,7 @@ import type { Compte, Role } from "./comptes/db";
 import type { EntreeArchive, EntreeCorbeille } from "./formations/cycle";
 import type { ResultatImport } from "./formations/import";
 import type { ActionFormation, Avancement } from "./progression/calculs";
+import type { Reglages } from "./reglages";
 import type { ResultatRecherche } from "./recherche/moteur";
 
 export type {
@@ -10,6 +11,7 @@ export type {
   Compte,
   EntreeArchive,
   EntreeCorbeille,
+  Reglages,
   ResultatRecherche,
   Role,
 };
@@ -18,6 +20,20 @@ export type {
 export interface ReponseEtatAuth {
   installationRequise: boolean;
   compte: Compte | null;
+  /** L'inscription libre est-elle ouverte (EM-R6) ? */
+  inscriptionOuverte: boolean;
+}
+
+/** Réponse commune aux gestes qui envoient un courriel (EM-R7, EM-R8). */
+export interface ReponseEnvoiCourriel {
+  envoye: boolean;
+  message: string;
+}
+
+/** Réglages de l'instance et mode d'envoi en cours (EM-R12). */
+export interface ReponseReglages {
+  reglages: Reglages;
+  envoiCourriel: "journal" | "smtp";
 }
 
 export interface ReponseCompte {

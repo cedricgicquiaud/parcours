@@ -24,6 +24,7 @@ machine.
 ## Commandes
 
 - `npm run dev` : serveur (port 4620) + UI Vite en parallèle
+- `PARCOURS_SMTP_URL` : active l'envoi réel des courriels (sinon journal)
 - `npm test` : tests Vitest — `npm run typecheck` : tsc --noEmit
 - `npm run build` : typecheck + build UI — `npm start` : serveur production
 
@@ -58,7 +59,12 @@ démarrage, connexion par cookie de session, profil personnel, console
 d'administration des comptes, progression rattachée au compte, écriture des
 formations réservée aux administrateurs. Règles :
 `.workflow/phases/03-comptes/PLAN.md`.
-364 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+**Adresse e-mail vérifiée (2026-08-15, décision P012)** : l'identifiant est une
+adresse e-mail, confirmée par un lien ; inscription libre optionnelle, mot de
+passe oublié autonome. Envoi **opt-in** : sans `PARCOURS_SMTP_URL`, rien ne sort
+de la machine, les liens s'affichent dans le journal du serveur. Règles :
+`.workflow/phases/04-email/PLAN.md`.
+413 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
@@ -78,16 +84,18 @@ bornée : rien de multi-user, pas d'impasses — **remplacée par P011**), **P00
 renverse P001 (espace d'administration de la structure), P009 qui lève son
 dernier garde-fou (édition du contenu des leçons, protégée contre l'écrasement),
 P010 qui ouvre le cycle de vie complet (import par dépôt, archivage, corbeille —
-jamais de suppression de fichier) et P011 qui rend Parcours multi-utilisateur
-(comptes, authentification, rôles admin/lecteur, console)**,
+jamais de suppression de fichier), P011 qui rend Parcours multi-utilisateur
+(comptes, authentification, rôles admin/lecteur, console) et P012 qui fait de
+l'identifiant une adresse e-mail vérifiée (envoi SMTP opt-in)**,
 P003 (légal : contenu Academy
 jamais intégré, liens sortants + non-affiliation), P004 (ids stables de leçons =
 clé de progression ; formatVersion obligatoire), P005 (alias anglais des blocs
 `:::`), P006 (manifeste seul, aucun frontmatter), P007 (recherche plein texte
 dans la V1, indices et solutions exclus de l'index).
 
-Non négociables du PRD : tout local par défaut (aucune requête sortante, serveur
-sur 127.0.0.1) ; écriture des formations limitée aux gestes explicites d'un
+Non négociables du PRD : tout local par défaut (serveur sur 127.0.0.1, aucune
+requête sortante depuis l'interface ; **seule exception, P012 : l'envoi SMTP,
+inactif tant qu'il n'est pas configuré**) ; écriture des formations limitée aux gestes explicites d'un
 administrateur (P008, P009, P010, P011 — jamais de suppression de fichier,
 jamais d'écrasement silencieux) ; solutions
 d'exercices repliées par défaut ; formation invalide toujours signalée avec son

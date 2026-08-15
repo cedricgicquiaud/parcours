@@ -26,10 +26,17 @@ La garde locale passe en premier, l'authentification ensuite.
 
 | Méthode | Route | Rôle |
 |---------|-------|------|
-| GET | `/api/auth/etat` | Installation requise ? compte connecté ? |
+| GET | `/api/auth/etat` | Installation requise ? compte connecté ? inscription ouverte ? |
 | POST | `/api/auth/installer` | Créer le tout premier compte (administrateur) |
 | POST | `/api/auth/connexion` | `{ identifiant, motDePasse }` |
 | POST | `/api/auth/deconnexion` | Révoque la session et efface le cookie |
+| POST | `/api/auth/inscription` | Inscription libre, si le réglage l'autorise |
+| POST | `/api/auth/confirmer` | `{ jeton }` reçu par courriel |
+| POST | `/api/auth/renvoyer-confirmation` | `{ identifiant }` |
+| POST | `/api/auth/motdepasse-oublie` | `{ identifiant }` |
+| POST | `/api/auth/motdepasse-reinitialiser` | `{ jeton, motDePasse }` |
+| GET | `/api/reglages` | Réglages de l'instance (admin) |
+| PUT | `/api/reglages` | Modifier les réglages (admin) |
 | GET | `/api/profil` | Compte connecté |
 | PUT | `/api/profil` | `{ nom }` |
 | PUT | `/api/profil/motdepasse` | `{ actuel, nouveau }` |
@@ -37,6 +44,8 @@ La garde locale passe en premier, l'authentification ensuite.
 | POST | `/api/utilisateurs` | Créer un compte (admin) |
 | PATCH | `/api/utilisateurs/:id` | Nom, identifiant, rôle, activation (admin) |
 | POST | `/api/utilisateurs/:id/motdepasse` | Mot de passe provisoire (admin) |
+| POST | `/api/utilisateurs/:id/confirmation` | Renvoyer le lien de confirmation (admin) |
+| POST | `/api/utilisateurs/:id/confirmer` | Confirmer l'adresse à la main (admin) |
 | DELETE | `/api/utilisateurs/:id` | Supprimer un compte désactivé (admin) |
 
 **Connexion.** Identifiant inconnu, mot de passe faux et compte désactivé
@@ -57,6 +66,54 @@ Désactiver un compte révoque ses sessions immédiatement.
 **Progression.** Elle est rattachée au compte : deux personnes ont deux
 avancements distincts sur la même formation. Les coches d'une base d'avant les
 comptes sont reprises par le premier administrateur créé.
+
+## Adresse e-mail vérifiée (P012)
+
+**L'identifiant est une adresse e-mail.** Validée de format à la création et à
+la modification, normalisée en minuscules. Les comptes créés avant cette règle
+restent utilisables tels quels.
+
+**Confirmation.** Chaque compte porte `emailVerifie`. Le premier administrateur
+l'est d'office ; tout autre compte naît non confirmé et reçoit un lien. Le jeton
+fait 32 octets aléatoires, est stocké haché, vaut **une seule fois**, et expire
+en 48 h (confirmation) ou 1 h (réinitialisation). Un nouveau lien annule le
+précédent, et un envoi au plus par minute et par adresse.
+
+**Connexion d'un compte non confirmé** : le mot de passe est vérifié d'abord ;
+s'il est bon mais l'adresse non confirmée, `403` avec `emailNonConfirme: true`.
+Un mot de passe faux donne le `401` indiscernable habituel — l'état de
+confirmation n'est jamais révélé à qui n'a pas le mot de passe.
+
+**Aucune énumération.** `inscription`, `renvoyer-confirmation` et
+`motdepasse-oublie` répondent toujours `200` avec le même message, que l'adresse
+existe ou non. Une inscription sur une adresse déjà prise ne crée aucun compte
+et envoie un courriel d'alerte à la personne concernée.
+
+**Réinitialisation.** `motdepasse-reinitialiser` change le mot de passe, révoque
+**toutes** les sessions du compte et confirme l'adresse au passage. Si le
+nouveau mot de passe est refusé, la réponse `400` porte un `jeton` réémis :
+inutile de retourner dans sa boîte pour une faute de frappe.
+
+**Envoi.** Sans `PARCOURS_SMTP_URL`, Parcours n'ouvre **aucune connexion
+sortante** : le message et son lien s'écrivent dans le journal du serveur. Avec
+l'URL configurée, l'envoi part en SMTP. Un échec d'envoi ne change jamais la
+réponse rendue : le lien reste réémissible.
+
+**Réglages** (`GET`/`PUT /api/reglages`, admin) :
+
+```json
+{
+  "reglages": {
+    "inscriptionOuverte": false,
+    "urlPublique": "http://127.0.0.1:4620",
+    "expediteur": "Parcours <parcours@localhost>"
+  },
+  "envoiCourriel": "journal"
+}
+```
+
+`urlPublique` sert à construire les liens des courriels ; elle doit être http ou
+https. `inscriptionOuverte` est **fermée par défaut**.
 
 ## Routes
 

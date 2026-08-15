@@ -6,6 +6,9 @@ import { Hono } from "hono";
 import { creerApi } from "./api";
 import { ouvrirBase } from "./base";
 import { BaseComptes } from "./comptes/db";
+import { BaseJetons } from "./comptes/jetons";
+import { creerExpediteur } from "./courriel/envoi";
+import { BaseReglages } from "./reglages";
 import { cheminBaseProgression, dossierFormations, HOTE, PORT, RACINE_PROJET } from "./config";
 import { MoteurRendu } from "./markdown/rendu";
 import { BaseProgression } from "./progression/db";
@@ -23,13 +26,25 @@ async function demarrer(): Promise<void> {
     ouverte.sauvegardeCorrompue,
   );
   const comptes = new BaseComptes(ouverte.db);
+  const jetons = new BaseJetons(ouverte.db);
+  const reglages = new BaseReglages(ouverte.db);
+  const expediteur = await creerExpediteur();
   const rendu = await MoteurRendu.creer();
   const recherche = new MoteurRecherche(rendu);
 
   const app = new Hono();
   app.route(
     "/",
-    creerApi({ dossierFormations: formations, base, comptes, rendu, recherche }),
+    creerApi({
+      dossierFormations: formations,
+      base,
+      comptes,
+      jetons,
+      reglages,
+      expediteur,
+      rendu,
+      recherche,
+    }),
   );
 
   // En production, le même process sert l'UI construite (1 process, PRD).
@@ -46,6 +61,11 @@ async function demarrer(): Promise<void> {
     console.log(`Formations : ${formations}`);
     if (comptes.installationRequise()) {
       console.log("Aucun compte : ouvrez Parcours pour créer le compte administrateur.");
+    }
+    if (expediteur.mode === "journal") {
+      console.log(
+        "Courriels : aucun SMTP configuré — les liens s'affichent ici (PARCOURS_SMTP_URL pour envoyer).",
+      );
     }
     if (base.reinitialisee) {
       console.warn(

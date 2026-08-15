@@ -136,6 +136,9 @@ describe("GET /api/formations (C-R2, C-R3)", () => {
       dossierFormations: path.join(racine, "nulle-part"),
       base,
       comptes: contexte.comptes,
+      jetons: contexte.jetons,
+      reglages: contexte.reglages,
+      expediteur: contexte.courriels,
       rendu,
       recherche: new MoteurRecherche(rendu),
     });

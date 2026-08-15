@@ -6,10 +6,11 @@ import type { Compte } from "./api";
 
 const compte: Compte = {
   id: 1,
-  identifiant: "cedric",
+  identifiant: "cedric@exemple.fr",
   nom: "Cédric",
   role: "admin",
   actif: true,
+  emailVerifie: true,
   creeLe: "2026-08-15T09:00:00.000Z",
   derniereConnexion: null,
 };
@@ -46,7 +47,7 @@ function simuler(surPost?: (url: string, corps: unknown) => Response | null) {
 
 beforeEach(() => {
   appels = [];
-  etat = { installationRequise: false, compte: null };
+  etat = { installationRequise: false, compte: null, inscriptionOuverte: false };
   window.history.pushState(null, "", "/");
 });
 
@@ -56,7 +57,7 @@ afterEach(() => {
 
 describe("écran d'installation (AU-R1)", () => {
   beforeEach(() => {
-    etat = { installationRequise: true, compte: null };
+    etat = { installationRequise: true, compte: null, inscriptionOuverte: false };
   });
 
   it("propose de créer le compte administrateur au premier démarrage", async () => {
@@ -74,7 +75,7 @@ describe("écran d'installation (AU-R1)", () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Créer le compte administrateur" });
 
-    await userEvent.type(screen.getByLabelText("Identifiant"), "cedric");
+    await userEvent.type(screen.getByLabelText("Adresse e-mail"), "cedric@exemple.fr");
     await userEvent.type(screen.getByLabelText("Mot de passe"), "mot-de-passe-long");
     await userEvent.type(
       screen.getByLabelText(/Confirmer le mot de passe/),
@@ -97,7 +98,7 @@ describe("écran d'installation (AU-R1)", () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Créer le compte administrateur" });
 
-    await userEvent.type(screen.getByLabelText("Identifiant"), "cedric");
+    await userEvent.type(screen.getByLabelText("Adresse e-mail"), "cedric@exemple.fr");
     await userEvent.type(screen.getByLabelText("Mot de passe"), "mot-de-passe-long");
     await userEvent.type(
       screen.getByLabelText(/Confirmer le mot de passe/),
@@ -132,7 +133,7 @@ describe("écran de connexion (AU-R6)", () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Se connecter" });
 
-    await userEvent.type(screen.getByLabelText("Identifiant"), "cedric");
+    await userEvent.type(screen.getByLabelText("Adresse e-mail"), "cedric@exemple.fr");
     await userEvent.type(screen.getByLabelText("Mot de passe"), "faux");
     await userEvent.click(screen.getByRole("button", { name: /Se connecter/ }));
 
@@ -146,7 +147,7 @@ describe("écran de connexion (AU-R6)", () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Se connecter" });
 
-    await userEvent.type(screen.getByLabelText("Identifiant"), "cedric");
+    await userEvent.type(screen.getByLabelText("Adresse e-mail"), "cedric@exemple.fr");
     await userEvent.type(screen.getByLabelText("Mot de passe"), "mot-de-passe-long");
     await userEvent.click(screen.getByRole("button", { name: /Se connecter/ }));
 
@@ -159,7 +160,7 @@ describe("écran de connexion (AU-R6)", () => {
 
 describe("session connectée", () => {
   beforeEach(() => {
-    etat = { installationRequise: false, compte };
+    etat = { installationRequise: false, compte, inscriptionOuverte: false };
   });
 
   it("montre le compte et permet de se déconnecter", async () => {
@@ -188,8 +189,8 @@ describe("session connectée", () => {
         const url = String(entree);
         if (url === "/api/auth/etat") {
           const valeur = premierAppel
-            ? { installationRequise: false, compte }
-            : { installationRequise: false, compte: null };
+            ? { installationRequise: false, compte, inscriptionOuverte: false }
+            : { installationRequise: false, compte: null, inscriptionOuverte: false };
           premierAppel = false;
           return reponse(valeur);
         }
@@ -207,7 +208,11 @@ describe("session connectée", () => {
   });
 
   it("cache la console des comptes à un lecteur", async () => {
-    etat = { installationRequise: false, compte: { ...compte, role: "lecteur" } };
+    etat = {
+      installationRequise: false,
+      compte: { ...compte, role: "lecteur" },
+      inscriptionOuverte: false,
+    };
     simuler();
     render(<App />);
     await screen.findByRole("heading", { name: "Mes formations" });
@@ -224,6 +229,6 @@ describe("session connectée", () => {
     await waitFor(() =>
       expect(screen.getByRole("heading", { name: "Mon profil" })).toBeInTheDocument(),
     );
-    expect(screen.getByLabelText("Identifiant de connexion")).toHaveValue("cedric");
+    expect(screen.getByLabelText("Identifiant de connexion")).toHaveValue("cedric@exemple.fr");
   });
 });
