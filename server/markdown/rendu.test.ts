@@ -224,7 +224,7 @@ describe("markdown standard (F-R6, F-R14, U-R7)", () => {
     expect(html).toContain('<div class="table-defilante"><table>');
   });
 
-  it("rend les cases à cocher désactivées", () => {
+  it("rend les cases à cocher désactivées quand aucun critère n'est collecté", () => {
     const html = rendre("- [x] fait\n- [ ] à faire");
     expect(html).toContain("<input type=\"checkbox\" disabled checked>");
     expect(html).toContain("<input type=\"checkbox\" disabled>");

@@ -4,6 +4,7 @@ import MarkdownIt from "markdown-it";
 import type { MarkdownIt as InstanceMd, Token } from "markdown-it";
 import { createHighlighter, type Highlighter } from "shiki";
 import { cheminConfine } from "../formations/manifeste";
+import { idCritere, MAX_CRITERES, normaliserCritere } from "./criteres";
 import { pluginConteneurs, type EnteteConteneur } from "./conteneurs";
 import { classerImage, classerLien, echapper } from "./urls";
 
@@ -29,6 +30,27 @@ const THEMES = { light: "github-light", dark: "github-dark" } as const;
 /** Nombre d'extraits de code colorés mémorisés par moteur. */
 const TAILLE_CACHE_COLORATION = 500;
 
+/** Un critère de réussite rencontré pendant le rendu (CR-R1). */
+export interface Critere {
+  id: string;
+  texte: string;
+  coche: boolean;
+}
+
+/**
+ * Entrée ET sortie du rendu des critères. Sa seule présence rend les cases
+ * cochables : l'aperçu de l'éditeur, qui n'en fournit pas, garde des cases
+ * inertes (CR-R15b).
+ */
+export interface CollecteCriteres {
+  /** Entrée : états enregistrés — ils priment sur le markdown (CR-R7). */
+  etats: ReadonlyMap<string, boolean>;
+  /** Sortie : critères rencontrés, dans l'ordre du document. */
+  liste: Critere[];
+  /** Sortie : vrai si le plafond par leçon a été atteint (CR-R2b). */
+  tronquee: boolean;
+}
+
 export interface ContexteRendu {
   /** Id de la formation, pour construire les URL d'assets et de leçons. */
   formationId: string;
@@ -36,12 +58,16 @@ export interface ContexteRendu {
   dossier: string;
   /** Ids de leçons existantes, pour les liens `lecon:` (F-R12). */
   idsLecons: ReadonlySet<string>;
+  /** Fourni = critères cochables et collectés (CR-R1). */
+  criteres?: CollecteCriteres;
 }
 
 interface EtatRendu {
   compteurIndices: number;
   /** Pile des liens ouverts : `false` = lien neutralisé (F-R12). */
   liens: boolean[];
+  /** Occurrences déjà vues de chaque texte de critère, pour le rang (CR-R2). */
+  rangsCriteres: Map<string, number>;
 }
 
 const ETIQUETTES: Record<string, string> = {
@@ -58,7 +84,13 @@ const ICONES: Record<string, string> = {
 
 function etat(env: unknown): EtatRendu {
   const sac = (env ?? {}) as Record<string, unknown>;
-  if (!sac.__parcours) sac.__parcours = { compteurIndices: 0, liens: [] };
+  if (!sac.__parcours) {
+    sac.__parcours = {
+      compteurIndices: 0,
+      liens: [],
+      rangsCriteres: new Map<string, number>(),
+    };
+  }
   return sac.__parcours as EtatRendu;
 }
 
@@ -206,14 +238,40 @@ export class MoteurRendu {
     regles.table_open = () => '<div class="table-defilante"><table>';
     regles.table_close = () => "</table></div>";
 
-    regles.case_a_cocher = (tokens, i) => {
-      const { coche } = tokens[i]!.meta as { coche: boolean };
-      return `<input type="checkbox" disabled${coche ? " checked" : ""}> `;
-    };
+    regles.case_a_cocher = (tokens, i, _options, env) =>
+      this.rendreCritere(tokens[i]!, contexteDe(env)?.criteres, etat(env));
 
     md.core.ruler.push("cases-a-cocher", (state) => {
       transformerCasesACocher(state.tokens);
     });
+  }
+
+  /**
+   * Une case à cocher. Sans collecteur, elle reste inerte (CR-R15b) ; avec, elle
+   * devient un critère identifié, dont l'état enregistré prime sur le markdown
+   * (CR-R7). Au-delà du plafond, la case est inerte plutôt que muette : mieux
+   * vaut une case qu'on ne peut pas cocher qu'un critère qui disparaît.
+   */
+  private rendreCritere(
+    token: Token,
+    collecte: CollecteCriteres | undefined,
+    etatRendu: EtatRendu,
+  ): string {
+    const { coche, texte } = token.meta as { coche: boolean; texte: string };
+    if (!collecte || collecte.liste.length >= MAX_CRITERES) {
+      if (collecte) collecte.tronquee = true;
+      return `<input type="checkbox" disabled${coche ? " checked" : ""}> `;
+    }
+    const cle = normaliserCritere(texte);
+    const rang = etatRendu.rangsCriteres.get(cle) ?? 0;
+    etatRendu.rangsCriteres.set(cle, rang + 1);
+    const id = idCritere(texte, rang);
+    const etatEnregistre = collecte.etats.get(id);
+    const actif = etatEnregistre ?? coche;
+    collecte.liste.push({ id, texte, coche: actif });
+    return (
+      `<input type="checkbox" data-critere="${id}"${actif ? " checked" : ""}> `
+    );
   }
 
   private ouvrirConteneur(entete: EnteteConteneur, etatRendu: EtatRendu): string {
@@ -311,8 +369,9 @@ function niveauTitre(tag: string): string {
 }
 
 /**
- * Cases à cocher GFM (F-R6) : purement visuelles, désactivées, jamais
- * persistées — la progression V1 est à la leçon, pas à la case.
+ * Cases à cocher GFM (F-R6). Elles portent le texte du critère jusqu'au
+ * renderer, qui en tire l'identité (CR-R2) — le texte visible, balisage retiré,
+ * pour qu'un mot mis en `code` ne change pas l'id.
  */
 function transformerCasesACocher(tokens: Token[]): void {
   for (const [i, token] of tokens.entries()) {
@@ -330,7 +389,17 @@ function transformerCasesACocher(tokens: Token[]): void {
     premier.content = premier.content.slice(correspondance[0].length);
     const coche = correspondance[1]!.toLowerCase() === "x";
     const boite = new MarkdownIt.Token("case_a_cocher", "input", 0);
-    boite.meta = { coche };
+    boite.meta = { coche, texte: texteVisible(token.children ?? []) };
     token.children!.unshift(boite);
   }
+}
+
+/** Texte lisible d'un critère : le balisage ne doit pas peser sur son identité. */
+function texteVisible(enfants: Token[]): string {
+  return enfants
+    .map((enfant) =>
+      enfant.type === "text" || enfant.type === "code_inline" ? enfant.content : "",
+    )
+    .join("")
+    .trim();
 }
