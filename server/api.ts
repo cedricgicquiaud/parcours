@@ -4,6 +4,8 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import {
   creerFormation,
+  ecrireSource,
+  lireSource,
   mettreAJourStructure,
   type StructureSaisie,
 } from "./formations/ecriture";
@@ -23,7 +25,10 @@ import type { BaseProgression } from "./progression/db";
 import type { MoteurRecherche } from "./recherche/moteur";
 import type {
   CarteFormation,
+  ReponseApercu,
   ReponseEcriture,
+  ReponseEnregistrementSource,
+  ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
@@ -202,6 +207,78 @@ export function creerApi(deps: DependancesApi): Hono {
       titre: ecrit.valeur.manifeste.titre,
       fichiersCrees: ecrit.valeur.fichiersCrees,
     } satisfies ReponseEcriture);
+  });
+
+  // --- Édition du contenu d'une leçon (P009) ---
+
+  /** Résout la leçon demandée et son chemin de fichier, ou l'erreur. */
+  async function resoudreLecon(c: Context, fid: string, lid: string) {
+    const resolu = await resoudre(c, fid);
+    if (resolu instanceof Response) return resolu;
+    const entree = trouverLecon(resolu.formation, lid);
+    if (!entree) return c.json({ erreur: `leçon inconnue : ${lid}` }, 404);
+    return { formation: resolu.formation, entree };
+  }
+
+  app.get("/api/formations/:fid/lecons/:lid/source", async (c) => {
+    const resolu = await resoudreLecon(c, c.req.param("fid"), c.req.param("lid"));
+    if (resolu instanceof Response) return resolu;
+    const { formation, entree } = resolu;
+    const source = await lireSource(formation.dossier, entree.lecon.fichier);
+    if (!source.ok) return c.json({ erreur: source.erreur }, 404);
+    return c.json({
+      formationId: formation.id,
+      leconId: entree.lecon.id,
+      titre: entree.lecon.titre,
+      fichier: entree.lecon.fichier,
+      markdown: source.valeur.markdown,
+      jeton: source.valeur.jeton,
+    } satisfies ReponseSourceLecon);
+  });
+
+  app.put("/api/formations/:fid/lecons/:lid/source", async (c) => {
+    const resolu = await resoudreLecon(c, c.req.param("fid"), c.req.param("lid"));
+    if (resolu instanceof Response) return resolu;
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+    const { formation, entree } = resolu;
+    const { markdown, jeton } = corps as { markdown?: unknown; jeton?: unknown };
+
+    const ecrit = await ecrireSource(
+      formation.dossier,
+      entree.lecon.fichier,
+      markdown as string,
+      typeof jeton === "string" ? jeton : undefined,
+    );
+    if (!ecrit.ok) return c.json({ erreur: ecrit.erreur }, ecrit.conflit ? 409 : 400);
+
+    deps.recherche.oublier(formation.id);
+    return c.json({ jeton: ecrit.valeur.jeton } satisfies ReponseEnregistrementSource);
+  });
+
+  /**
+   * Aperçu d'un markdown non encore enregistré. Le rendu reste CÔTÉ SERVEUR
+   * (A-R5) : l'interface ne rend jamais de markdown elle-même, il n'y a qu'un
+   * seul pipeline d'assainissement à sécuriser.
+   */
+  app.post("/api/formations/:fid/apercu", async (c) => {
+    const resolu = await resoudre(c, c.req.param("fid"));
+    if (resolu instanceof Response) return resolu;
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+    const { markdown } = corps as { markdown?: unknown };
+    if (typeof markdown !== "string") {
+      return c.json({ erreur: "markdown : texte attendu" }, 400);
+    }
+    const { formation } = resolu;
+    const html = deps.rendu.rendre(markdown, {
+      formationId: formation.id,
+      dossier: formation.dossier,
+      idsLecons: new Set(
+        leconsOrdonnees(formation.manifeste).map(({ lecon }) => lecon.id),
+      ),
+    });
+    return c.json({ html } satisfies ReponseApercu);
   });
 
   app.get("/api/formations", async (c) => {

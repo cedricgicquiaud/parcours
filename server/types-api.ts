@@ -81,6 +81,26 @@ export interface ReponseEcriture {
   fichiersCrees: string[];
 }
 
+/** Source markdown d'une leçon, pour l'éditeur (P009). */
+export interface ReponseSourceLecon {
+  formationId: string;
+  leconId: string;
+  titre: string;
+  fichier: string;
+  markdown: string;
+  /** État du fichier au chargement — renvoyé à l'enregistrement (P009). */
+  jeton: string;
+}
+
+export interface ReponseEnregistrementSource {
+  jeton: string;
+}
+
+/** Aperçu rendu par le serveur d'un markdown non enregistré (A-R5). */
+export interface ReponseApercu {
+  html: string;
+}
+
 export interface ReponseErreur {
   erreur: string;
 }

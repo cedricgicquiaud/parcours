@@ -19,6 +19,9 @@ Sur une mutation (`PUT`, `DELETE`, `POST`), un en-tête `Origin` non local répo
 | PUT | `/api/formations/:fid/structure` | Enregistrer titres, ordre et composition |
 | GET | `/api/formations/:fid` | Sommaire, progression et orphelines |
 | GET | `/api/formations/:fid/lecons/:lid` | Leçon rendue en HTML assaini |
+| GET | `/api/formations/:fid/lecons/:lid/source` | Markdown d'une leçon (éditeur) |
+| PUT | `/api/formations/:fid/lecons/:lid/source` | Enregistrer le markdown d'une leçon |
+| POST | `/api/formations/:fid/apercu` | Rendre un markdown non enregistré |
 | GET | `/api/formations/:fid/recherche?q=` | Recherche plein texte dans la formation |
 | GET | `/api/formations/:fid/assets/*` | Fichier joint d'une formation |
 | PUT | `/api/progression/:fid/:lid` | Marquer une leçon terminée |
@@ -165,8 +168,8 @@ d'orpheline.
 
 ## Administration : créer et modifier une formation
 
-Ces deux routes sont les **seules** qui écrivent dans `formations/` (décision
-P008). Elles écrivent la structure, jamais le texte des leçons.
+Ces deux routes écrivent la structure d'une formation (décision P008) ; le texte
+des leçons passe par les routes d'édition décrites plus bas (P009).
 
 `POST /api/formations` — corps :
 
@@ -212,6 +215,36 @@ invalidé après écriture.
 Erreurs : `400` pour une saisie invalide (message situé, ex.
 `modules[0].lecons : au moins une leçon attendue`), `409` si le dossier existe
 déjà, `403` si l'origine n'est pas locale.
+
+## Éditeur de leçon
+
+`GET …/lecons/:lid/source` renvoie le markdown du fichier et un **jeton d'état**
+(date de modification + taille) :
+
+```json
+{
+  "formationId": "prise-en-main",
+  "leconId": "bienvenue",
+  "titre": "Bienvenue",
+  "fichier": "lecons/bienvenue.md",
+  "markdown": "Parcours lit des formations…",
+  "jeton": "1786785175153-45"
+}
+```
+
+`PUT …/lecons/:lid/source` prend `{ "markdown": "…", "jeton": "…" }` et renvoie
+le nouveau jeton. Si le fichier a changé depuis la lecture — parce qu'il a été
+modifié dans un éditeur externe ou par Claude Code — la route répond **409** et
+n'écrit rien : aucune version n'est écrasée en silence. Omettre le jeton force
+l'écriture (utile en script). Le fichier est écrit de façon atomique, confiné au
+dossier de la formation, et plafonné à 2 Mo comme à la lecture.
+
+`POST /api/formations/:fid/apercu` prend `{ "markdown": "…" }` et renvoie
+`{ "html": "…" }` : c'est le **même pipeline de rendu** que la leçon (A-R5), donc
+le même assainissement. La route n'écrit rien sur le disque.
+
+Ces trois routes sont, avec celles de la structure, les seules qui touchent à
+`formations/`.
 
 ## Erreurs
 

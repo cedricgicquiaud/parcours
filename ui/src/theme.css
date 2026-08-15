@@ -855,6 +855,125 @@ summary::-webkit-details-marker {
   flex-wrap: wrap;
 }
 
+.lecon-entete {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.lecon-entete .fil-ariane {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------- Éditeur de leçon (P009) ---------- */
+
+.editeur {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.editeur-barre {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: var(--bar);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.editeur-titre {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.editeur-titre strong {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.editeur-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.editeur-colonnes {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: 0;
+}
+
+.editeur-colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 24px 24px;
+  min-width: 0;
+}
+
+.editeur-colonne + .editeur-colonne {
+  border-left: 1px solid var(--line);
+  background: var(--pane);
+}
+
+.editeur-saisie {
+  flex: 1;
+  min-height: 60vh;
+  padding: 16px 18px;
+  font: 400 14px/1.7 var(--mono);
+  color: var(--text);
+  background: var(--code);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  outline: none;
+  resize: none;
+  tab-size: 2;
+}
+
+.editeur-saisie:focus {
+  border-color: var(--accent);
+}
+
+.editeur-apercu {
+  flex: 1;
+  overflow: auto;
+  padding: 4px 2px 20px;
+}
+
+.editeur-apercu > :first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .editeur-colonnes {
+    grid-template-columns: 1fr;
+  }
+
+  .editeur-colonne + .editeur-colonne {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .editeur-saisie {
+    min-height: 40vh;
+  }
+}
+
 /* ---------- Bandeaux ---------- */
 
 .bandeau {

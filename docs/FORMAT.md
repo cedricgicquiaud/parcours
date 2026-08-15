@@ -12,9 +12,11 @@ Deux façons de créer une formation, au choix :
 - **À la main** (ou avec Claude Code) : vous écrivez vous-même le manifeste et
   les fichiers, comme décrit ci-dessous.
 
-Le **texte** des leçons s'écrit toujours dans votre éditeur : l'administration
-ne touche jamais au contenu d'un fichier existant, et retirer une leçon du
-sommaire ne supprime pas sa prose.
+Le **texte** d'une leçon s'écrit soit dans l'application (bouton « Modifier
+cette leçon », avec aperçu en direct), soit dans votre éditeur habituel — les
+deux vont ensemble : si le fichier a changé sur le disque pendant que vous
+l'éditiez dans Parcours, l'enregistrement est refusé plutôt que d'écraser
+l'autre version. Retirer une leçon du sommaire ne supprime jamais sa prose.
 
 ```
 formations/

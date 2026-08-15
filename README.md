@@ -43,9 +43,11 @@ Deux voies, au choix :
   sans redémarrer le serveur. Une formation invalide reste visible avec son
   erreur exacte.
 
-Dans les deux cas, le **texte** des leçons s'écrit dans votre éditeur (ou avec
-Claude Code) : l'administration gère la structure, jamais le contenu. Elle ne
-réécrit aucun fichier existant et ne supprime jamais de prose.
+Le **texte** d'une leçon s'écrit au choix dans l'application (« Modifier cette
+leçon » : markdown à gauche, aperçu à droite, `Cmd/Ctrl + S` pour enregistrer)
+ou dans votre éditeur habituel. Les deux cohabitent : si le fichier a changé sur
+le disque pendant votre édition, Parcours refuse d'enregistrer plutôt que
+d'écraser l'autre version. Aucun fichier n'est jamais supprimé.
 
 Le format complet est décrit dans **`docs/FORMAT.md`**, et la formation
 « Prise en main de Parcours » (livrée dans `formations/`) le montre en pratique.
@@ -60,9 +62,9 @@ PARCOURS_FORMATIONS_DIR=~/mes-formations npm start
 
 La progression, dans
 `~/Library/Application Support/Parcours/parcours.db` (SQLite, mode WAL). Les
-dossiers de formation ne sont modifiés que par l'espace d'administration, et
-seulement leur structure (manifeste et création de fichiers vides). Si la base
-de progression est trouvée corrompue
+dossiers de formation ne sont modifiés que par vos gestes explicites dans
+l'application : créer ou modifier une structure, enregistrer une leçon. Si la
+base de progression est trouvée corrompue
 au démarrage, elle est mise de côté, une base neuve est créée et l'interface
 l'annonce — jamais de plantage silencieux.
 

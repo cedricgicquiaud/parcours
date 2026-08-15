@@ -1,5 +1,8 @@
 import type {
+  ReponseApercu,
   ReponseEcriture,
+  ReponseEnregistrementSource,
+  ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
@@ -9,7 +12,10 @@ import type {
 } from "../../server/types-api";
 
 export type {
+  ReponseApercu,
   ReponseEcriture,
+  ReponseEnregistrementSource,
+  ReponseSourceLecon,
   ReponseCatalogue,
   ReponseFormation,
   ReponseLecon,
@@ -107,6 +113,27 @@ export const api = {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(structure),
+    }),
+
+  sourceLecon: (fid: string, lid: string) =>
+    appeler<ReponseSourceLecon>(`/api/formations/${id(fid)}/lecons/${id(lid)}/source`),
+
+  enregistrerLecon: (fid: string, lid: string, markdown: string, jeton: string) =>
+    appeler<ReponseEnregistrementSource>(
+      `/api/formations/${id(fid)}/lecons/${id(lid)}/source`,
+      {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ markdown, jeton }),
+      },
+    ),
+
+  apercu: (fid: string, markdown: string, signal?: AbortSignal) =>
+    appeler<ReponseApercu>(`/api/formations/${id(fid)}/apercu`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ markdown }),
+      signal,
     }),
 
   nettoyer: (fid: string) =>

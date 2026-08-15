@@ -116,7 +116,8 @@ export function PageLecon({
   return (
     <>
       <article className="page page-lecon lecon">
-        <nav className="fil-ariane" aria-label="Fil d'Ariane">
+        <div className="lecon-entete">
+          <nav className="fil-ariane" aria-label="Fil d'Ariane">
           <a
             href={`/formation/${encodeURIComponent(lecon.formationId)}`}
             onClick={(evenement) => {
@@ -129,10 +130,21 @@ export function PageLecon({
           <span>/</span>
           <span style={{ textTransform: "uppercase" }}>{lecon.moduleTitre}</span>
           <span>·</span>
-          <span style={{ textTransform: "uppercase" }}>
-            Leçon {lecon.position} sur {lecon.total}
-          </span>
-        </nav>
+            <span style={{ textTransform: "uppercase" }}>
+              Leçon {lecon.position} sur {lecon.total}
+            </span>
+          </nav>
+          <button
+            type="button"
+            className="bouton bouton-petit bouton-neutre"
+            onClick={() =>
+              naviguer({ nom: "editer", fid: lecon.formationId, lid: lecon.leconId })
+            }
+          >
+            <Icone nom="pencil-simple" taille={14} />
+            Modifier cette leçon
+          </button>
+        </div>
 
         <h1>{lecon.titre}</h1>
 

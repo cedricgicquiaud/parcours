@@ -5,6 +5,7 @@ import { Icone } from "./composants/communs";
 import { useMode, useRafraichirAuFocus, useRailReplie } from "./preferences";
 import { Administration } from "./pages/Administration";
 import { Catalogue } from "./pages/Catalogue";
+import { EditeurLecon } from "./pages/EditeurLecon";
 import { PageFormation } from "./pages/Formation";
 import { PageLecon } from "./pages/Lecon";
 import { useRecherche } from "./recherche";
@@ -19,10 +20,14 @@ export function App() {
   const [tiroirOuvert, setTiroirOuvert] = useState(false);
 
   const fid =
-    route.nom === "formation" || route.nom === "lecon" || route.nom === "structure"
+    route.nom === "formation" ||
+    route.nom === "lecon" ||
+    route.nom === "structure" ||
+    route.nom === "editer"
       ? route.fid
       : null;
-  const lid = route.nom === "lecon" ? route.lid : null;
+  const lid =
+    route.nom === "lecon" || route.nom === "editer" ? route.lid : null;
 
   const [catalogue, setCatalogue] = useState<ReponseCatalogue | null>(null);
   const [formation, setFormation] = useState<ReponseFormation | null>(null);
@@ -200,6 +205,8 @@ export function App() {
           <Administration fid={null} naviguer={naviguerEtFermer} />
         ) : route.nom === "structure" ? (
           <Administration fid={route.fid} naviguer={naviguerEtFermer} />
+        ) : route.nom === "editer" ? (
+          <EditeurLecon fid={route.fid} lid={route.lid} naviguer={naviguerEtFermer} />
         ) : route.nom === "lecon" ? (
           <PageLecon
             lecon={lecon}

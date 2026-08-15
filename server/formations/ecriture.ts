@@ -1,11 +1,13 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  cheminConfine,
   leconsOrdonnees,
   validerManifeste,
   type Manifeste,
   type Validation,
 } from "./manifeste";
+import { TAILLE_MAX_LECON } from "./scan";
 import { slugifier, slugUnique } from "./slug";
 
 /**
@@ -128,6 +130,83 @@ function derive(
     );
   }
   return slugUnique(base, pris);
+}
+
+/**
+ * Jeton d'état d'un fichier de leçon (P009) : date de modification et taille.
+ * Il sert à refuser une écriture qui écraserait une version plus récente.
+ */
+export function jetonDe(infos: { mtimeMs: number; size: number }): string {
+  return `${Math.round(infos.mtimeMs)}-${infos.size}`;
+}
+
+export interface SourceLecon {
+  markdown: string;
+  jeton: string;
+}
+
+/** Lit le markdown d'une leçon, avec son jeton d'état (P009). */
+export async function lireSource(
+  dossier: string,
+  fichier: string,
+): Promise<Validation<SourceLecon>> {
+  const confine = cheminConfine(fichier);
+  if (!confine.ok) return confine;
+  const complet = path.join(dossier, confine.valeur);
+  try {
+    const infos = await fs.stat(complet);
+    if (!infos.isFile()) throw new Error("pas un fichier");
+    if (infos.size > TAILLE_MAX_LECON) {
+      return echec(`fichier de leçon trop volumineux : ${fichier}`);
+    }
+    return {
+      ok: true,
+      valeur: { markdown: await fs.readFile(complet, "utf8"), jeton: jetonDe(infos) },
+    };
+  } catch {
+    return echec(`fichier de leçon introuvable ou illisible : ${fichier}`);
+  }
+}
+
+/**
+ * Écrit le markdown d'une leçon (P009). Refuse si le fichier a changé depuis la
+ * lecture : aucune version n'est écrasée en silence.
+ */
+export async function ecrireSource(
+  dossier: string,
+  fichier: string,
+  markdown: string,
+  jetonAttendu: string | undefined,
+): Promise<Validation<{ jeton: string }> & { conflit?: boolean }> {
+  if (typeof markdown !== "string") return echec("markdown : texte attendu");
+  if (Buffer.byteLength(markdown, "utf8") > TAILLE_MAX_LECON) {
+    return echec("leçon trop volumineuse (2 Mo maximum)");
+  }
+  const confine = cheminConfine(fichier);
+  if (!confine.ok) return confine;
+
+  const complet = path.join(dossier, confine.valeur);
+  try {
+    const infos = await fs.stat(complet);
+    const jetonActuel = jetonDe(infos);
+    if (jetonAttendu !== undefined && jetonAttendu !== jetonActuel) {
+      return {
+        ...echec(
+          "le fichier a changé depuis son ouverture : rechargez la leçon pour ne pas écraser l'autre version",
+        ),
+        conflit: true,
+      };
+    }
+  } catch {
+    // Fichier absent : l'écriture le crée, il n'y a rien à écraser.
+  }
+
+  await fs.mkdir(path.dirname(complet), { recursive: true });
+  const temporaire = `${complet}.${process.pid}.tmp`;
+  await fs.writeFile(temporaire, markdown, "utf8");
+  await fs.rename(temporaire, complet);
+  const infos = await fs.stat(complet);
+  return { ok: true, valeur: { jeton: jetonDe(infos) } };
 }
 
 /** Écrit le manifeste de façon atomique : fichier temporaire puis renommage. */

@@ -6,6 +6,7 @@ export type Route =
   | { nom: "lecon"; fid: string; lid: string }
   | { nom: "administration" }
   | { nom: "structure"; fid: string }
+  | { nom: "editer"; fid: string; lid: string }
   | { nom: "inconnue"; chemin: string };
 
 /** Trois routes seulement (§ 5) : pas de dépendance de routage. */
@@ -21,8 +22,12 @@ export function analyserChemin(chemin: string): Route {
     if (segments[2] === "structure" && segments.length === 3) {
       return { nom: "structure", fid };
     }
-    if (segments[2] === "lecon" && segments[3] && segments.length === 4) {
-      return { nom: "lecon", fid, lid: decodeURIComponent(segments[3]) };
+    if (segments[2] === "lecon" && segments[3]) {
+      const lid = decodeURIComponent(segments[3]);
+      if (segments.length === 4) return { nom: "lecon", fid, lid };
+      if (segments[4] === "editer" && segments.length === 5) {
+        return { nom: "editer", fid, lid };
+      }
     }
   }
   return { nom: "inconnue", chemin };
@@ -40,6 +45,8 @@ export function cheminDe(route: Route): string {
       return "/administration";
     case "structure":
       return `/formation/${encodeURIComponent(route.fid)}/structure`;
+    case "editer":
+      return `/formation/${encodeURIComponent(route.fid)}/lecon/${encodeURIComponent(route.lid)}/editer`;
     default:
       return route.chemin;
   }
