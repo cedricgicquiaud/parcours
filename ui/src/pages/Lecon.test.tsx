@@ -33,6 +33,7 @@ const proprietes = {
   erreurCoche: null,
   naviguer: () => undefined,
   surBasculerFaite: () => undefined,
+  surBasculerCritere: () => Promise.resolve(true),
 };
 
 describe("PageLecon (U-R3, U-R4, U-R5)", () => {

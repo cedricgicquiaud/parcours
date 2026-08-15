@@ -20,6 +20,8 @@ import type {
   ReponseUtilisateurs,
   ReponseCatalogue,
   ReponseFormation,
+  EtatCritere,
+  ReponseCritere,
   ReponseLecon,
   ReponseProgression,
   ReponseRechercheApi,
@@ -50,6 +52,8 @@ export type {
   ReponseUtilisateurs,
   ReponseCatalogue,
   ReponseFormation,
+  EtatCritere,
+  ReponseCritere,
   ReponseLecon,
   ReponseProgression,
   ReponseRechercheApi,
@@ -129,6 +133,13 @@ export const api = {
     appeler<ReponseProgression>(`/api/progression/${id(fid)}/${id(lid)}`, {
       method: "DELETE",
     }),
+
+  /** Bascule un critère de réussite (CR-R14). */
+  basculerCritere: (fid: string, lid: string, cid: string, coche: boolean) =>
+    appeler<ReponseCritere>(
+      `/api/progression/${id(fid)}/${id(lid)}/criteres/${id(cid)}`,
+      { method: coche ? "PUT" : "DELETE" },
+    ),
 
   reinitialiser: (fid: string) =>
     appeler<ReponseSuppression>(`/api/progression/${id(fid)}/reset`, {

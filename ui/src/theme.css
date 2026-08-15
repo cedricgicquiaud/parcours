@@ -1273,6 +1273,41 @@ summary::-webkit-details-marker {
   margin-right: 4px;
 }
 
+/* Critères de réussite : cochables, donc visibles et atteignables au doigt. */
+.contenu-lecon input[type="checkbox"][data-critere] {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  /* Cible tactile de 24 px sans décaler la ligne de texte. */
+  outline-offset: 3px;
+}
+
+.contenu-lecon input[type="checkbox"][data-critere]:hover {
+  filter: brightness(1.1);
+}
+
+.lecon-criteres {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 260px;
+}
+
+.lecon-criteres:empty {
+  display: none;
+}
+
+.ligne-lecon-titre {
+  flex: 1;
+  min-width: 0;
+}
+
+.ligne-lecon-criteres {
+  font-size: 11.5px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
 .table-defilante {
   overflow-x: auto;
 }

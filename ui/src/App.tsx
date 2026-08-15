@@ -34,6 +34,11 @@ const SEUIL_MOBILE = 720;
 export function App() {
   const session = useSession();
   const { mode } = useMode();
+  const { rafraichir: rafraichirSession, surConnexion } = session;
+  const surSessionPerdue = useCallback(
+    () => void rafraichirSession(),
+    [rafraichirSession],
+  );
 
   if (session.etat.phase === "chargement") {
     return (
@@ -113,9 +118,9 @@ export function App() {
   return (
     <ApplicationConnectee
       compte={session.etat.compte}
-      surCompteChange={session.surConnexion}
+      surCompteChange={surConnexion}
       surDeconnexion={() => void session.deconnecter()}
-      surSessionPerdue={() => void session.rafraichir()}
+      surSessionPerdue={surSessionPerdue}
     />
   );
 }
@@ -259,6 +264,53 @@ function ApplicationConnectee({
     }
   }, [lecon]);
 
+  /**
+   * Bascule d'un critère (CR-R6). Rend `false` quand le serveur refuse : la
+   * page leçon remet alors la case dans son état d'avant. Un 404 signifie que
+   * la leçon a changé sur le disque — on la recharge plutôt que d'insister.
+   */
+  const basculerCritere = useCallback(
+    async (critereId: string, coche: boolean): Promise<boolean> => {
+      if (!lecon) return false;
+      setErreurCoche(null);
+      try {
+        const reponse = await api.basculerCritere(
+          lecon.formationId,
+          lecon.leconId,
+          critereId,
+          coche,
+        );
+        setLecon((courante) =>
+          courante && courante.leconId === lecon.leconId
+            ? { ...courante, faite: reponse.faite, criteres: reponse.criteres }
+            : courante,
+        );
+        setFormation((courante) =>
+          courante && courante.id === lecon.formationId
+            ? { ...courante, avancement: reponse.avancement }
+            : courante,
+        );
+        void api.catalogue().then(setCatalogue).catch(() => undefined);
+        return true;
+      } catch (cause: unknown) {
+        if (cause instanceof ErreurApi && cause.statut === 404) {
+          setErreurCoche("Cette leçon a changé — contenu rechargé.");
+          // Discret : recharger avec squelette ferait clignoter l'écran et
+          // masquerait le message qu'on vient d'afficher.
+          void charger(true);
+          return false;
+        }
+        setErreurCoche(
+          cause instanceof Error
+            ? `Critère non enregistré : ${cause.message}`
+            : "Critère non enregistré",
+        );
+        return false;
+      }
+    },
+    [lecon, charger],
+  );
+
   const nettoyer = useCallback(async () => {
     if (!formation) return;
     const nombre = formation.avancement.orphelines.length;
@@ -288,6 +340,13 @@ function ApplicationConnectee({
     catalogue,
     formation,
     leconCourante: lid,
+    criteresCourants:
+      lecon && lecon.criteres.length > 0
+        ? {
+            faits: lecon.criteres.filter((critere) => critere.coche).length,
+            total: lecon.criteres.length,
+          }
+        : null,
     recherche,
     mode,
     basculerMode,
@@ -374,6 +433,7 @@ function ApplicationConnectee({
             erreurCoche={erreurCoche}
             naviguer={naviguerEtFermer}
             surBasculerFaite={() => void basculerFaite()}
+            surBasculerCritere={basculerCritere}
           />
         ) : (
           <div className="page">

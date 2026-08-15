@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReponseLecon } from "../api";
 import {
   Bandeau,
@@ -15,6 +15,7 @@ export function PageLecon({
   erreurCoche,
   naviguer,
   surBasculerFaite,
+  surBasculerCritere,
 }: {
   lecon: ReponseLecon | null;
   chargement: boolean;
@@ -22,8 +23,62 @@ export function PageLecon({
   erreurCoche: string | null;
   naviguer: (route: Route) => void;
   surBasculerFaite: () => void;
+  /** Bascule un critère ; `false` = le serveur a refusé, on revient en arrière. */
+  surBasculerCritere: (id: string, coche: boolean) => Promise<boolean>;
 }) {
   const contenu = useRef<HTMLDivElement>(null);
+  const criteresServeur = lecon?.criteres;
+  /**
+   * États des critères, tenus à part du HTML : le DOM sert d'affichage (le
+   * serveur l'a déjà rendu coché), cet état sert au décompte (CR-R9).
+   */
+  const [criteres, setCriteres] = useState<Record<string, boolean>>({});
+  const [avertissement, setAvertissement] = useState(false);
+
+  useEffect(() => {
+    setCriteres(
+      Object.fromEntries((criteresServeur ?? []).map(({ id, coche }) => [id, coche])),
+    );
+    setAvertissement(false);
+  }, [criteresServeur]);
+
+  const total = criteresServeur?.length ?? 0;
+  const faits = useMemo(
+    () => Object.values(criteres).filter(Boolean).length,
+    [criteres],
+  );
+
+  /**
+   * Délégation sur un écouteur NATIF : les cases viennent du HTML du serveur,
+   * pas du JSX — React ne voit pas leurs événements. Un seul écouteur suffit,
+   * et il survit au remplacement du contenu.
+   */
+  const basculer = useCallback(
+    (cible: HTMLInputElement) => {
+      const id = cible.dataset.critere;
+      if (!id) return;
+      const coche = cible.checked;
+      setCriteres((etats) => ({ ...etats, [id]: coche }));
+      void surBasculerCritere(id, coche).then((accepte) => {
+        if (accepte) return;
+        // CR-R6 : le serveur a refusé — la case ment, on la remet.
+        cible.checked = !coche;
+        setCriteres((etats) => ({ ...etats, [id]: !coche }));
+      });
+    },
+    [surBasculerCritere],
+  );
+
+  useEffect(() => {
+    const noeud = contenu.current;
+    if (!noeud) return;
+    const surChangement = (evenement: Event) => {
+      const cible = evenement.target as HTMLInputElement | null;
+      if (cible?.type === "checkbox" && cible.dataset.critere) basculer(cible);
+    };
+    noeud.addEventListener("change", surChangement);
+    return () => noeud.removeEventListener("change", surChangement);
+  }, [basculer, lecon]);
 
   // Les liens `lecon:` rendus par le serveur restent en navigation client (F-R12).
   useEffect(() => {
@@ -145,7 +200,34 @@ export function PageLecon({
 
         <h1>{lecon.titre}</h1>
 
+        <div className="lecon-criteres" aria-live="polite">
+          {total > 0 ? (
+            <>
+              <span className="barre">
+                <span
+                  className="barre-remplie"
+                  style={{ width: `${total === 0 ? 0 : Math.round((faits / total) * 100)}%` }}
+                />
+              </span>
+              <span className="meta-faible">
+                {faits}/{total} critères
+              </span>
+            </>
+          ) : null}
+          {lecon.criteresTronques ? (
+            <span className="meta-faible">
+              au-delà de 300 critères, les suivants ne sont pas suivis
+            </span>
+          ) : null}
+        </div>
+
         {erreurCoche ? <Bandeau icone="warning">{erreurCoche}</Bandeau> : null}
+        {avertissement ? (
+          <Bandeau icone="warning">
+            {total - faits} critère{total - faits > 1 ? "s restent" : " reste"} ouvert
+            {total - faits > 1 ? "s" : ""} — la leçon est marquée terminée quand même.
+          </Bandeau>
+        ) : null}
 
         <div
           className="contenu-lecon"
@@ -179,7 +261,11 @@ export function PageLecon({
             type="button"
             className={`bouton bouton-terminer${lecon.faite ? " bouton-actif" : ""}`}
             aria-pressed={lecon.faite}
-            onClick={surBasculerFaite}
+            onClick={() => {
+              // CR-R11 : on avertit, on ne bloque pas — l'apprenant reste juge.
+              setAvertissement(!lecon.faite && faits < total);
+              surBasculerFaite();
+            }}
           >
             <Icone nom={lecon.faite ? "check-circle" : "check"} taille={16} />
             {lecon.faite ? "Terminé" : "Marquer comme terminé"}

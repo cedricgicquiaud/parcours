@@ -11,6 +11,8 @@ export interface ProprietesRail {
   catalogue: ReponseCatalogue | null;
   formation: ReponseFormation | null;
   leconCourante: string | null;
+  /** Décompte des critères de la leçon ouverte (CR-R9), sinon `null`. */
+  criteresCourants: { faits: number; total: number } | null;
   recherche: EtatRecherche;
   mode: Mode;
   basculerMode: () => void;
@@ -342,7 +344,12 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
               ) : (
                 <span className="pastille" />
               )}
-              {lecon.titre}
+              <span className="ligne-lecon-titre">{lecon.titre}</span>
+              {lecon.id === leconCourante && props.criteresCourants ? (
+                <span className="ligne-lecon-criteres">
+                  {props.criteresCourants.faits}/{props.criteresCourants.total}
+                </span>
+              ) : null}
             </a>
           ))}
         </div>
