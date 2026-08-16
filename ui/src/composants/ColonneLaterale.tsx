@@ -476,7 +476,12 @@ function Spine(props: ProprietesRail) {
             ))}
             {lecons.length > 12 ? <span className="spine-separateur" /> : null}
           </button>
-          <span className="spine-pourcent">{formation.avancement.pourcentage} %</span>
+          <span
+            className="spine-pourcent"
+            title={`${formation.avancement.pourcentage} % de la formation`}
+          >
+            {formation.avancement.pourcentage}&nbsp;%
+          </span>
         </>
       ) : null}
 

@@ -422,10 +422,18 @@ summary::-webkit-details-marker {
 }
 
 .spine-pourcent {
-  font: 400 10.5px var(--mono);
-  color: var(--faint);
-  writing-mode: vertical-rl;
-  letter-spacing: 0.1em;
+  /* Un jeton rond, dans la même famille visuelle que les pastilles de leçons :
+     à la verticale, le chiffre était illisible. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  font: 400 11px var(--mono);
+  color: var(--accent-text);
+  white-space: nowrap;
 }
 
 .spine-bas {
