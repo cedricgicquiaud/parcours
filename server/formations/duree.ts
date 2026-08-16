@@ -10,7 +10,7 @@ export function dureeFormation(manifeste: Manifeste): number | null {
   if (manifeste.duree !== undefined) return manifeste.duree;
   const lecons = leconsOrdonnees(manifeste).map(({ lecon }) => lecon.duree);
   if (lecons.length === 0 || lecons.some((duree) => duree === undefined)) return null;
-  return lecons.reduce((total, duree) => total + (duree ?? 0), 0);
+  return lecons.reduce<number>((total, duree) => total + (duree ?? 0), 0);
 }
 
 /** « 45 min », « 1 h », « 3 h 30 » — jamais « 3 h 0 » ni « 0 h 45 ». */
