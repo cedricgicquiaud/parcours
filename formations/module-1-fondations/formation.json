@@ -11,34 +11,54 @@
         {
           "id": "avant-de-commencer",
           "titre": "Avant de commencer",
-          "fichier": "lecons/avant-de-commencer.md"
+          "fichier": "lecons/avant-de-commencer.md",
+          "duree": 10
         },
         {
           "id": "ex-1-1-initialiser-le-projet-en-plan-mode",
           "titre": "Ex 1.1 — Initialiser le projet en plan mode",
-          "fichier": "lecons/ex-1-1-initialiser-le-projet-en-plan-mode.md"
+          "fichier": "lecons/ex-1-1-initialiser-le-projet-en-plan-mode.md",
+          "duree": 45
         },
         {
           "id": "ex-1-2-un-claude-md-qui-agit-vraiment",
           "titre": "Ex 1.2 — Un CLAUDE.md qui agit vraiment",
-          "fichier": "lecons/ex-1-2-un-claude-md-qui-agit-vraiment.md"
+          "fichier": "lecons/ex-1-2-un-claude-md-qui-agit-vraiment.md",
+          "duree": 30
         },
         {
           "id": "ex-1-3-la-slash-command-progress",
           "titre": "Ex 1.3 — La slash command /progress",
-          "fichier": "lecons/ex-1-3-la-slash-command-progress.md"
+          "fichier": "lecons/ex-1-3-la-slash-command-progress.md",
+          "duree": 20
         },
         {
           "id": "ex-1-4-deux-hooks-qualite-et-garde-fou",
           "titre": "Ex 1.4 — Deux hooks : qualité et garde-fou",
-          "fichier": "lecons/ex-1-4-deux-hooks-qualite-et-garde-fou.md"
+          "fichier": "lecons/ex-1-4-deux-hooks-qualite-et-garde-fou.md",
+          "duree": 45
         },
         {
           "id": "ex-1-5-une-feature-en-tdd-pilote",
           "titre": "Ex 1.5 — Une feature en TDD piloté",
-          "fichier": "lecons/ex-1-5-une-feature-en-tdd-pilote.md"
+          "fichier": "lecons/ex-1-5-une-feature-en-tdd-pilote.md",
+          "duree": 45
         }
-      ]
+      ],
+      "description": "Le socle du pilotage : plan mode, CLAUDE.md, slash command, hooks, TDD."
     }
+  ],
+  "presentation": "## À propos\n\nCe module est le compagnon pratique des cours **Claude Code 101** et **Claude Code in Action** de l'Anthropic Academy. Suivez-les d'abord : ici, on ne réexplique pas la théorie, on la transforme en réflexes.\n\nVous n'écrirez pas une ligne de code vous-même. Claude Code l'écrit ; votre travail — celui que la certification évalue — c'est de diriger et de vérifier.\n\n:::attention\nLa règle d'or, valable tout le parcours : on ne valide jamais ce qu'on n'a pas compris, et c'est à Claude de se rendre compréhensible.\n:::",
+  "objectifs": [
+    "Faire proposer un plan à Claude Code, puis le négocier avant d'écrire une ligne",
+    "Écrire un CLAUDE.md qui change réellement le comportement de Claude",
+    "Créer une slash command réutilisable",
+    "Poser deux hooks : un qui tient la qualité, un qui sert de garde-fou",
+    "Piloter une feature en TDD, du test rouge au refactor"
+  ],
+  "prerequis": [
+    "Un terminal et Claude Code installé",
+    "Les cours Claude Code 101 et Claude Code in Action, suivis",
+    "Aucune expérience de Python n'est nécessaire"
   ]
 }
