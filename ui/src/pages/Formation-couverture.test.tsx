@@ -28,7 +28,9 @@ function formation(surcharge: Partial<ReponseFormation> = {}): ReponseFormation 
   };
 }
 
-function afficher(props: { estAdmin?: boolean; surCouverture?: (fichier: File) => Promise<void> } = {}) {
+function afficher(
+  props: { peutEcrire?: boolean; surCouverture?: (fichier: File) => Promise<void> } = {},
+) {
   const surCouverture = props.surCouverture ?? vi.fn().mockResolvedValue(undefined);
   render(
     <PageFormation
@@ -41,7 +43,7 @@ function afficher(props: { estAdmin?: boolean; surCouverture?: (fichier: File) =
       occupe={false}
       surArchiver={vi.fn()}
       surSupprimer={vi.fn()}
-      estAdmin={props.estAdmin ?? true}
+      peutEcrire={props.peutEcrire ?? true}
       surCouverture={surCouverture}
     />,
   );
@@ -52,12 +54,12 @@ const IMAGE = new File(["png"], "couverture.png", { type: "image/png" });
 
 describe("dépôt d'une couverture (FI-R16)", () => {
   it("propose la zone de dépôt à un administrateur", () => {
-    afficher({ estAdmin: true });
+    afficher({ peutEcrire: true });
     expect(screen.getByLabelText(/couverture/i)).toBeInTheDocument();
   });
 
-  it("ne la propose pas à un lecteur", () => {
-    afficher({ estAdmin: false });
+  it("ne la propose pas hors du mode édition", () => {
+    afficher({ peutEcrire: false });
     expect(screen.queryByLabelText(/couverture/i)).not.toBeInTheDocument();
   });
 

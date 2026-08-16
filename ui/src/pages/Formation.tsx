@@ -51,7 +51,7 @@ export function PageFormation({
   surArchiver,
   surSupprimer,
   occupe = false,
-  estAdmin = false,
+  peutEcrire = false,
   surCouverture,
 }: {
   formation: ReponseFormation | null;
@@ -63,8 +63,11 @@ export function PageFormation({
   surArchiver?: () => void;
   surSupprimer?: () => void;
   occupe?: boolean;
-  /** Seul un administrateur peut changer la couverture (FI-R16). */
-  estAdmin?: boolean;
+  /**
+   * Administrateur avec l'édition allumée (ED-R7). Conditionne tous les gestes
+   * qui touchent au dossier de la formation — jamais ceux de la progression.
+   */
+  peutEcrire?: boolean;
   surCouverture?: (fichier: File) => Promise<void>;
 }) {
   const [couvertureCassee, setCouvertureCassee] = useState(false);
@@ -174,7 +177,7 @@ export function PageFormation({
             <Barre pourcentage={avancement.pourcentage} epaisse />
           </div>
 
-      {estAdmin && surCouverture ? (
+      {peutEcrire && surCouverture ? (
         <div className="couverture-depot">
           <label
             htmlFor="champ-couverture"
@@ -292,38 +295,40 @@ export function PageFormation({
         ))}
       </div>
 
-      <div className="actions-formulaire">
-        <button
-          type="button"
-          className="bouton bouton-petit bouton-neutre"
-          onClick={() => naviguer({ nom: "structure", fid: formation.id })}
-        >
-          <Icone nom="pencil-simple" taille={14} />
-          Modifier la structure
-        </button>
-        {surArchiver ? (
+      {peutEcrire ? (
+        <div className="actions-formulaire">
           <button
             type="button"
             className="bouton bouton-petit bouton-neutre"
-            disabled={occupe}
-            onClick={surArchiver}
+            onClick={() => naviguer({ nom: "structure", fid: formation.id })}
           >
-            <Icone nom="archive" taille={14} />
-            Archiver
+            <Icone nom="pencil-simple" taille={14} />
+            Modifier la structure
           </button>
-        ) : null}
-        {surSupprimer ? (
-          <button
-            type="button"
-            className="bouton bouton-petit bouton-neutre"
-            disabled={occupe}
-            onClick={surSupprimer}
-          >
-            <Icone nom="trash" taille={14} />
-            Mettre à la corbeille
-          </button>
-        ) : null}
-      </div>
+          {surArchiver ? (
+            <button
+              type="button"
+              className="bouton bouton-petit bouton-neutre"
+              disabled={occupe}
+              onClick={surArchiver}
+            >
+              <Icone nom="archive" taille={14} />
+              Archiver
+            </button>
+          ) : null}
+          {surSupprimer ? (
+            <button
+              type="button"
+              className="bouton bouton-petit bouton-neutre"
+              disabled={occupe}
+              onClick={surSupprimer}
+            >
+              <Icone nom="trash" taille={14} />
+              Mettre à la corbeille
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <button
         type="button"

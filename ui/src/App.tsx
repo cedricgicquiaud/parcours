@@ -468,7 +468,7 @@ function ApplicationConnectee({
             surNettoyer={() => void nettoyer()}
             surReinitialiser={() => void reinitialiser()}
             occupe={administration.occupe}
-            estAdmin={compte.role === "admin"}
+            peutEcrire={peutEcrire}
             surCouverture={async (fichier) => {
               const { formation: aJour } = await api.televerserCouverture(
                 fid!,
