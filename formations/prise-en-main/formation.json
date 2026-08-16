@@ -2,48 +2,73 @@
   "formatVersion": 1,
   "id": "prise-en-main",
   "titre": "Prise en main de Parcours",
-  "description": "Le format des formations, vu de l'intérieur : manifeste, blocs, exercices et progression. Projet indépendant, non affilié à Anthropic.",
+  "description": "Apprendre Parcours en s'en servant : lire, écrire, publier, ranger. Chaque leçon se termine par des critères qui sont autant de vérifications réelles dans l'application.",
+  "presentation": "Parcours lit des formations écrites en markdown et les affiche comme un site de cours : un catalogue, une fiche, un sommaire, des leçons, une progression qui se souvient d'où vous en étiez.\n\nCette formation est elle-même une formation Parcours. Tout ce qu'elle décrit, vous pouvez l'ouvrir : ses fichiers sont dans `formations/prise-en-main/`, et ce que vous lisez en est le rendu exact.\n\n:::astuce\nSes critères de réussite ne sont pas des questions de cours. Ce sont des gestes à faire dans l'application, ici, maintenant. Les cocher tous, c'est avoir vérifié Parcours de bout en bout.\n:::\n\nProjet indépendant, non affilié à Anthropic.",
+  "objectifs": [
+    "Lire une formation et suivre sa progression sans rien perdre",
+    "Distinguer le mode lecture du mode édition, et savoir quand allumer lequel",
+    "Écrire un manifeste valide et corriger une formation refusée",
+    "Rédiger une leçon : blocs, liens, images, code, schémas",
+    "Écrire des critères de réussite qui survivent aux relectures",
+    "Créer, importer, restructurer, archiver et restaurer une formation",
+    "Savoir ce que Parcours enregistre, où, et ce qui ne sort jamais de la machine"
+  ],
+  "prerequis": [
+    "Parcours démarré (npm run dev) et un compte administrateur",
+    "Un éditeur de texte, pour regarder les fichiers de temps en temps",
+    "Aucune connaissance en programmation"
+  ],
   "modules": [
     {
-      "id": "decouverte",
-      "titre": "Découverte",
+      "id": "decouvrir",
+      "titre": "Découvrir",
+      "description": "Ce que Parcours fait, comment on s'y déplace, et ce qu'il retient de vous.",
       "lecons": [
-        {
-          "id": "bienvenue",
-          "titre": "Bienvenue",
-          "fichier": "lecons/bienvenue.md"
-        },
-        {
-          "id": "anatomie-formation",
-          "titre": "Anatomie d'une formation",
-          "fichier": "lecons/anatomie-formation.md"
-        },
-        {
-          "id": "progression",
-          "titre": "Comment la progression est gardée",
-          "fichier": "lecons/progression.md"
-        }
+        { "id": "bienvenue", "titre": "Bienvenue", "fichier": "lecons/bienvenue.md", "duree": 5 },
+        { "id": "se-reperer", "titre": "Se repérer dans l'écran", "fichier": "lecons/se-reperer.md", "duree": 8 },
+        { "id": "progression", "titre": "Ce que Parcours retient de vous", "fichier": "lecons/progression.md", "duree": 8 },
+        { "id": "criteres", "titre": "Les critères de réussite", "fichier": "lecons/criteres.md", "duree": 10 }
       ]
     },
     {
-      "id": "ecriture",
-      "titre": "Écrire une leçon",
+      "id": "ecrire",
+      "titre": "Passer auteur",
+      "description": "L'interrupteur qui sépare la lecture de l'écriture, puis le format lui-même.",
       "lecons": [
-        {
-          "id": "blocs-speciaux",
-          "titre": "Les blocs spéciaux",
-          "fichier": "lecons/blocs-speciaux.md"
-        },
-        {
-          "id": "exercice-guide",
-          "titre": "Exercice guidé",
-          "fichier": "lecons/exercice-guide.md"
-        },
-        {
-          "id": "cloture",
-          "titre": "Clôture du module",
-          "fichier": "lecons/cloture.md"
-        }
+        { "id": "mode-edition", "titre": "L'interrupteur Édition", "fichier": "lecons/mode-edition.md", "duree": 8 },
+        { "id": "anatomie-formation", "titre": "Anatomie d'une formation", "fichier": "lecons/anatomie-formation.md", "duree": 12 },
+        { "id": "fiche-presentation", "titre": "La fiche de présentation", "fichier": "lecons/fiche-presentation.md", "duree": 10 },
+        { "id": "blocs-speciaux", "titre": "Le markdown et ses blocs", "fichier": "lecons/blocs-speciaux.md", "duree": 12 },
+        { "id": "ecrire-criteres", "titre": "Écrire de bons critères", "fichier": "lecons/ecrire-criteres.md", "duree": 8 }
+      ]
+    },
+    {
+      "id": "cycle-de-vie",
+      "titre": "Le cycle de vie",
+      "description": "Créer, importer, restructurer, ranger — sans jamais perdre un fichier.",
+      "lecons": [
+        { "id": "creer-importer", "titre": "Créer ou importer une formation", "fichier": "lecons/creer-importer.md", "duree": 12 },
+        { "id": "structure-editeur", "titre": "Modifier la structure et le texte", "fichier": "lecons/structure-editeur.md", "duree": 12 },
+        { "id": "archiver-corbeille", "titre": "Archiver, jeter, restaurer", "fichier": "lecons/archiver-corbeille.md", "duree": 10 }
+      ]
+    },
+    {
+      "id": "comptes-et-confinement",
+      "titre": "Comptes et confinement",
+      "description": "Qui peut faire quoi, et ce qui ne quitte jamais votre machine.",
+      "lecons": [
+        { "id": "comptes-roles", "titre": "Comptes, rôles et console", "fichier": "lecons/comptes-roles.md", "duree": 10 },
+        { "id": "courriel", "titre": "L'adresse e-mail et les envois", "fichier": "lecons/courriel.md", "duree": 8 },
+        { "id": "confinement", "titre": "Tout reste sur votre machine", "fichier": "lecons/confinement.md", "duree": 8 }
+      ]
+    },
+    {
+      "id": "pratique",
+      "titre": "Mettre en pratique",
+      "description": "Un exercice complet, puis le point d'arrivée.",
+      "lecons": [
+        { "id": "exercice-guide", "titre": "Exercice guidé : une formation de zéro", "fichier": "lecons/exercice-guide.md", "duree": 15 },
+        { "id": "cloture", "titre": "Clôture", "fichier": "lecons/cloture.md", "duree": 5 }
       ]
     }
   ]
