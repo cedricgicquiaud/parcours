@@ -42,6 +42,14 @@ export function PageLecon({
     setAvertissement(false);
   }, [criteresServeur]);
 
+  /**
+   * L'objet passé à `dangerouslySetInnerHTML` DOIT être stable : React compare
+   * la référence, pas la chaîne. Sans ce mémo, le moindre rendu réécrivait tout
+   * le contenu de la leçon — et une case qu'on venait de cocher se vidait
+   * aussitôt, puisque le HTML servi décrit l'état d'avant le clic.
+   */
+  const contenuHtml = useMemo(() => ({ __html: lecon?.html ?? "" }), [lecon?.html]);
+
   const total = criteresServeur?.length ?? 0;
   const faits = useMemo(
     () => Object.values(criteres).filter(Boolean).length,
@@ -233,7 +241,7 @@ export function PageLecon({
           className="contenu-lecon"
           ref={contenu}
           // HTML déjà assaini par le serveur (A-R5, F-R6).
-          dangerouslySetInnerHTML={{ __html: lecon.html }}
+          dangerouslySetInnerHTML={contenuHtml}
         />
 
       </article>

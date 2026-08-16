@@ -155,6 +155,42 @@ describe("décompte des critères dans la colonne latérale (CR-R9)", () => {
   });
 });
 
+describe("rafraîchissement concurrent (CR-R6)", () => {
+  it("ne laisse pas un chargement parti avant la coche écraser l'état", async () => {
+    // Scénario réel : revenir sur la fenêtre déclenche un rafraîchissement
+    // discret ; cliquer dans la foulée fait arriver sa réponse APRÈS l'écriture.
+    const attente: { resoudre?: () => void } = {};
+    let leconsDemandees = 0;
+    const fetchSimule = vi.mocked(globalThis.fetch).getMockImplementation()!;
+    vi.mocked(globalThis.fetch).mockImplementation(async (entree, init) => {
+      const url = String(entree);
+      if (url.includes("/lecons/") && ++leconsDemandees === 2) {
+        // Le second GET (celui du retour de focus) répond en dernier.
+        await new Promise<void>((resoudre) => {
+          attente.resoudre = resoudre;
+        });
+      }
+      return fetchSimule(entree, init);
+    });
+
+    render(<App />);
+    await screen.findByText("0/2 critères");
+
+    window.dispatchEvent(new Event("focus"));
+    await waitFor(() => expect(leconsDemandees).toBe(2));
+
+    fireEvent.click(screen.getAllByRole("checkbox")[0]!);
+    await screen.findByText("1/2 critères");
+
+    // La réponse périmée arrive maintenant : elle ne doit rien écraser.
+    attente.resoudre?.();
+    await new Promise((resoudre) => setTimeout(resoudre, 20));
+
+    expect(screen.getByText("1/2 critères")).toBeInTheDocument();
+    expect((screen.getAllByRole("checkbox")[0] as HTMLInputElement).checked).toBe(true);
+  });
+});
+
 describe("leçon modifiée sous les pieds (CR-R6)", () => {
   it("recharge la leçon quand le serveur ne connaît plus le critère", async () => {
     bascule = () => reponse({ erreur: "critère inconnu" }, 404);

@@ -123,6 +123,19 @@ describe("critères ouverts et fin de leçon (CR-R11)", () => {
   });
 });
 
+describe("stabilité du contenu rendu (régression 2026-08-16)", () => {
+  it("garde la case cochée quand le composant se rend à nouveau", async () => {
+    // React compare la RÉFÉRENCE de l'objet dangerouslySetInnerHTML : sans mémo,
+    // chaque rendu réécrivait le HTML et vidait la case qu'on venait de cocher.
+    afficher();
+    const premiere = casesACocher()[0]!;
+    fireEvent.click(premiere);
+
+    await screen.findByText("2/2 critères");
+    expect((casesACocher()[0] as HTMLInputElement).checked).toBe(true);
+  });
+});
+
 describe("accessibilité du décompte (SPEC § 7)", () => {
   it("annonce le décompte sans voler le focus", () => {
     afficher();

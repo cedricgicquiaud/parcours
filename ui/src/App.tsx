@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAdministration } from "./administration";
 import {
   api,
@@ -161,12 +161,21 @@ function ApplicationConnectee({
   const recherche = useRecherche(fid);
 
   /**
+   * Compteur d'écritures. Un chargement parti AVANT une coche ne doit pas
+   * écraser l'état d'après : sa réponse décrit un passé. Revenir sur la fenêtre
+   * déclenche un rafraîchissement discret ; cliquer dans la foulée faisait
+   * arriver sa réponse après l'écriture, et la case se décochait toute seule.
+   */
+  const ecritures = useRef(0);
+
+  /**
    * `discret` : rafraîchissement sans squelette — au retour sur la fenêtre, les
    * données déjà affichées restent en place le temps du refetch (P-R7).
    */
   const charger = useCallback(async (discret = false) => {
     setErreur(null);
     if (!discret) setChargement(true);
+    const marque = ecritures.current;
     try {
       const promesses: [
         Promise<ReponseCatalogue>,
@@ -182,6 +191,8 @@ function ApplicationConnectee({
         promesses[1] ?? Promise.resolve(null),
         promesses[2] ?? Promise.resolve(null),
       ]);
+      // Une écriture a eu lieu pendant ce chargement : sa réponse est périmée.
+      if (ecritures.current !== marque) return;
       setCatalogue(resultatCatalogue);
       setFormation(resultatFormation);
       setLecon(resultatLecon);
@@ -239,6 +250,7 @@ function ApplicationConnectee({
     if (!lecon) return;
     const cible = !lecon.faite;
     setErreurCoche(null);
+    ecritures.current += 1;
     setLecon({ ...lecon, faite: cible });
     try {
       const reponse = cible
@@ -273,6 +285,7 @@ function ApplicationConnectee({
     async (critereId: string, coche: boolean): Promise<boolean> => {
       if (!lecon) return false;
       setErreurCoche(null);
+      ecritures.current += 1;
       try {
         const reponse = await api.basculerCritere(
           lecon.formationId,
