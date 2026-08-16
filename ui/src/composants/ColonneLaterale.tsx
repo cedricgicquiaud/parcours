@@ -480,7 +480,7 @@ function Spine(props: ProprietesRail) {
             className="spine-pourcent"
             title={`${formation.avancement.pourcentage} % de la formation`}
           >
-            {formation.avancement.pourcentage}&nbsp;%
+            {formation.avancement.pourcentage}&#8239;%
           </span>
         </>
       ) : null}
