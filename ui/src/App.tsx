@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAdministration } from "./administration";
+import { fichierEnBase64 } from "./depot";
 import {
   api,
   ErreurApi,
@@ -417,6 +418,15 @@ function ApplicationConnectee({
             surNettoyer={() => void nettoyer()}
             surReinitialiser={() => void reinitialiser()}
             occupe={administration.occupe}
+            estAdmin={compte.role === "admin"}
+            surCouverture={async (fichier) => {
+              const { formation: aJour } = await api.televerserCouverture(
+                fid!,
+                await fichierEnBase64(fichier),
+              );
+              setFormation(aJour);
+              void api.catalogue().then(setCatalogue).catch(() => undefined);
+            }}
             surArchiver={() => void administrerFormation(administration.archiver)}
             surSupprimer={() =>
               void administrerFormation((fid, titre) =>

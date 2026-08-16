@@ -3,9 +3,13 @@ import { leconsOrdonnees, type Manifeste } from "../formations/manifeste";
 export interface AvancementModule {
   id: string;
   titre: string;
+  /** Ce que le module apporte, affiché sur la fiche (FI-R7). */
+  description?: string;
   faites: number;
   total: number;
-  lecons: Array<{ id: string; titre: string; faite: boolean }>;
+  /** Somme des durées du module, si toutes ses leçons en ont une (FI-R5). */
+  duree?: number;
+  lecons: Array<{ id: string; titre: string; faite: boolean; duree?: number }>;
 }
 
 /** Une seule action possible par carte de formation (U-R1). */
@@ -40,12 +44,18 @@ export function calculerAvancement(
       id: lecon.id,
       titre: lecon.titre,
       faite: cochees.has(lecon.id),
+      ...(lecon.duree === undefined ? {} : { duree: lecon.duree }),
     }));
+    const dureeModule = lecons.every((lecon) => lecon.duree !== undefined)
+      ? lecons.reduce<number>((somme, lecon) => somme + (lecon.duree ?? 0), 0)
+      : undefined;
     return {
       id: module.id,
       titre: module.titre,
+      ...(module.description === undefined ? {} : { description: module.description }),
       faites: lecons.filter((lecon) => lecon.faite).length,
       total: lecons.length,
+      ...(dureeModule === undefined ? {} : { duree: dureeModule }),
       lecons,
     };
   });

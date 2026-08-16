@@ -73,6 +73,41 @@ Règles :
 source de vérité des métadonnées. Un bloc `---` en tête de fichier n'a aucun
 statut particulier : il est rendu comme une ligne horizontale.
 
+## La fiche de présentation
+
+Tous ces champs sont **facultatifs** : sans eux, la formation s'affiche comme
+avant.
+
+```json
+{
+  "couverture": "assets/couverture.png",
+  "presentation": "## À propos\n\nUn texte long, en markdown.",
+  "objectifs": ["Piloter Claude Code en mode plan", "Écrire un hook"],
+  "prerequis": ["Un terminal", "Claude Code installé"],
+  "duree": 1200,
+  "modules": [
+    { "id": "fondations", "titre": "Fondations", "description": "Le socle.",
+      "lecons": [{ "id": "…", "titre": "…", "fichier": "…", "duree": 45 }] }
+  ]
+}
+```
+
+- `couverture` : chemin relatif, image `.png` `.jpg` `.jpeg` `.gif` `.webp`.
+  Le SVG est refusé. Une image **absente du disque** n'invalide pas la
+  formation : la fiche s'affiche sans visuel. Recommandation : 1 200 px de
+  large, moins de 500 Ko — rien ne l'impose.
+- `presentation` : markdown, 8 000 caractères au plus. Les cases à cocher y sont
+  inertes : une fiche n'a pas de progression.
+- `objectifs`, `prerequis` : 12 entrées au plus, 200 caractères chacune. Une
+  liste vide équivaut à une liste absente.
+- `duree` : minutes, entier. Sans elle, Parcours somme les durées des leçons —
+  **et seulement si toutes en ont une** : une somme partielle mentirait.
+- `duree` d'une leçon, `description` d'un module (500 caractères au plus).
+
+Une couverture peut aussi se déposer depuis la fiche, en tant qu'administrateur.
+L'image est datée et l'ancienne reste sur le disque : Parcours ne supprime
+jamais un fichier.
+
 ## Ordre de validation
 
 Déterministe, pour que le message d'erreur affiché soit toujours le même :

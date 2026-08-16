@@ -69,7 +69,12 @@ cocher d'une leçon devient un critère mémorisé par compte, avec décompte
 « n/N » ; cocher le dernier termine la leçon. Parcours n'exécute jamais de code
 et ne corrige jamais : les exercices pratiques se font dans un terminal, avec
 Claude Code. Règles : `.workflow/phases/05-criteres/SPEC.md` et son `PLAN.md`.
-466 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+**Fiche de présentation (2026-08-16, décision P015)** : le manifeste accueille
+couverture, présentation, objectifs, prérequis et durées (tous facultatifs) ;
+l'écran d'une formation devient une vraie page d'entrée, et une couverture se
+dépose depuis la fiche sans jamais écraser l'ancienne. Règles :
+`.workflow/phases/07-fiche-formation/SPEC.md`.
+531 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :

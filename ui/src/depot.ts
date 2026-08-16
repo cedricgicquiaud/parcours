@@ -111,6 +111,16 @@ export async function construireDepot(
   );
 }
 
+/** Un fichier unique, encodé pour l'envoi (couverture, FI-R16). */
+export async function fichierEnBase64(
+  fichier: File,
+): Promise<{ nom: string; contenu: string }> {
+  return {
+    nom: fichier.name,
+    contenu: base64(new Uint8Array(await fichier.arrayBuffer())),
+  };
+}
+
 /** `btoa` ne prend qu'une chaîne : on la construit par tranches. */
 function base64(octets: Uint8Array): string {
   let binaire = "";

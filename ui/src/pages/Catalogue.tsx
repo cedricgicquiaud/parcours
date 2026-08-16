@@ -10,6 +10,7 @@ import {
   Squelette,
 } from "../composants/communs";
 import { ZoneDepot } from "../composants/ZoneDepot";
+import { urlAsset } from "../assets";
 import type { Route } from "../routeur";
 
 const LIBELLES_ACTION = {
@@ -382,6 +383,20 @@ interface ActionsCarte {
   supprimer: (fid: string, titre: string) => void;
 }
 
+/** Bandeau de couverture d'une carte (FI-R13) — rien du tout s'il n'y en a pas. */
+function Couverture({ formation }: { formation: CarteFormationValide }) {
+  const [cassee, setCassee] = useState(false);
+  if (!formation.couverture || cassee) return null;
+  return (
+    <img
+      className="carte-couverture"
+      src={urlAsset(formation.id, formation.couverture)}
+      alt={formation.titre}
+      onError={() => setCassee(true)}
+    />
+  );
+}
+
 function Carte({
   formation,
   naviguer,
@@ -427,6 +442,7 @@ function Carte({
 
   return (
     <div className="carte">
+      <Couverture formation={formation} />
       <a
         className="carte-titre"
         href={`/formation/${encodeURIComponent(formation.id)}`}

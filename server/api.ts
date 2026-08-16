@@ -31,8 +31,10 @@ import {
   mettreAJourStructure,
   type StructureSaisie,
 } from "./formations/ecriture";
+import { enregistrerCouverture, verifierCouverture } from "./formations/couverture";
 import { EXTENSIONS_ASSETS } from "./formations/extensions";
 import { importerFormation, type DemandeImport } from "./formations/import";
+import { dureeFormation } from "./formations/duree";
 import { cheminConfine, leconsOrdonnees } from "./formations/manifeste";
 import { slugifier } from "./formations/slug";
 import {
@@ -464,10 +466,16 @@ export function creerApi(deps: DependancesApi): AppParcours {
         formation.manifeste,
         coches.get(formation.id) ?? new Set(),
       );
+      const dureeCarte = dureeFormation(formation.manifeste);
       const carte: CarteFormation = {
         statut: "valide",
         id: formation.id,
         titre: formation.manifeste.titre,
+        // La carte porte le visuel (FI-R13), jamais la présentation longue.
+        ...(formation.manifeste.couverture
+          ? { couverture: formation.manifeste.couverture }
+          : {}),
+        ...(dureeCarte === null ? {} : { duree: dureeCarte }),
         modules: formation.manifeste.modules.length,
         lecons: avancement.total,
         faites: avancement.faites,
@@ -506,6 +514,23 @@ export function creerApi(deps: DependancesApi): AppParcours {
     };
     if (formation.manifeste.description) {
       reponse.description = formation.manifeste.description;
+    }
+    const { couverture, presentation, objectifs, prerequis } = formation.manifeste;
+    if (couverture) reponse.couverture = couverture;
+    if (objectifs) reponse.objectifs = objectifs;
+    if (prerequis) reponse.prerequis = prerequis;
+    const duree = dureeFormation(formation.manifeste);
+    if (duree !== null) reponse.duree = duree;
+    if (presentation) {
+      // Rendu SANS collecteur de critères : les cases d'une fiche sont inertes
+      // (FI-R2), une présentation n'a pas de progression.
+      reponse.presentationHtml = deps.rendu.rendre(presentation, {
+        formationId: formation.id,
+        dossier: formation.dossier,
+        idsLecons: new Set(
+          leconsOrdonnees(formation.manifeste).map(({ lecon }) => lecon.id),
+        ),
+      });
     }
     return c.json(reponse);
   });
@@ -574,6 +599,44 @@ export function creerApi(deps: DependancesApi): AppParcours {
     );
     return { entree, html, criteres, idsLecons };
   }
+
+  /**
+   * Téléverse une couverture (FI-R14). Réservée à un administrateur par la
+   * garde de rôle : elle écrit dans le dossier d'une formation.
+   */
+  app.post("/api/formations/:fid/couverture", async (c) => {
+    const resolu = await resoudre(c, c.req.param("fid"));
+    if (resolu instanceof Response) return resolu;
+    const corps = await lireCorps(c);
+    if (corps instanceof Response) return corps;
+
+    const verifie = verifierCouverture(corps);
+    if (!verifie.ok) return c.json({ erreur: verifie.erreur }, verifie.statut);
+
+    const { formation } = resolu;
+    const ecrit = await enregistrerCouverture(
+      formation.dossier,
+      formation.manifeste,
+      verifie.extension,
+      verifie.octets,
+    );
+    if (!ecrit.ok) return c.json({ erreur: ecrit.erreur }, 409);
+
+    const avancement = calculerAvancement(
+      formation.manifeste,
+      deps.base.leconsCochees(c.get("compte").id, formation.id),
+    );
+    const reponseFormation: ReponseFormation = {
+      id: formation.id,
+      titre: formation.manifeste.titre,
+      couverture: ecrit.valeur.couverture,
+      avancement,
+    };
+    if (formation.manifeste.description) {
+      reponseFormation.description = formation.manifeste.description;
+    }
+    return c.json({ formation: reponseFormation }, 201);
+  });
 
   app.get("/api/formations/:fid/lecons/:lid", async (c) => {
     const resolu = await resoudre(c, c.req.param("fid"));

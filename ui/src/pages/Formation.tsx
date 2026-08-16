@@ -1,4 +1,7 @@
+import { useMemo, useState } from "react";
 import type { ReponseFormation } from "../api";
+import { urlAsset } from "../assets";
+import { formaterDuree } from "../duree";
 import {
   Bandeau,
   Barre,
@@ -7,6 +10,30 @@ import {
   Squelette,
 } from "../composants/communs";
 import type { Route } from "../routeur";
+
+/** Une liste de la fiche : objectifs, prérequis. Absente ou vide → rien (FI-R11). */
+function ListeFiche({
+  titre,
+  entrees,
+}: {
+  titre: string;
+  entrees?: string[];
+}) {
+  if (!entrees || entrees.length === 0) return null;
+  const identifiant = titre.toLowerCase().replace(/[^a-z]+/g, "-");
+  return (
+    <section className="fiche-bloc">
+      <span className="kicker-faible" id={identifiant}>
+        {titre}
+      </span>
+      <ul className="fiche-liste" aria-labelledby={identifiant}>
+        {entrees.map((entree) => (
+          <li key={entree}>{entree}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 const LIBELLES_ACTION = {
   commencer: "Commencer",
@@ -24,6 +51,8 @@ export function PageFormation({
   surArchiver,
   surSupprimer,
   occupe = false,
+  estAdmin = false,
+  surCouverture,
 }: {
   formation: ReponseFormation | null;
   chargement: boolean;
@@ -34,7 +63,20 @@ export function PageFormation({
   surArchiver?: () => void;
   surSupprimer?: () => void;
   occupe?: boolean;
+  /** Seul un administrateur peut changer la couverture (FI-R16). */
+  estAdmin?: boolean;
+  surCouverture?: (fichier: File) => Promise<void>;
 }) {
+  const [couvertureCassee, setCouvertureCassee] = useState(false);
+  const [erreurCouverture, setErreurCouverture] = useState<string | null>(null);
+  const [envoiEnCours, setEnvoiEnCours] = useState(false);
+  // Référence stable : React compare l'objet, pas la chaîne — sans mémo, le
+  // contenu serait réinjecté à chaque rendu (régression corrigée en phase 05).
+  const presentation = useMemo(
+    () => ({ __html: formation?.presentationHtml ?? "" }),
+    [formation?.presentationHtml],
+  );
+
   if (erreur) {
     return (
       <div className="page">
@@ -69,49 +111,126 @@ export function PageFormation({
 
   return (
     <div className="page">
-      <div className="titre-page">
-        <h1>{formation.titre}</h1>
-        <span className="meta-faible">
-          {avancement.faites}/{avancement.total} leçons — {avancement.pourcentage} %
-        </span>
-      </div>
+      <header className="fiche-entete">
+        <div className="fiche-entete-texte">
+          <nav className="fil-ariane" aria-label="Fil d'Ariane">
+            <a
+              href="/"
+              onClick={(evenement) => {
+                evenement.preventDefault();
+                naviguer({ nom: "catalogue" });
+              }}
+            >
+              Mes formations
+            </a>
+          </nav>
 
-      {formation.description ? (
-        <p
-          style={{
-            margin: 0,
-            maxWidth: "66ch",
-            fontSize: 15.5,
-            lineHeight: 1.6,
-            color: "var(--muted)",
-            textWrap: "pretty",
-          }}
-        >
-          {formation.description}
-        </p>
+          <h1>{formation.titre}</h1>
+
+          {formation.description ? (
+            <p className="fiche-promesse">{formation.description}</p>
+          ) : null}
+
+          {avancement.prochaine ? (
+            <button
+              type="button"
+              className="bouton"
+              style={{ alignSelf: "flex-start" }}
+              onClick={() =>
+                naviguer({
+                  nom: "lecon",
+                  fid: formation.id,
+                  lid: avancement.prochaine!.id,
+                })
+              }
+            >
+              {LIBELLES_ACTION[avancement.action]} — {avancement.prochaine.titre}
+              <Icone nom="arrow-right" />
+            </button>
+          ) : null}
+        </div>
+
+        <div className="fiche-entete-visuel">
+          {formation.couverture && !couvertureCassee ? (
+            <img
+              className="couverture-formation"
+              src={urlAsset(formation.id, formation.couverture)}
+              alt={formation.titre}
+              // FI-R12 : une couverture introuvable disparaît, elle ne laisse
+              // pas de cadre vide en tête de fiche.
+              onError={() => setCouvertureCassee(true)}
+            />
+          ) : null}
+
+          <div className="fiche-metas">
+            <span className="meta-faible">
+              {avancement.total} leçon{avancement.total > 1 ? "s" : ""}
+              {formation.duree !== undefined
+                ? ` · ${formaterDuree(formation.duree)}`
+                : ""}
+              {` · ${avancement.faites}/${avancement.total} fait`}
+              {avancement.faites > 1 ? "s" : ""}
+            </span>
+            <Barre pourcentage={avancement.pourcentage} epaisse />
+          </div>
+
+      {estAdmin && surCouverture ? (
+        <div className="couverture-depot">
+          <label
+            htmlFor="champ-couverture"
+            className="bouton bouton-petit bouton-neutre"
+          >
+            <Icone nom="image" taille={14} />
+            {formation.couverture ? "Changer la couverture" : "Ajouter une couverture"}
+          </label>
+          {/* Le champ natif est laid et n'a rien à faire en tête de fiche : le
+              label lui sert de bouton, il reste atteignable au clavier. */}
+          <input
+            id="champ-couverture"
+            type="file"
+            className="visuellement-cache"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+            disabled={envoiEnCours}
+            onChange={(evenement) => {
+              const fichier = evenement.target.files?.[0];
+              evenement.target.value = "";
+              if (!fichier) return;
+              setErreurCouverture(null);
+              setEnvoiEnCours(true);
+              void surCouverture(fichier)
+                .then(() => setCouvertureCassee(false))
+                .catch((cause: unknown) => {
+                  // La couverture précédente reste en place (FI-R16).
+                  setErreurCouverture(
+                    cause instanceof Error ? cause.message : "envoi impossible",
+                  );
+                })
+                .finally(() => setEnvoiEnCours(false));
+            }}
+          />
+          {envoiEnCours ? <span className="meta-faible">envoi…</span> : null}
+        </div>
       ) : null}
 
-      <div className="barre-ligne" style={{ maxWidth: 420 }}>
-        <Barre pourcentage={avancement.pourcentage} epaisse />
-      </div>
+          {erreurCouverture ? (
+            <Bandeau icone="warning">{erreurCouverture}</Bandeau>
+          ) : null}
+        </div>
+      </header>
 
-      {avancement.prochaine ? (
-        <button
-          type="button"
-          className="bouton"
-          style={{ alignSelf: "flex-start" }}
-          onClick={() =>
-            naviguer({
-              nom: "lecon",
-              fid: formation.id,
-              lid: avancement.prochaine!.id,
-            })
-          }
-        >
-          {LIBELLES_ACTION[avancement.action]} — {avancement.prochaine.titre}
-          <Icone nom="arrow-right" />
-        </button>
+      {formation.presentationHtml ? (
+        <section className="fiche-bloc">
+          <span className="kicker-faible">À PROPOS</span>
+          <div
+            className="contenu-lecon"
+            // HTML déjà assaini par le serveur (A-R5).
+            dangerouslySetInnerHTML={presentation}
+          />
+        </section>
       ) : null}
+
+      <ListeFiche titre="CE QUE VOUS SAUREZ FAIRE" entrees={formation.objectifs} />
+      <ListeFiche titre="AVANT DE COMMENCER" entrees={formation.prerequis} />
 
       {avancement.orphelines.length > 0 ? (
         <Bandeau
@@ -142,8 +261,12 @@ export function PageFormation({
               </span>
               <span className="module-compteur">
                 {module.faites}/{module.total}
+                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
               </span>
             </div>
+            {module.description ? (
+              <p className="module-description">{module.description}</p>
+            ) : null}
             {module.lecons.map((lecon) => (
               <a
                 key={lecon.id}
@@ -159,7 +282,10 @@ export function PageFormation({
                 ) : (
                   <span className="pastille" />
                 )}
-                {lecon.titre}
+                <span className="ligne-lecon-titre">{lecon.titre}</span>
+                {lecon.duree !== undefined ? (
+                  <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
+                ) : null}
               </a>
             ))}
           </section>
