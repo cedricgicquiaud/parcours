@@ -217,6 +217,19 @@ introuvable, illisible ou n'est pas un dossier. `progressionReinitialisee` passe
 Les leçons orphelines (cochées en base mais absentes du manifeste) sont exclues
 de tous les calculs et listées à part.
 
+## POST /api/formations/:fid/couverture
+
+Administrateur seulement. Corps : `{ "nom": "ma-couv.png", "contenu": "<base64>" }`.
+
+Réponse `201` : `{ "formation": { … } }`, la formation à jour.
+
+- `400` — extension refusée (le SVG l'est), base64 illisible, ou contenu qui ne
+  correspond pas à sa signature de format : un PDF renommé en `.png` est rejeté.
+- `413` — au-delà de 2 Mo.
+
+L'image est écrite sous `assets/couverture-<AAAAMMJJ-hhmmss>.<ext>` et le
+manifeste mis à jour. **L'ancienne couverture reste sur le disque.**
+
 ## GET /api/formations/:fid/lecons/:lid
 
 ```json
