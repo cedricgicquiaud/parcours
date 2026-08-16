@@ -5,11 +5,15 @@ export interface LeconManifeste {
   id: string;
   titre: string;
   fichier: string;
+  /** Durée estimée, en minutes (FI-R6). */
+  duree?: number;
 }
 
 export interface ModuleManifeste {
   id: string;
   titre: string;
+  /** Ce que le module apporte, affiché sur la fiche (FI-R7). */
+  description?: string;
   lecons: LeconManifeste[];
 }
 
@@ -18,6 +22,12 @@ export interface Manifeste {
   id: string;
   titre: string;
   description?: string;
+  /** Champs de la fiche de présentation (phase 07), tous facultatifs. */
+  couverture?: string;
+  presentation?: string;
+  objectifs?: string[];
+  prerequis?: string[];
+  duree?: number;
   modules: ModuleManifeste[];
 }
 
@@ -33,6 +43,52 @@ export const TAILLE_MAX_MANIFESTE = 1_000_000;
 
 const SLUG = /^[a-z0-9][a-z0-9-]*$/;
 const SLUG_LONGUEUR_MAX = 64;
+
+/** Bornes des champs de la fiche (FI-R2 à FI-R7). */
+export const MAX_PRESENTATION = 8_000;
+export const MAX_LISTE_FICHE = 12;
+export const MAX_ENTREE_FICHE = 200;
+export const MAX_DESCRIPTION_MODULE = 500;
+export const MAX_DUREE = 100_000;
+
+/** Extensions acceptées pour une couverture (FI-R1) : des images, pas un SVG. */
+export const EXTENSIONS_COUVERTURE = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"]);
+
+/** Liste de chaînes courtes : objectifs, prérequis. Vide = absente (FI-R3). */
+function validerListeFiche(
+  valeur: unknown,
+  champ: string,
+): Validation<string[] | undefined> {
+  if (valeur === undefined) return { ok: true, valeur: undefined };
+  if (!Array.isArray(valeur)) return echec(`${champ} : tableau de chaînes attendu`);
+  if (valeur.length === 0) return { ok: true, valeur: undefined };
+  if (valeur.length > MAX_LISTE_FICHE) {
+    return echec(`${champ} : ${MAX_LISTE_FICHE} entrées au plus`);
+  }
+  const entrees: string[] = [];
+  for (const [i, entree] of valeur.entries()) {
+    if (typeof entree !== "string" || entree.trim().length === 0) {
+      return echec(`${champ}[${i}] : chaîne non vide attendue`);
+    }
+    if (entree.length > MAX_ENTREE_FICHE) {
+      return echec(`${champ}[${i}] : ${MAX_ENTREE_FICHE} caractères au plus`);
+    }
+    entrees.push(entree.trim());
+  }
+  return { ok: true, valeur: entrees };
+}
+
+/** Durée en minutes, entière et bornée (FI-R5, FI-R6). */
+function validerDuree(valeur: unknown, champ: string): Validation<number | undefined> {
+  if (valeur === undefined) return { ok: true, valeur: undefined };
+  if (typeof valeur !== "number" || !Number.isInteger(valeur)) {
+    return echec(`${champ} : entier de minutes attendu`);
+  }
+  if (valeur < 1 || valeur > MAX_DUREE) {
+    return echec(`${champ} : entre 1 et ${MAX_DUREE} minutes`);
+  }
+  return { ok: true, valeur };
+}
 
 function estObjet(valeur: unknown): valeur is Record<string, unknown> {
   return typeof valeur === "object" && valeur !== null && !Array.isArray(valeur);
@@ -86,6 +142,35 @@ function validerStructure(brut: unknown): Validation<Manifeste> {
     return echec("description : chaîne attendue");
   }
 
+  // Champs de la fiche (FI-R1 à FI-R5), après description et avant les modules :
+  // l'ordre de validation reste déterministe (F-R2).
+  if (brut.couverture !== undefined) {
+    if (typeof brut.couverture !== "string" || brut.couverture.length === 0) {
+      return echec("couverture : chaîne non vide attendue");
+    }
+    const confine = cheminConfine(brut.couverture);
+    if (!confine.ok) return echec(`couverture : ${confine.erreur}`);
+    if (!EXTENSIONS_COUVERTURE.has(path.extname(confine.valeur).toLowerCase())) {
+      return echec(
+        `couverture : image attendue (${[...EXTENSIONS_COUVERTURE].join(", ")})`,
+      );
+    }
+  }
+  if (brut.presentation !== undefined) {
+    if (typeof brut.presentation !== "string") {
+      return echec("presentation : chaîne attendue");
+    }
+    if (brut.presentation.length > MAX_PRESENTATION) {
+      return echec(`presentation : ${MAX_PRESENTATION} caractères au plus`);
+    }
+  }
+  const objectifs = validerListeFiche(brut.objectifs, "objectifs");
+  if (!objectifs.ok) return objectifs;
+  const prerequis = validerListeFiche(brut.prerequis, "prerequis");
+  if (!prerequis.ok) return prerequis;
+  const dureeFormation = validerDuree(brut.duree, "duree");
+  if (!dureeFormation.ok) return dureeFormation;
+
   if (brut.modules === undefined) return echec("modules manquant");
   if (!Array.isArray(brut.modules) || brut.modules.length === 0) {
     return echec("modules : au moins un module attendu");
@@ -100,6 +185,16 @@ function validerStructure(brut: unknown): Validation<Manifeste> {
       if (moduleBrut[champ] === undefined) return echec(`${chemin}.${champ} manquant`);
       if (typeof moduleBrut[champ] !== "string" || moduleBrut[champ].length === 0) {
         return echec(`${chemin}.${champ} : chaîne non vide attendue`);
+      }
+    }
+    if (moduleBrut.description !== undefined) {
+      if (typeof moduleBrut.description !== "string") {
+        return echec(`${chemin}.description : chaîne attendue`);
+      }
+      if (moduleBrut.description.length > MAX_DESCRIPTION_MODULE) {
+        return echec(
+          `${chemin}.description : ${MAX_DESCRIPTION_MODULE} caractères au plus`,
+        );
       }
     }
     if (moduleBrut.lecons === undefined) return echec(`${chemin}.lecons manquant`);
@@ -119,17 +214,25 @@ function validerStructure(brut: unknown): Validation<Manifeste> {
           return echec(`${cheminLecon}.${champ} : chaîne non vide attendue`);
         }
       }
-      lecons.push({
+      const dureeLecon = validerDuree(leconBrute.duree, `${cheminLecon}.duree`);
+      if (!dureeLecon.ok) return dureeLecon;
+      const lecon: LeconManifeste = {
         id: leconBrute.id as string,
         titre: leconBrute.titre as string,
         fichier: leconBrute.fichier as string,
-      });
+      };
+      if (dureeLecon.valeur !== undefined) lecon.duree = dureeLecon.valeur;
+      lecons.push(lecon);
     }
-    modules.push({
+    const module: ModuleManifeste = {
       id: moduleBrut.id as string,
       titre: moduleBrut.titre as string,
       lecons,
-    });
+    };
+    if (typeof moduleBrut.description === "string") {
+      module.description = moduleBrut.description;
+    }
+    modules.push(module);
   }
 
   const manifeste: Manifeste = {
@@ -139,6 +242,11 @@ function validerStructure(brut: unknown): Validation<Manifeste> {
     modules,
   };
   if (typeof brut.description === "string") manifeste.description = brut.description;
+  if (typeof brut.couverture === "string") manifeste.couverture = brut.couverture;
+  if (typeof brut.presentation === "string") manifeste.presentation = brut.presentation;
+  if (objectifs.valeur) manifeste.objectifs = objectifs.valeur;
+  if (prerequis.valeur) manifeste.prerequis = prerequis.valeur;
+  if (dureeFormation.valeur !== undefined) manifeste.duree = dureeFormation.valeur;
   return { ok: true, valeur: manifeste };
 }
 
