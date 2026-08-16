@@ -271,6 +271,24 @@ summary::-webkit-details-marker {
   display: block;
 }
 
+.couverture-depot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+}
+
+.couverture-depot label {
+  cursor: pointer;
+  color: var(--accent-text);
+}
+
+.couverture-depot input[type="file"] {
+  font-size: 12px;
+  color: var(--faint);
+  max-width: 240px;
+}
+
 .fiche-bloc {
   display: flex;
   flex-direction: column;

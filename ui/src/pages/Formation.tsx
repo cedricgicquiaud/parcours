@@ -50,6 +50,8 @@ export function PageFormation({
   surArchiver,
   surSupprimer,
   occupe = false,
+  estAdmin = false,
+  surCouverture,
 }: {
   formation: ReponseFormation | null;
   chargement: boolean;
@@ -60,8 +62,13 @@ export function PageFormation({
   surArchiver?: () => void;
   surSupprimer?: () => void;
   occupe?: boolean;
+  /** Seul un administrateur peut changer la couverture (FI-R16). */
+  estAdmin?: boolean;
+  surCouverture?: (fichier: File) => Promise<void>;
 }) {
   const [couvertureCassee, setCouvertureCassee] = useState(false);
+  const [erreurCouverture, setErreurCouverture] = useState<string | null>(null);
+  const [envoiEnCours, setEnvoiEnCours] = useState(false);
   // Référence stable : React compare l'objet, pas la chaîne — sans mémo, le
   // contenu serait réinjecté à chaque rendu (régression corrigée en phase 05).
   const presentation = useMemo(
@@ -103,6 +110,38 @@ export function PageFormation({
 
   return (
     <div className="page">
+      {estAdmin && surCouverture ? (
+        <div className="couverture-depot">
+          <label className="lien" htmlFor="champ-couverture">
+            {formation.couverture ? "Changer la couverture" : "Ajouter une couverture"}
+          </label>
+          <input
+            id="champ-couverture"
+            type="file"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+            disabled={envoiEnCours}
+            onChange={(evenement) => {
+              const fichier = evenement.target.files?.[0];
+              evenement.target.value = "";
+              if (!fichier) return;
+              setErreurCouverture(null);
+              setEnvoiEnCours(true);
+              void surCouverture(fichier)
+                .then(() => setCouvertureCassee(false))
+                .catch((cause: unknown) => {
+                  // La couverture précédente reste en place (FI-R16).
+                  setErreurCouverture(
+                    cause instanceof Error ? cause.message : "envoi impossible",
+                  );
+                })
+                .finally(() => setEnvoiEnCours(false));
+            }}
+          />
+        </div>
+      ) : null}
+
+      {erreurCouverture ? <Bandeau icone="warning">{erreurCouverture}</Bandeau> : null}
+
       {formation.couverture && !couvertureCassee ? (
         <img
           className="couverture-formation"

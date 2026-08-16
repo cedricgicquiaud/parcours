@@ -146,6 +146,13 @@ export const api = {
       method: "POST",
     }),
 
+  /** Téléverse une couverture (FI-R14) ; renvoie la formation à jour. */
+  televerserCouverture: (fid: string, fichier: { nom: string; contenu: string }) =>
+    appeler<{ formation: ReponseFormation }>(
+      `/api/formations/${id(fid)}/couverture`,
+      { method: "POST", body: JSON.stringify(fichier) },
+    ),
+
   structure: (fid: string) =>
     appeler<StructureFormation>(`/api/formations/${id(fid)}/structure`),
 
