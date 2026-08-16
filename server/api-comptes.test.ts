@@ -302,6 +302,29 @@ describe("permissions par rôle (CO-R2)", () => {
   });
 });
 
+describe("interface servie avant la session (AU-R6)", () => {
+  let contexte: ContexteTest;
+
+  beforeEach(async () => {
+    contexte = await creerContexteTest({ rendu, prefixe: "parcours-ui-" });
+  });
+
+  afterEach(async () => {
+    await contexte.fermer();
+  });
+
+  it("laisse passer les chemins hors /api/ : sinon aucun écran pour se connecter", async () => {
+    // En production, le même process sert l'interface. Une garde posée sur `*`
+    // renvoyait 401 sur « / » : impossible d'atteindre l'écran de connexion.
+    const reponse = await contexte.appelerAnonyme("/");
+    expect(reponse.status).not.toBe(401);
+  });
+
+  it("garde en revanche toutes les routes de données", async () => {
+    expect((await contexte.appelerAnonyme("/api/formations")).status).toBe(401);
+  });
+});
+
 describe("couverture de la garde de rôle (CO-R2)", () => {
   let contexte: ContexteTest;
 

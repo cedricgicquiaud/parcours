@@ -70,10 +70,16 @@ export function jetonDeRequete(c: Context): string | undefined {
  * Garde d'authentification (AU-R6). Laisse passer la sonde de vie et les routes
  * d'authentification ; tout le reste exige une session valide. Tant qu'aucun
  * compte n'existe, répond `503` : l'installation doit se faire d'abord (AU-R1).
+ *
+ * Elle ne garde que les routes `/api/` : en production, le même process sert
+ * aussi l'interface (index.html, JS, CSS). Ces fichiers doivent être servis
+ * avant toute session — sans eux, il n'y a pas d'écran pour se connecter. Les
+ * DONNÉES restent protégées : elles ne transitent que par `/api/`.
  */
 export function gardeSession(deps: DependancesAuth): MiddlewareHandler {
   return async (c, next) => {
     const chemin = c.req.path;
+    if (!chemin.startsWith("/api/")) return next();
     if (chemin === "/api/health" || chemin.startsWith("/api/auth/")) return next();
 
     if (deps.comptes.installationRequise()) {
