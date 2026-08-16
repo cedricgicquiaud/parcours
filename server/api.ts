@@ -33,6 +33,7 @@ import {
 } from "./formations/ecriture";
 import { EXTENSIONS_ASSETS } from "./formations/extensions";
 import { importerFormation, type DemandeImport } from "./formations/import";
+import { dureeFormation } from "./formations/duree";
 import { cheminConfine, leconsOrdonnees } from "./formations/manifeste";
 import { slugifier } from "./formations/slug";
 import {
@@ -464,10 +465,16 @@ export function creerApi(deps: DependancesApi): AppParcours {
         formation.manifeste,
         coches.get(formation.id) ?? new Set(),
       );
+      const dureeCarte = dureeFormation(formation.manifeste);
       const carte: CarteFormation = {
         statut: "valide",
         id: formation.id,
         titre: formation.manifeste.titre,
+        // La carte porte le visuel (FI-R13), jamais la présentation longue.
+        ...(formation.manifeste.couverture
+          ? { couverture: formation.manifeste.couverture }
+          : {}),
+        ...(dureeCarte === null ? {} : { duree: dureeCarte }),
         modules: formation.manifeste.modules.length,
         lecons: avancement.total,
         faites: avancement.faites,
@@ -506,6 +513,23 @@ export function creerApi(deps: DependancesApi): AppParcours {
     };
     if (formation.manifeste.description) {
       reponse.description = formation.manifeste.description;
+    }
+    const { couverture, presentation, objectifs, prerequis } = formation.manifeste;
+    if (couverture) reponse.couverture = couverture;
+    if (objectifs) reponse.objectifs = objectifs;
+    if (prerequis) reponse.prerequis = prerequis;
+    const duree = dureeFormation(formation.manifeste);
+    if (duree !== null) reponse.duree = duree;
+    if (presentation) {
+      // Rendu SANS collecteur de critères : les cases d'une fiche sont inertes
+      // (FI-R2), une présentation n'a pas de progression.
+      reponse.presentationHtml = deps.rendu.rendre(presentation, {
+        formationId: formation.id,
+        dossier: formation.dossier,
+        idsLecons: new Set(
+          leconsOrdonnees(formation.manifeste).map(({ lecon }) => lecon.id),
+        ),
+      });
     }
     return c.json(reponse);
   });

@@ -66,6 +66,9 @@ export interface CarteFormationValide {
   id: string;
   titre: string;
   description?: string;
+  /** Visuel de la carte (FI-R13) ; la présentation n'y a pas sa place. */
+  couverture?: string;
+  duree?: number;
   modules: number;
   lecons: number;
   faites: number;
@@ -112,6 +115,14 @@ export interface ReponseFormation {
   id: string;
   titre: string;
   description?: string;
+  /** Champs de la fiche de présentation (phase 07), omis quand ils manquent. */
+  couverture?: string;
+  /** Présentation déjà rendue et assainie par le serveur (A-R5). */
+  presentationHtml?: string;
+  objectifs?: string[];
+  prerequis?: string[];
+  /** Durée totale en minutes (FI-R5). */
+  duree?: number;
   avancement: Avancement;
 }
 
