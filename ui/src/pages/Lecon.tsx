@@ -6,6 +6,8 @@ import {
   Icone,
   Squelette,
 } from "../composants/communs";
+import { variablesMermaid } from "../mermaid";
+import type { Mode } from "../preferences";
 import { estClicSimple, type Route } from "../routeur";
 
 export function PageLecon({
@@ -17,6 +19,7 @@ export function PageLecon({
   surBasculerFaite,
   surBasculerCritere,
   peutEcrire = false,
+  mode = "clair",
 }: {
   lecon: ReponseLecon | null;
   chargement: boolean;
@@ -28,6 +31,8 @@ export function PageLecon({
   surBasculerCritere: (id: string, coche: boolean) => Promise<boolean>;
   /** Administrateur avec l'édition allumée (ED-R7) : la leçon devient éditable. */
   peutEcrire?: boolean;
+  /** Palette courante : les schémas sont redessinés quand elle change. */
+  mode?: Mode;
 }) {
   const contenu = useRef<HTMLDivElement>(null);
   const criteresServeur = lecon?.criteres;
@@ -120,11 +125,18 @@ export function PageLecon({
       try {
         const { default: mermaid } = await import("mermaid");
         if (annule) return;
-        mermaid.initialize({ startOnLoad: false, securityLevel: "strict" });
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+          theme: "base",
+          themeVariables: variablesMermaid(document.documentElement),
+        });
         for (const [index, schema] of schemas.entries()) {
           const source = schema.dataset.source ?? "";
           try {
-            const { svg } = await mermaid.render(`schema-${index}`, source);
+            // L'identifiant porte le mode : re-rendre après une bascule
+            // clair/sombre ne doit pas réutiliser le SVG précédent.
+            const { svg } = await mermaid.render(`schema-${mode}-${index}`, source);
             if (annule) return;
             schema.innerHTML = svg;
           } catch {
@@ -142,7 +154,7 @@ export function PageLecon({
     return () => {
       annule = true;
     };
-  }, [lecon]);
+  }, [lecon, mode]);
 
   if (erreur) {
     return (
