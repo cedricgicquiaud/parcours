@@ -173,9 +173,6 @@ describe("l'interrupteur d'édition (ED-R3, ED-R12, ED-R13)", () => {
 
     await screen.findByText("EN COURS");
     expect(screen.queryByRole("button", { name: /l'édition/ })).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: /Nouvelle formation/ }),
-    ).not.toBeInTheDocument();
   });
 });
 

@@ -11,7 +11,12 @@ import {
 } from "./api";
 import { ColonneLaterale } from "./composants/ColonneLaterale";
 import { BlocErreur, Icone, Squelette } from "./composants/communs";
-import { useMode, useRafraichirAuFocus, useRailReplie } from "./preferences";
+import {
+  useEdition,
+  useMode,
+  useRafraichirAuFocus,
+  useRailReplie,
+} from "./preferences";
 import { Administration } from "./pages/Administration";
 import { Catalogue } from "./pages/Catalogue";
 import { Connexion } from "./pages/Connexion";
@@ -140,7 +145,13 @@ function ApplicationConnectee({
   const { route, naviguer } = useRoute();
   const { mode, basculer: basculerMode } = useMode();
   const { replie, basculer: basculerReplie } = useRailReplie();
+  const { edition, basculer: basculerEdition, allumer: allumerEdition } = useEdition();
   const [tiroirOuvert, setTiroirOuvert] = useState(false);
+
+  // ED-R6 : la préférence dit ce qu'on affiche, le rôle dit ce qu'on a le droit
+  // de faire. L'autorisation reste celle du serveur (CO-R2).
+  const estAdmin = compte.role === "admin";
+  const peutEcrire = estAdmin && edition;
 
   const fid =
     route.nom === "formation" ||
@@ -368,6 +379,8 @@ function ApplicationConnectee({
     basculerReplie,
     compte,
     surDeconnexion,
+    edition,
+    basculerEdition,
   };
 
   return (

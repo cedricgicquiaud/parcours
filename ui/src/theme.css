@@ -1872,6 +1872,13 @@ summary::-webkit-details-marker {
   background: var(--accent-soft);
 }
 
+/* Mode édition allumé (ED-R13) : on doit savoir sans cliquer si l'on écrit. */
+.rail-compte-lien.actif,
+.bouton-icone.actif {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 /* Profil et console des comptes */
 
 .formulaire-profil {
