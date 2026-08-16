@@ -457,6 +457,7 @@ function ApplicationConnectee({
             recharger={() => void charger()}
             naviguer={naviguerEtFermer}
             administration={administration}
+            peutEcrire={peutEcrire}
           />
         ) : route.nom === "formation" ? (
           <PageFormation

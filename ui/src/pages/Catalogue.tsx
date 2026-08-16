@@ -26,6 +26,7 @@ export function Catalogue({
   recharger,
   naviguer,
   administration,
+  peutEcrire,
 }: {
   catalogue: ReponseCatalogue | null;
   chargement: boolean;
@@ -33,6 +34,8 @@ export function Catalogue({
   recharger: () => void;
   naviguer: (route: Route) => void;
   administration: Administration;
+  /** Administrateur avec l'édition allumée (ED-R7) : sinon, lecture seule. */
+  peutEcrire: boolean;
 }) {
   if (erreur) {
     return (
@@ -96,15 +99,17 @@ export function Catalogue({
           {valides.length} formation{valides.length > 1 ? "s" : ""} · {totalLecons} leçon
           {totalLecons > 1 ? "s" : ""}
         </span>
-        <button
-          type="button"
-          className="bouton bouton-petit"
-          style={{ marginLeft: "auto" }}
-          onClick={() => naviguer({ nom: "administration" })}
-        >
-          <Icone nom="plus" taille={14} />
-          Nouvelle formation
-        </button>
+        {peutEcrire ? (
+          <button
+            type="button"
+            className="bouton bouton-petit"
+            style={{ marginLeft: "auto" }}
+            onClick={() => naviguer({ nom: "administration" })}
+          >
+            <Icone nom="plus" taille={14} />
+            Nouvelle formation
+          </button>
+        ) : null}
       </div>
 
       {catalogue?.progressionReinitialisee ? (
@@ -145,18 +150,27 @@ export function Catalogue({
           <strong style={{ color: "var(--text)", fontWeight: 500 }}>
             Aucune formation.
           </strong>
-          <span>
-            Déposez le dossier d'une formation existante, ou créez-en une de zéro.
-          </span>
-          <ZoneDepot surDepot={administration.importer} occupe={administration.occupe} />
-          <button
-            type="button"
-            className="bouton bouton-petit"
-            onClick={() => naviguer({ nom: "administration" })}
-          >
-            <Icone nom="plus" taille={14} />
-            Créer une formation
-          </button>
+          {peutEcrire ? (
+            <>
+              <span>
+                Déposez le dossier d'une formation existante, ou créez-en une de zéro.
+              </span>
+              <ZoneDepot
+                surDepot={administration.importer}
+                occupe={administration.occupe}
+              />
+              <button
+                type="button"
+                className="bouton bouton-petit"
+                onClick={() => naviguer({ nom: "administration" })}
+              >
+                <Icone nom="plus" taille={14} />
+                Créer une formation
+              </button>
+            </>
+          ) : (
+            <span>Aucune formation n'est publiée pour l'instant.</span>
+          )}
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
@@ -169,18 +183,21 @@ export function Catalogue({
                 naviguer={naviguer}
                 actions={actions}
                 occupe={administration.occupe}
+                peutEcrire={peutEcrire}
               />
             ))}
-            <ZoneDepot
-              surDepot={administration.importer}
-              occupe={administration.occupe}
-              compacte
-            />
+            {peutEcrire ? (
+              <ZoneDepot
+                surDepot={administration.importer}
+                occupe={administration.occupe}
+                compacte
+              />
+            ) : null}
           </div>
         </div>
       )}
 
-      {archivees.length > 0 ? (
+      {peutEcrire && archivees.length > 0 ? (
         <SectionRepliable titre="Archivées" nombre={archivees.length}>
           {archivees.map((archive) => (
             <LigneArchive
@@ -194,7 +211,7 @@ export function Catalogue({
         </SectionRepliable>
       ) : null}
 
-      {corbeille.length > 0 ? (
+      {peutEcrire && corbeille.length > 0 ? (
         <SectionRepliable titre="Corbeille" nombre={corbeille.length}>
           <p className="note-corbeille">
             Parcours ne supprime aucun fichier : ces dossiers sont déplacés dans{" "}
@@ -402,11 +419,13 @@ function Carte({
   naviguer,
   actions,
   occupe,
+  peutEcrire,
 }: {
   formation: CarteFormation;
   naviguer: (route: Route) => void;
   actions: ActionsCarte;
   occupe: boolean;
+  peutEcrire: boolean;
 }) {
   const titre = formation.statut === "valide" ? formation.titre : formation.id;
 
@@ -422,13 +441,15 @@ function Carte({
           <span className="meta-faible" style={{ fontSize: 12 }}>
             Corrigez le manifeste, puis rechargez.
           </span>
-          <MenuCarte
-            titre={titre}
-            fid={formation.id}
-            actions={actions}
-            occupe={occupe}
-            modifiable={false}
-          />
+          {peutEcrire ? (
+            <MenuCarte
+              titre={titre}
+              fid={formation.id}
+              actions={actions}
+              occupe={occupe}
+              modifiable={false}
+            />
+          ) : null}
         </div>
       </div>
     );
@@ -459,16 +480,20 @@ function Carte({
         <span className="meta-faible" style={{ fontSize: 12 }}>
           {formation.faites}/{formation.lecons} leçons
         </span>
-        <MenuCarte
-          titre={titre}
-          fid={formation.id}
-          actions={actions}
-          occupe={occupe}
-          modifiable
-        />
+        {peutEcrire ? (
+          <MenuCarte
+            titre={titre}
+            fid={formation.id}
+            actions={actions}
+            occupe={occupe}
+            modifiable
+          />
+        ) : null}
         <button
           type="button"
           className={`bouton bouton-petit${formation.action === "revoir" ? " bouton-neutre" : ""}`}
+          // Sans le menu « … », c'est ce bouton qui tient la droite du pied.
+          style={peutEcrire ? undefined : { marginLeft: "auto" }}
           onClick={ouvrir}
         >
           {LIBELLES_ACTION[formation.action]}
