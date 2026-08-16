@@ -94,6 +94,21 @@ describe("téléverser une couverture (FI-R14)", () => {
   });
 });
 
+describe("l'image déposée est ensuite SERVIE (FI-R14)", () => {
+  it("répond 200 sur l'adresse construite à partir du manifeste", async () => {
+    await envoyer({ nom: "ma-couv.png", contenu: PNG });
+    const couverture = (await manifeste()).couverture as string;
+
+    // Exactement l'URL que construit l'interface : le chemin du manifeste se
+    // place DERRIÈRE le segment de route « /assets/ », sans être raccourci.
+    const reponse = await contexte.appeler(
+      `/api/formations/formation-claude/assets/${couverture}`,
+    );
+    expect(reponse.status).toBe(200);
+    expect(reponse.headers.get("content-type")).toBe("image/png");
+  });
+});
+
 describe("refus (FI-R14)", () => {
   it("refuse un SVG : un document actif n'a pas sa place en couverture", async () => {
     const svg = Buffer.from("<svg xmlns='http://www.w3.org/2000/svg'/>").toString("base64");

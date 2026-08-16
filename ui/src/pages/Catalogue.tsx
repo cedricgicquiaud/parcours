@@ -10,6 +10,7 @@ import {
   Squelette,
 } from "../composants/communs";
 import { ZoneDepot } from "../composants/ZoneDepot";
+import { urlAsset } from "../assets";
 import type { Route } from "../routeur";
 
 const LIBELLES_ACTION = {
@@ -389,7 +390,7 @@ function Couverture({ formation }: { formation: CarteFormationValide }) {
   return (
     <img
       className="carte-couverture"
-      src={`/api/formations/${encodeURIComponent(formation.id)}/assets/${formation.couverture.replace(/^assets\//, "")}`}
+      src={urlAsset(formation.id, formation.couverture)}
       alt={formation.titre}
       onError={() => setCassee(true)}
     />

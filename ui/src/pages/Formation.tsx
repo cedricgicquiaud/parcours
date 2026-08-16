@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { ReponseFormation } from "../api";
+import { urlAsset } from "../assets";
 import { formaterDuree } from "../duree";
 import {
   Bandeau,
@@ -113,7 +114,7 @@ export function PageFormation({
       {formation.couverture && !couvertureCassee ? (
         <img
           className="couverture-formation"
-          src={`/api/formations/${encodeURIComponent(formation.id)}/assets/${formation.couverture.replace(/^assets\//, "")}`}
+          src={urlAsset(formation.id, formation.couverture)}
           alt={formation.titre}
           // FI-R12 : une couverture introuvable disparaît, elle ne laisse pas
           // de cadre vide au sommet de la fiche.

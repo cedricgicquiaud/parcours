@@ -69,7 +69,12 @@ describe("fiche garnie (FI-R10)", () => {
     afficher(garnie());
 
     const couverture = screen.getByRole("img", { name: "Formation pratique Claude" });
-    expect(couverture).toHaveAttribute("src", expect.stringContaining("couverture.png"));
+    // L'adresse EXACTE : c'est un raccourci sur ce chemin qui avait donné un
+    // 404 silencieux — l'image existait, l'URL était fausse.
+    expect(couverture).toHaveAttribute(
+      "src",
+      "/api/formations/formation-claude/assets/assets/couverture.png",
+    );
     expect(screen.getByText("Un texte de présentation.")).toBeInTheDocument();
 
     const objectifs = screen.getByRole("list", { name: /saurez faire/i });
