@@ -16,10 +16,13 @@ export function variablesMermaid(racine: Element): Record<string, string> {
   const trait = jeton("--line", "#eae4dc");
   const accent = jeton("--accent", "#f2701f");
 
+  // Ni `fontFamily` ni `fontSize` ici, volontairement : mermaid mesure les
+  // libellés avec sa police par défaut pour dimensionner les boîtes. Lui en
+  // imposer une autre décale la mesure du dessin, et le texte déborde
+  // (« parcours.db » tronqué en « parcours.c »). On ne lui donne que des
+  // couleurs.
   return {
     background: jeton("--bg", "#ffffff"),
-    fontFamily: jeton("--font", "system-ui, sans-serif"),
-    fontSize: "14px",
     // Nœuds
     primaryColor: fond,
     mainBkg: fond,

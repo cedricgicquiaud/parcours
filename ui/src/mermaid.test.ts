@@ -38,4 +38,10 @@ describe("thème des schémas (mode sombre)", () => {
     expect(variables.background).toBe("#ffffff");
     expect(variables.textColor).toBe("#302a22");
   });
+
+  it("n'impose aucune police : mermaid mesure ses boîtes avec la sienne", () => {
+    const variables = variablesMermaid(document.documentElement);
+    expect(variables.fontFamily).toBeUndefined();
+    expect(variables.fontSize).toBeUndefined();
+  });
 });

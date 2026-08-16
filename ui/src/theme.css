@@ -1556,7 +1556,11 @@ summary::-webkit-details-marker {
 
 .mermaid-source svg {
   max-width: 100%;
+  height: auto;
 }
+
+/* Aucune règle de police ici : le SVG porte la sienne, celle avec laquelle
+   mermaid a mesuré ses boîtes. La lui remplacer fait déborder le texte. */
 
 /* Barre d'actions de leçon */
 .barre-actions {
