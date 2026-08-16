@@ -6,6 +6,10 @@ import { afterEach } from "vitest";
 // le nettoyage du DOM entre deux rendus doit donc être branché à la main.
 afterEach(cleanup);
 
+// Les préférences (thème, rail, édition) vivent dans le stockage local : un
+// test qui en pose une ne doit pas la léguer au suivant.
+afterEach(() => window.localStorage.clear());
+
 // jsdom n'implémente pas scrollTo, appelé à chaque navigation du routeur.
 window.scrollTo = () => undefined;
 

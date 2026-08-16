@@ -10,6 +10,7 @@ import {
   type ReponseLecon,
 } from "./api";
 import { ColonneLaterale } from "./composants/ColonneLaterale";
+import { GardeEcriture } from "./composants/GardeEcriture";
 import { BlocErreur, Icone, Squelette } from "./composants/communs";
 import {
   useEdition,
@@ -242,6 +243,41 @@ function ApplicationConnectee({
     [naviguer],
   );
 
+  /**
+   * Question posée par l'écran d'écriture ouvert avant qu'on le quitte
+   * autrement que par son propre bouton (ED-R11). `null` : rien à demander.
+   */
+  const gardeSortie = useRef<(() => boolean) | null>(null);
+  const enregistrerGardeSortie = useCallback((garde: (() => boolean) | null) => {
+    gardeSortie.current = garde;
+  }, []);
+
+  const surEcranEcriture =
+    route.nom === "administration" ||
+    route.nom === "structure" ||
+    route.nom === "editer";
+
+  /**
+   * Éteindre l'édition depuis un écran d'écriture ramène au catalogue : on ne
+   * laisse pas un formulaire ouvert derrière un refus (ED-R11).
+   */
+  const basculerEditionSure = useCallback(() => {
+    if (edition && surEcranEcriture) {
+      if (gardeSortie.current && !gardeSortie.current()) return;
+      basculerEdition();
+      naviguerEtFermer({ nom: "catalogue" });
+      return;
+    }
+    basculerEdition();
+  }, [edition, surEcranEcriture, basculerEdition, naviguerEtFermer]);
+
+  const garde = {
+    estAdmin,
+    edition,
+    surAllumer: allumerEdition,
+    surRetour: () => naviguerEtFermer({ nom: "catalogue" }),
+  };
+
   // Une seule instance pour toute l'application : le message d'une action
   // lancée depuis l'écran formation doit s'afficher au catalogue, où l'on
   // atterrit juste après (P010).
@@ -380,7 +416,7 @@ function ApplicationConnectee({
     compte,
     surDeconnexion,
     edition,
-    basculerEdition,
+    basculerEdition: basculerEditionSure,
   };
 
   return (
@@ -456,11 +492,22 @@ function ApplicationConnectee({
         ) : route.nom === "comptes" ? (
           <ConsoleComptes moi={compte} />
         ) : route.nom === "administration" ? (
-          <Administration fid={null} naviguer={naviguerEtFermer} />
+          <GardeEcriture {...garde}>
+            <Administration fid={null} naviguer={naviguerEtFermer} />
+          </GardeEcriture>
         ) : route.nom === "structure" ? (
-          <Administration fid={route.fid} naviguer={naviguerEtFermer} />
+          <GardeEcriture {...garde}>
+            <Administration fid={route.fid} naviguer={naviguerEtFermer} />
+          </GardeEcriture>
         ) : route.nom === "editer" ? (
-          <EditeurLecon fid={route.fid} lid={route.lid} naviguer={naviguerEtFermer} />
+          <GardeEcriture {...garde}>
+            <EditeurLecon
+              fid={route.fid}
+              lid={route.lid}
+              naviguer={naviguerEtFermer}
+              surGardeSortie={enregistrerGardeSortie}
+            />
+          </GardeEcriture>
         ) : route.nom === "lecon" ? (
           <PageLecon
             lecon={lecon}

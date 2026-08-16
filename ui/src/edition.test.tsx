@@ -273,7 +273,9 @@ describe("routes d'écriture — admin, édition éteinte (ED-R10)", () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: "Activer l'édition" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Activer l'édition et continuer" }),
+    );
 
     // L'écran demandé s'affiche enfin, sans rechargement ni changement d'adresse.
     await waitFor(() => expect(screen.getAllByRole("textbox").length).toBeGreaterThan(0));

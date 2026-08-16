@@ -197,6 +197,8 @@ describe("App — parcours complet (§ 6)", () => {
   });
 
   it("réaffiche le contenu à jour en fermant l'éditeur de leçon", async () => {
+    // L'éditeur vit derrière le mode édition (ED-R10) : on l'allume.
+    window.localStorage.setItem("parcours.edition", "oui");
     window.history.pushState(null, "", "/formation/prise-en-main/lecon/anatomie/editer");
     render(<App />);
 
