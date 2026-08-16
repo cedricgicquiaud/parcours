@@ -4,6 +4,8 @@ export type Mode = "clair" | "sombre";
 
 const CLE_MODE = "parcours.mode";
 const CLE_RAIL = "parcours.railReplie";
+/** Préférence d'affichage, jamais une autorisation (ED-R6). */
+export const CLE_EDITION = "parcours.edition";
 
 function lire(cle: string): string | null {
   try {
@@ -56,6 +58,32 @@ export function useRailReplie() {
   }, []);
 
   return { replie, basculer, setReplie };
+}
+
+/**
+ * Mode édition (ED-R4). Éteint par défaut : Parcours est d'abord un lecteur.
+ * C'est une préférence d'affichage — l'autorisation d'écrire reste celle du
+ * serveur (CO-R2), et cet état ne lui est jamais envoyé (ED-R6).
+ */
+export function useEdition() {
+  const [edition, setEdition] = useState<boolean>(() => lire(CLE_EDITION) === "oui");
+
+  const appliquer = useCallback((valeur: boolean) => {
+    ecrire(CLE_EDITION, valeur ? "oui" : "non");
+    setEdition(valeur);
+  }, []);
+
+  const basculer = useCallback(() => {
+    setEdition((courant) => {
+      ecrire(CLE_EDITION, courant ? "non" : "oui");
+      return !courant;
+    });
+  }, []);
+
+  const eteindre = useCallback(() => appliquer(false), [appliquer]);
+  const allumer = useCallback(() => appliquer(true), [appliquer]);
+
+  return { edition, basculer, allumer, eteindre };
 }
 
 /**
