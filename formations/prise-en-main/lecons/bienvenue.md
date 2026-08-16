@@ -1,25 +1,45 @@
-Parcours lit des formations écrites en markdown et les affiche comme un site de
-cours : un catalogue, un sommaire, des leçons, une progression qui se souvient
-d'où vous en étiez.
+Parcours affiche des formations écrites en markdown comme un site de cours :
+un catalogue, une fiche de présentation, un sommaire, des leçons, et une
+progression qui se souvient d'où vous en étiez.
 
-Cette formation est elle-même une formation Parcours : chaque leçon montre une
-partie du format, et vous pouvez ouvrir ses fichiers dans `formations/prise-en-main/`
-pour voir exactement ce qui produit ce que vous lisez.
+Vous êtes en train de lire une formation Parcours. Ses fichiers sont dans
+`formations/prise-en-main/` : à tout moment, vous pouvez les ouvrir dans un
+éditeur pour voir ce qui produit ce que vous lisez.
 
 ## Ce que Parcours fait
 
-- Il **lit** vos dossiers de formation, il ne les écrit jamais.
-- Il rend le markdown côté serveur, assaini, et sert le HTML à l'interface.
-- Il garde votre progression dans une base locale, à part de vos contenus.
+- Il **lit** les dossiers de `formations/` et les rend consultables.
+- Il **rend** le markdown côté serveur, assaini, et sert le résultat à l'écran.
+- Il **retient** votre progression dans une base locale, à part de vos contenus.
+- Il **écrit** vos formations quand vous le lui demandez explicitement — jamais
+  autrement, et jamais sans que le geste vienne de vous.
 
 ## Ce que Parcours ne fait pas
 
-- Pas d'outil d'écriture intégré : vous écrivez vos leçons avec votre éditeur.
-- Pas de compte, pas de réseau : tout reste sur votre machine.
+- Il n'exécute **jamais** de code, et ne corrige jamais un exercice. Les
+  exercices pratiques se font dehors, dans un vrai terminal.
+- Il ne supprime **jamais** un fichier. Ce qu'on jette est déplacé, pas effacé.
+- Il n'envoie rien sur Internet. Une seule exception, désactivée par défaut :
+  l'envoi de courriels, si vous le configurez — voir [L'adresse e-mail et les
+  envois](lecon:courriel).
+
+## Comment cette formation fonctionne
+
+Chaque leçon se termine par des **critères de réussite** : des cases à cocher.
+Ce ne sont pas des questions de cours, ce sont des gestes à faire dans
+l'application. Cocher tous les critères de cette formation, c'est avoir vérifié
+Parcours de bout en bout — c'est sa recette.
 
 :::astuce
-Le bouton en bas de page marque la leçon comme terminée. Rien ne vous oblige à
-suivre l'ordre : aucune leçon n'est verrouillée.
+Rien n'est verrouillé : aucune leçon n'attend que la précédente soit terminée.
+Vous pouvez sauter, revenir, relire.
 :::
 
-Continuez avec [l'anatomie d'une formation](lecon:anatomie-formation).
+## Critères de réussite
+
+- [ ] j'ai ouvert cette leçon depuis le bouton « Commencer » ou « Reprendre » de la fiche
+- [ ] j'ai coché ce critère, et le décompte sous le titre est passé à 1
+- [ ] j'ai rechargé la page : le décompte est toujours là
+- [ ] j'ai ouvert `formations/prise-en-main/lecons/bienvenue.md` dans un éditeur et retrouvé ce texte
+
+Continuez avec [Se repérer dans l'écran](lecon:se-reperer).

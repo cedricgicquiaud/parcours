@@ -1,8 +1,8 @@
 Le markdown de Parcours est du markdown standard — titres, listes, tableaux,
-cases à cocher, blocs de code — plus cinq blocs à trois deux-points.
+cases à cocher, blocs de code — plus cinq encadrés à trois deux-points.
 
 :::prerequis
-[La documentation du format, dans le dépôt](https://commonmark.org/help/)
+[La syntaxe markdown de base, en une page](https://commonmark.org/help/)
 :::
 
 ## Les cinq blocs
@@ -16,7 +16,7 @@ Toujours ouvert, fond teinté.
 Toujours ouvert, pour ce qui peut casser.
 :::
 
-:::indice Le titre est optionnel
+:::indice Le titre est facultatif
 Replié. Numéroté automatiquement : Indice 1, Indice 2…
 :::
 
@@ -29,34 +29,38 @@ Les liens vers l'extérieur, ouverts dans un nouvel onglet.
 :::
 ```
 
-Les noms anglais fonctionnent aussi : `tip`, `warning`, `danger`, `hint`. Un nom
-inconnu n'est pas une erreur : le contenu s'affiche normalement, sans encadré.
+Les noms anglais fonctionnent : `tip`, `warning`, `danger`, `hint`. La casse et
+les accents sont ignorés — `:::Astuce` et `:::Prérequis` marchent. Un nom inconnu
+n'est pas une erreur : le contenu s'affiche normalement, sans encadré.
 
-## Ce que fait le rendu
+Les indices et les solutions sont **repliés à l'arrivée**, sans exception, et le
+restent après un rechargement. Rien ne se dévoile sans un clic.
 
-- Le HTML écrit à la main est affiché en texte, jamais interprété.
-- Les liens externes s'ouvrent dans un nouvel onglet.
-- Les liens internes s'écrivent `[texte](lecon:identifiant)`.
-- Les images sont relatives au dossier de la formation : `![alt](assets/image.png)`.
+## Les liens
 
-Les cases à cocher du contenu sont des **critères de réussite** : cochez-les,
-Parcours retient. Essayez sur celles-ci.
+| Écriture | Effet |
+| --- | --- |
+| `[texte](https://exemple.test)` | Lien externe, nouvel onglet |
+| `[texte](lecon:identifiant)` | Va à une leçon de la même formation |
+| `[texte](assets/fichier.pdf)` | Fichier joint de la formation |
+| `[texte](#ancre)` | Ancre dans la page |
 
-- [ ] j'ai coché ce critère, et le décompte ci-dessus est passé à 1
-- [ ] j'ai rechargé la page : mon état est toujours là
-- [x] cette case est cochée dans le fichier, mais je peux la décocher
+Un `lecon:` dont l'identifiant n'existe pas s'affiche en texte simple, non
+cliquable. Tout autre schéma — `javascript:`, `data:`, un chemin absolu — est
+refusé : le texte du lien reste, le lien disparaît.
 
-Cocher le dernier critère ouvert marque la leçon terminée. Décocher ensuite ne
-la défait pas : revenir vérifier un détail ne coûte pas son avancement.
+## Les images
 
-:::attention
-Une image absente n'est pas une page cassée : son texte alternatif s'affiche
-encadré, et la leçon continue.
-:::
+```markdown
+![Texte alternatif](assets/schema.png)
+```
 
-## Le code
+Chemins relatifs uniquement, confinés au dossier de la formation. Une image
+absente affiche son texte alternatif encadré : la leçon ne casse pas.
 
-Le langage déclaré sur la barrière de code active la coloration syntaxique :
+## Le code et les schémas
+
+Le langage déclaré sur la barrière active la coloration, hors ligne :
 
 ```typescript
 export function bonjour(nom: string): string {
@@ -69,3 +73,24 @@ Un langage inconnu reste lisible, en monospace neutre :
 ```klingon
 nuqneH
 ```
+
+Une barrière ` ```mermaid ` produit un schéma, dessiné par le navigateur en mode
+sécurité strict. Une syntaxe invalide affiche le source avec la mention « schéma
+non rendu » — jamais une page cassée.
+
+:::attention
+Le HTML écrit à la main est **affiché en texte**, jamais interprété. Écrire
+`<script>` dans une leçon affiche `<script>`, et rien ne s'exécute.
+:::
+
+Les titres du contenu descendent d'un niveau au rendu : un `#` dans le fichier
+devient un sous-titre. Le seul grand titre de l'écran est celui de la leçon,
+pris dans le manifeste.
+
+## Critères de réussite
+
+- [ ] j'ai vu que l'encadré « AVANT CETTE LEÇON », en haut, ouvre son lien dans un nouvel onglet
+- [ ] j'ai constaté que le bloc TypeScript est coloré et que le bloc `klingon` reste lisible
+- [ ] j'ai vu le schéma de la leçon [Ce que Parcours retient de vous](lecon:progression) s'afficher comme un dessin
+- [ ] j'ai ouvert un indice de l'[exercice guidé](lecon:exercice-guide), rechargé, et il était de nouveau replié
+- [ ] j'ai cherché un mot présent uniquement dans une solution : aucun résultat
