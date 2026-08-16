@@ -491,7 +491,11 @@ function ApplicationConnectee({
             naviguer={naviguerEtFermer}
           />
         ) : route.nom === "comptes" ? (
-          <ConsoleComptes moi={compte} />
+          // Administrer des comptes n'est pas écrire une formation : seul le
+          // rôle compte ici, pas le mode édition (ED-R9).
+          <GardeEcriture {...garde} edition>
+            <ConsoleComptes moi={compte} />
+          </GardeEcriture>
         ) : route.nom === "administration" ? (
           <GardeEcriture {...garde}>
             <Administration fid={null} naviguer={naviguerEtFermer} />

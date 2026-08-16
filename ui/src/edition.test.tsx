@@ -262,6 +262,33 @@ describe("routes d'écriture — compte lecteur (ED-R2)", () => {
   });
 });
 
+describe("console des comptes — réservée au rôle (ED-R2, trouvaille EVALUATE)", () => {
+  it("refuse un lecteur qui force l'adresse", async () => {
+    brancher(LECTEUR);
+    window.history.pushState(null, "", "/comptes");
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: /Réservé aux administrateurs/ }),
+    ).toBeInTheDocument();
+    expect(appels.some((appel) => appel.includes("/api/comptes"))).toBe(false);
+  });
+
+  it("reste ouverte à un administrateur, édition éteinte (ED-R9)", async () => {
+    brancher(ADMIN);
+    window.history.pushState(null, "", "/comptes");
+    render(<App />);
+
+    await screen.findByRole("button", { name: "Activer l'édition" });
+    expect(
+      screen.queryByRole("heading", { name: /Réservé aux administrateurs/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: /L'édition est désactivée/ }),
+    ).not.toBeInTheDocument();
+  });
+});
+
 describe("routes d'écriture — admin, édition éteinte (ED-R10)", () => {
   it("explique et propose d'allumer, sans décider à la place", async () => {
     brancher(ADMIN);
