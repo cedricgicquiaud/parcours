@@ -209,8 +209,71 @@ export async function ecrireSource(
   return { ok: true, valeur: { jeton: jetonDe(infos) } };
 }
 
+/**
+ * Reporte sur le manifeste reconstruit tout ce que l'administration ne gère pas
+ * (FI-R9) : couverture, présentation, objectifs, prérequis, durées, description
+ * de module — et jusqu'aux champs que Parcours ne connaît pas. Sans cela, un
+ * simple renommage de module effacerait le travail éditorial de l'auteur.
+ *
+ * La fusion se fait APRÈS validation, sur l'objet écrit : la validation, elle,
+ * ne garde que les champs qu'elle connaît.
+ */
+const CHAMPS_GERES = new Set(["formatVersion", "id", "titre", "description", "modules"]);
+const CHAMPS_GERES_MODULE = new Set(["id", "titre", "lecons"]);
+const CHAMPS_GERES_LECON = new Set(["id", "titre", "fichier"]);
+
+function reporter(
+  cible: Record<string, unknown>,
+  source: Record<string, unknown> | undefined,
+  geres: ReadonlySet<string>,
+): void {
+  if (!source) return;
+  for (const [cle, valeur] of Object.entries(source)) {
+    if (!geres.has(cle) && !(cle in cible)) cible[cle] = valeur;
+  }
+}
+
+export function fusionnerAvecExistant(
+  manifeste: Manifeste,
+  existant: unknown,
+): Record<string, unknown> {
+  const fusionne = JSON.parse(JSON.stringify(manifeste)) as Record<string, unknown>;
+  if (typeof existant !== "object" || existant === null || Array.isArray(existant)) {
+    return fusionne;
+  }
+  const ancien = existant as Record<string, unknown>;
+  reporter(fusionne, ancien, CHAMPS_GERES);
+
+  const modulesAnciens = Array.isArray(ancien.modules) ? ancien.modules : [];
+  const parIdModule = new Map<string, Record<string, unknown>>();
+  const leconsAnciennes = new Map<string, Record<string, unknown>>();
+  for (const moduleAncien of modulesAnciens) {
+    if (typeof moduleAncien !== "object" || moduleAncien === null) continue;
+    const objet = moduleAncien as Record<string, unknown>;
+    if (typeof objet.id === "string") parIdModule.set(objet.id, objet);
+    for (const leconAncienne of Array.isArray(objet.lecons) ? objet.lecons : []) {
+      if (typeof leconAncienne !== "object" || leconAncienne === null) continue;
+      const lecon = leconAncienne as Record<string, unknown>;
+      // Une leçon déplacée d'un module à l'autre garde sa durée : la clé est
+      // son id, comme pour la progression (P004).
+      if (typeof lecon.id === "string") leconsAnciennes.set(lecon.id, lecon);
+    }
+  }
+
+  for (const module of (fusionne.modules ?? []) as Array<Record<string, unknown>>) {
+    reporter(module, parIdModule.get(module.id as string), CHAMPS_GERES_MODULE);
+    for (const lecon of (module.lecons ?? []) as Array<Record<string, unknown>>) {
+      reporter(lecon, leconsAnciennes.get(lecon.id as string), CHAMPS_GERES_LECON);
+    }
+  }
+  return fusionne;
+}
+
 /** Écrit le manifeste de façon atomique : fichier temporaire puis renommage. */
-async function ecrireManifeste(dossier: string, manifeste: Manifeste): Promise<void> {
+async function ecrireManifeste(
+  dossier: string,
+  manifeste: Manifeste | Record<string, unknown>,
+): Promise<void> {
   const cible = path.join(dossier, "formation.json");
   const temporaire = path.join(dossier, `.formation.json.${process.pid}.tmp`);
   await fs.writeFile(temporaire, `${JSON.stringify(manifeste, null, 2)}\n`, "utf8");
@@ -283,7 +346,17 @@ export async function mettreAJourStructure(
   const construit = construireManifeste(saisie, formationId, fichiersExistants);
   if (!construit.ok) return construit;
 
-  await ecrireManifeste(dossier, construit.valeur);
+  // FI-R9 : on relit l'ancien manifeste pour lui reprendre tout ce que la
+  // saisie ne porte pas. Illisible ou absent → on écrit le nouveau tel quel.
+  let ancien: unknown = null;
+  try {
+    ancien = JSON.parse(
+      await fs.readFile(path.join(dossier, "formation.json"), "utf8"),
+    ) as unknown;
+  } catch {
+    ancien = null;
+  }
+  await ecrireManifeste(dossier, fusionnerAvecExistant(construit.valeur, ancien));
   const fichiersCrees = await creerFichiersManquants(dossier, construit.valeur);
   return { ok: true, valeur: { manifeste: construit.valeur, fichiersCrees } };
 }
