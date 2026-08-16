@@ -26,7 +26,13 @@ const GARNI = {
       description: "Le socle.",
       lecons: [
         { id: "installer", titre: "Installer", fichier: "lecons/installer.md", duree: 45 },
-        { id: "hooks", titre: "Les hooks", fichier: "lecons/hooks.md", duree: 30 },
+        {
+          id: "hooks",
+          titre: "Les hooks",
+          fichier: "lecons/hooks.md",
+          duree: 30,
+          suppose: ["installer"],
+        },
       ],
     },
   ],
@@ -138,5 +144,29 @@ describe("l'administration ne perd aucun champ (FI-R9)", () => {
     const lecons = modules[0]!.lecons as Array<Record<string, unknown>>;
     expect(lecons).toHaveLength(1);
     expect(lecons[0]!.duree).toBe(45);
+  });
+});
+
+describe("`suppose` survit à l'administration (SU-R8)", () => {
+  it("reste intact après un renommage de module", async () => {
+    await mettreAJourStructure(dossier, "formation-claude", saisieRenommee());
+    const modules = (await relire()).modules as Array<Record<string, unknown>>;
+    const lecons = modules[0]!.lecons as Array<Record<string, unknown>>;
+    expect(lecons[1]!.suppose).toEqual(["installer"]);
+  });
+
+  it("suit sa leçon quand l'ordre change", async () => {
+    const inverse = saisieRenommee();
+    inverse.modules[0]!.lecons = [
+      { id: "hooks", titre: "Les hooks" },
+      { id: "installer", titre: "Installer" },
+    ];
+    await mettreAJourStructure(dossier, "formation-claude", inverse);
+
+    const modules = (await relire()).modules as Array<Record<string, unknown>>;
+    const lecons = modules[0]!.lecons as Array<Record<string, unknown>>;
+    expect(lecons[0]!.id).toBe("hooks");
+    expect(lecons[0]!.suppose).toEqual(["installer"]);
+    expect(lecons[1]!.suppose).toBeUndefined();
   });
 });

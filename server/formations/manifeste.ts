@@ -7,6 +7,11 @@ export interface LeconManifeste {
   fichier: string;
   /** Durée estimée, en minutes (FI-R6). */
   duree?: number;
+  /**
+   * Leçons de la même formation que celle-ci suppose faites (SU-R1). Simple
+   * déclaration d'auteur : elle informe le lecteur, elle ne verrouille rien.
+   */
+  suppose?: string[];
 }
 
 export interface ModuleManifeste {
@@ -50,6 +55,8 @@ export const MAX_LISTE_FICHE = 12;
 export const MAX_ENTREE_FICHE = 200;
 export const MAX_DESCRIPTION_MODULE = 500;
 export const MAX_DUREE = 100_000;
+/** Au-delà, ce n'est plus un rappel, c'est un sommaire (SU-R3). */
+export const MAX_SUPPOSE = 5;
 
 /** Extensions acceptées pour une couverture (FI-R1) : des images, pas un SVG. */
 export const EXTENSIONS_COUVERTURE = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp"]);
@@ -88,6 +95,31 @@ function validerDuree(valeur: unknown, champ: string): Validation<number | undef
     return echec(`${champ} : entre 1 et ${MAX_DUREE} minutes`);
   }
   return { ok: true, valeur };
+}
+
+/**
+ * Valide `suppose` (SU-R2, SU-R3). N'exige **pas** que les identifiants
+ * existent : une leçon retirée du sommaire ne doit pas rendre toute la
+ * formation invalide (SU-R4). Le rendu ignore ce qu'il ne trouve pas.
+ */
+function validerSuppose(
+  valeur: unknown,
+  champ: string,
+): Validation<string[] | undefined> {
+  if (valeur === undefined) return { ok: true, valeur: undefined };
+  if (!Array.isArray(valeur)) {
+    return echec(`${champ} : tableau d'identifiants attendu`);
+  }
+  if (valeur.length === 0) return { ok: true, valeur: undefined };
+  if (valeur.length > MAX_SUPPOSE) {
+    return echec(`${champ} : ${MAX_SUPPOSE} identifiants au plus`);
+  }
+  for (const [index, entree] of valeur.entries()) {
+    if (typeof entree !== "string" || !slugValide(entree)) {
+      return echec(`${champ}[${index}] : slug invalide`);
+    }
+  }
+  return { ok: true, valeur: valeur as string[] };
 }
 
 function estObjet(valeur: unknown): valeur is Record<string, unknown> {
@@ -216,12 +248,15 @@ function validerStructure(brut: unknown): Validation<Manifeste> {
       }
       const dureeLecon = validerDuree(leconBrute.duree, `${cheminLecon}.duree`);
       if (!dureeLecon.ok) return dureeLecon;
+      const suppose = validerSuppose(leconBrute.suppose, `${cheminLecon}.suppose`);
+      if (!suppose.ok) return suppose;
       const lecon: LeconManifeste = {
         id: leconBrute.id as string,
         titre: leconBrute.titre as string,
         fichier: leconBrute.fichier as string,
       };
       if (dureeLecon.valeur !== undefined) lecon.duree = dureeLecon.valeur;
+      if (suppose.valeur !== undefined) lecon.suppose = suppose.valeur;
       lecons.push(lecon);
     }
     const module: ModuleManifeste = {
