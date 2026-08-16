@@ -10,10 +10,17 @@ export function EditeurLecon({
   fid,
   lid,
   naviguer,
+  surGardeSortie,
 }: {
   fid: string;
   lid: string;
   naviguer: (route: Route) => void;
+  /**
+   * Enregistre auprès de l'application une question à poser avant de quitter
+   * l'éditeur autrement que par « Fermer » — par exemple en éteignant le mode
+   * édition (ED-R11). Rendre `false` annule le départ.
+   */
+  surGardeSortie?: (garde: (() => boolean) | null) => void;
 }) {
   const [source, setSource] = useState<ReponseSourceLecon | null>(null);
   const [markdown, setMarkdown] = useState("");
@@ -67,6 +74,15 @@ export function EditeurLecon({
     window.addEventListener("beforeunload", avertir);
     return () => window.removeEventListener("beforeunload", avertir);
   }, [modifie]);
+
+  // Même question que « Fermer », posée depuis l'extérieur (ED-R11).
+  useEffect(() => {
+    if (!surGardeSortie) return;
+    surGardeSortie(() =>
+      !modifie || window.confirm("Quitter sans enregistrer les modifications ?"),
+    );
+    return () => surGardeSortie(null);
+  }, [modifie, surGardeSortie]);
 
   const enregistrer = useCallback(async () => {
     setErreur(null);

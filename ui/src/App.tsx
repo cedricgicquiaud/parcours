@@ -10,8 +10,14 @@ import {
   type ReponseLecon,
 } from "./api";
 import { ColonneLaterale } from "./composants/ColonneLaterale";
+import { GardeEcriture } from "./composants/GardeEcriture";
 import { BlocErreur, Icone, Squelette } from "./composants/communs";
-import { useMode, useRafraichirAuFocus, useRailReplie } from "./preferences";
+import {
+  useEdition,
+  useMode,
+  useRafraichirAuFocus,
+  useRailReplie,
+} from "./preferences";
 import { Administration } from "./pages/Administration";
 import { Catalogue } from "./pages/Catalogue";
 import { Connexion } from "./pages/Connexion";
@@ -140,7 +146,13 @@ function ApplicationConnectee({
   const { route, naviguer } = useRoute();
   const { mode, basculer: basculerMode } = useMode();
   const { replie, basculer: basculerReplie } = useRailReplie();
+  const { edition, basculer: basculerEdition, allumer: allumerEdition } = useEdition();
   const [tiroirOuvert, setTiroirOuvert] = useState(false);
+
+  // ED-R6 : la préférence dit ce qu'on affiche, le rôle dit ce qu'on a le droit
+  // de faire. L'autorisation reste celle du serveur (CO-R2).
+  const estAdmin = compte.role === "admin";
+  const peutEcrire = estAdmin && edition;
 
   const fid =
     route.nom === "formation" ||
@@ -230,6 +242,41 @@ function ApplicationConnectee({
     },
     [naviguer],
   );
+
+  /**
+   * Question posée par l'écran d'écriture ouvert avant qu'on le quitte
+   * autrement que par son propre bouton (ED-R11). `null` : rien à demander.
+   */
+  const gardeSortie = useRef<(() => boolean) | null>(null);
+  const enregistrerGardeSortie = useCallback((garde: (() => boolean) | null) => {
+    gardeSortie.current = garde;
+  }, []);
+
+  const surEcranEcriture =
+    route.nom === "administration" ||
+    route.nom === "structure" ||
+    route.nom === "editer";
+
+  /**
+   * Éteindre l'édition depuis un écran d'écriture ramène au catalogue : on ne
+   * laisse pas un formulaire ouvert derrière un refus (ED-R11).
+   */
+  const basculerEditionSure = useCallback(() => {
+    if (edition && surEcranEcriture) {
+      if (gardeSortie.current && !gardeSortie.current()) return;
+      basculerEdition();
+      naviguerEtFermer({ nom: "catalogue" });
+      return;
+    }
+    basculerEdition();
+  }, [edition, surEcranEcriture, basculerEdition, naviguerEtFermer]);
+
+  const garde = {
+    estAdmin,
+    edition,
+    surAllumer: allumerEdition,
+    surRetour: () => naviguerEtFermer({ nom: "catalogue" }),
+  };
 
   // Une seule instance pour toute l'application : le message d'une action
   // lancée depuis l'écran formation doit s'afficher au catalogue, où l'on
@@ -368,6 +415,8 @@ function ApplicationConnectee({
     basculerReplie,
     compte,
     surDeconnexion,
+    edition,
+    basculerEdition: basculerEditionSure,
   };
 
   return (
@@ -408,6 +457,7 @@ function ApplicationConnectee({
             recharger={() => void charger()}
             naviguer={naviguerEtFermer}
             administration={administration}
+            peutEcrire={peutEcrire}
           />
         ) : route.nom === "formation" ? (
           <PageFormation
@@ -418,7 +468,7 @@ function ApplicationConnectee({
             surNettoyer={() => void nettoyer()}
             surReinitialiser={() => void reinitialiser()}
             occupe={administration.occupe}
-            estAdmin={compte.role === "admin"}
+            peutEcrire={peutEcrire}
             surCouverture={async (fichier) => {
               const { formation: aJour } = await api.televerserCouverture(
                 fid!,
@@ -441,13 +491,28 @@ function ApplicationConnectee({
             naviguer={naviguerEtFermer}
           />
         ) : route.nom === "comptes" ? (
-          <ConsoleComptes moi={compte} />
+          // Administrer des comptes n'est pas écrire une formation : seul le
+          // rôle compte ici, pas le mode édition (ED-R9).
+          <GardeEcriture {...garde} edition>
+            <ConsoleComptes moi={compte} />
+          </GardeEcriture>
         ) : route.nom === "administration" ? (
-          <Administration fid={null} naviguer={naviguerEtFermer} />
+          <GardeEcriture {...garde}>
+            <Administration fid={null} naviguer={naviguerEtFermer} />
+          </GardeEcriture>
         ) : route.nom === "structure" ? (
-          <Administration fid={route.fid} naviguer={naviguerEtFermer} />
+          <GardeEcriture {...garde}>
+            <Administration fid={route.fid} naviguer={naviguerEtFermer} />
+          </GardeEcriture>
         ) : route.nom === "editer" ? (
-          <EditeurLecon fid={route.fid} lid={route.lid} naviguer={naviguerEtFermer} />
+          <GardeEcriture {...garde}>
+            <EditeurLecon
+              fid={route.fid}
+              lid={route.lid}
+              naviguer={naviguerEtFermer}
+              surGardeSortie={enregistrerGardeSortie}
+            />
+          </GardeEcriture>
         ) : route.nom === "lecon" ? (
           <PageLecon
             lecon={lecon}
@@ -457,6 +522,7 @@ function ApplicationConnectee({
             naviguer={naviguerEtFermer}
             surBasculerFaite={() => void basculerFaite()}
             surBasculerCritere={basculerCritere}
+            peutEcrire={peutEcrire}
           />
         ) : (
           <div className="page">

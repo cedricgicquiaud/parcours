@@ -21,6 +21,9 @@ export interface ProprietesRail {
   /** Compte connecté (P011) : son nom et ses actions vivent au pied du rail. */
   compte: Compte;
   surDeconnexion: () => void;
+  /** Mode édition (ED-R3) : l'interrupteur n'existe que pour un administrateur. */
+  edition: boolean;
+  basculerEdition: () => void;
   /** Vrai quand le latéral est affiché en tiroir mobile (U-R6). */
   enTiroir?: boolean;
   fermerTiroir?: () => void;
@@ -144,6 +147,13 @@ export function ColonneLaterale(props: ProprietesRail) {
             <Icone nom="users-three" taille={15} />
           </a>
         ) : null}
+        {props.compte.role === "admin" ? (
+          <BoutonEdition
+            edition={props.edition}
+            basculer={props.basculerEdition}
+            taille={15}
+          />
+        ) : null}
         <button
           type="button"
           className="rail-compte-lien"
@@ -166,6 +176,37 @@ export function ColonneLaterale(props: ProprietesRail) {
         </button>
       </div>
     </aside>
+  );
+}
+
+/**
+ * Interrupteur « Édition » (ED-R12, ED-R13). Éteint, Parcours est un lecteur ;
+ * allumé, les outils d'auteur reviennent. Le libellé dit l'état, pas seulement
+ * la fonction : c'est lui qu'annonce un lecteur d'écran.
+ */
+function BoutonEdition({
+  edition,
+  basculer,
+  taille,
+  classe = "rail-compte-lien",
+}: {
+  edition: boolean;
+  basculer: () => void;
+  taille: number;
+  classe?: string;
+}) {
+  const libelle = edition ? "Désactiver l'édition" : "Activer l'édition";
+  return (
+    <button
+      type="button"
+      className={edition ? `${classe} actif` : classe}
+      aria-pressed={edition}
+      title={libelle}
+      aria-label={libelle}
+      onClick={basculer}
+    >
+      <Icone nom="pencil-simple" taille={taille} />
+    </button>
   );
 }
 
@@ -462,6 +503,14 @@ function Spine(props: ProprietesRail) {
         >
           <Icone nom="user-circle" taille={16} />
         </a>
+        {props.compte.role === "admin" ? (
+          <BoutonEdition
+            edition={props.edition}
+            basculer={props.basculerEdition}
+            taille={16}
+            classe="bouton-icone"
+          />
+        ) : null}
         <button
           type="button"
           className="bouton-icone"

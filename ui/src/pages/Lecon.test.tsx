@@ -34,6 +34,8 @@ const proprietes = {
   naviguer: () => undefined,
   surBasculerFaite: () => undefined,
   surBasculerCritere: () => Promise.resolve(true),
+  // Les tests historiques décrivent un auteur au travail (ED-R8).
+  peutEcrire: true,
 };
 
 describe("PageLecon (U-R3, U-R4, U-R5)", () => {
@@ -130,5 +132,31 @@ describe("PageLecon (U-R3, U-R4, U-R5)", () => {
       fid: "formation-claude",
       lid: "cloture",
     });
+  });
+});
+
+describe("en lecture — aucun geste d'écriture (ED-R7, ED-R9)", () => {
+  const enLecture = { ...proprietes, peutEcrire: false };
+
+  it("ne propose pas de modifier la leçon", () => {
+    render(<PageLecon {...enLecture} lecon={lecon()} />);
+    expect(
+      screen.queryByRole("button", { name: /Modifier cette leçon/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("laisse la progression intacte", () => {
+    render(<PageLecon {...enLecture} lecon={lecon()} />);
+    expect(
+      screen.getByRole("button", { name: /Marquer comme terminé/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Les hooks");
+  });
+
+  it("rend le bouton quand l'édition est allumée (ED-R8)", () => {
+    render(<PageLecon {...proprietes} lecon={lecon()} />);
+    expect(
+      screen.getByRole("button", { name: /Modifier cette leçon/ }),
+    ).toBeInTheDocument();
   });
 });

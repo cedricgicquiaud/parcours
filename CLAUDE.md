@@ -74,11 +74,18 @@ couverture, présentation, objectifs, prérequis et durées (tous facultatifs) ;
 l'écran d'une formation devient une vraie page d'entrée, et une couverture se
 dépose depuis la fiche sans jamais écraser l'ancienne. Règles :
 `.workflow/phases/07-fiche-formation/SPEC.md`.
-531 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+570 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
 l'écran formation est absorbé par la colonne latérale, où vit aussi la recherche.
+
+**Lire et écrire séparés (2026-08-16, décision P016)** : les gestes d'écriture
+vivent derrière un interrupteur « Édition » au pied de la colonne, réservé aux
+administrateurs et éteint par défaut ; en lecture, Parcours n'affiche aucun
+outil d'auteur. Les routes d'écriture et la console des comptes sont gardées
+côté interface (refus expliqué), l'autorisation restant celle du serveur.
+Règles : `.workflow/phases/08-mode-edition/SPEC.md`.
 
 **Orientation produit (2026-08-15, décision P013)** : si Parcours donne lieu un
 jour à une activité commerciale, ce sont les **formations** qui se vendent, pas
@@ -132,7 +139,10 @@ produit : si quelque chose se vend, ce sont les formations, pas le lecteur —
 le contenu passe devant les features ; aucun chantier de commercialisation
 ouvert), P014 (les critères de réussite sont l'unité fine de progression ;
 identité dérivée du texte, donc reformuler un critère perd sa coche ; Parcours
-n'exécute jamais de code et ne corrige jamais)**.
+n'exécute jamais de code et ne corrige jamais), P016 (lire et écrire ne sont
+plus le même écran : interrupteur « Édition » réservé aux admins, éteint par
+défaut ; `peutEcrire = admin && edition` est la seule notion d'écriture côté
+interface)**.
 
 Non négociables du PRD : tout local par défaut (serveur sur 127.0.0.1, aucune
 requête sortante depuis l'interface ; **seule exception, P012 : l'envoi SMTP,

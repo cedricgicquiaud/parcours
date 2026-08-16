@@ -73,6 +73,8 @@ const proprietes = {
   recharger: () => undefined,
   naviguer: () => undefined,
   administration: administrationFactice(),
+  // La plupart des tests ci-dessous décrivent un auteur au travail (ED-R8).
+  peutEcrire: true,
 };
 
 describe("Catalogue (U-R1, U-R8)", () => {
@@ -252,5 +254,71 @@ describe("Catalogue (U-R1, U-R8)", () => {
       fid: "formation-claude",
       lid: "les-hooks",
     });
+  });
+});
+
+describe("en lecture — aucun geste d'écriture (ED-R1, ED-R7)", () => {
+  const enLecture = { ...proprietes, peutEcrire: false };
+
+  it("ne propose ni création, ni dépôt, ni menu d'administration", () => {
+    render(<Catalogue {...enLecture} catalogue={catalogue()} />);
+
+    expect(
+      screen.queryByRole("button", { name: /Nouvelle formation/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Déposez un dossier de formation/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Administrer/ })).not.toBeInTheDocument();
+  });
+
+  it("cache aussi le menu d'une carte invalide", () => {
+    render(<Catalogue {...enLecture} catalogue={catalogue()} />);
+
+    // La carte reste affichée avec son erreur (F-R14), sans son menu.
+    expect(screen.getByText("modules[0].id manquant")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Administrer « mauvais-dossier »" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("cache les sections Archivées et Corbeille", () => {
+    render(
+      <Catalogue
+        {...enLecture}
+        catalogue={catalogue({
+          archivees: [
+            { statut: "valide", id: "vieux-cours", titre: "Vieux cours", lecons: 4 },
+          ],
+          corbeille: [
+            {
+              entree: "vieux--20260815-142530",
+              id: "vieux",
+              titre: "Vieux cours",
+              supprimeeLe: "2026-08-15T14:25:30.000Z",
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: /Archivées/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Corbeille/ })).not.toBeInTheDocument();
+  });
+
+  it("laisse la lecture parfaitement intacte (ED-R9)", () => {
+    render(<Catalogue {...enLecture} catalogue={catalogue()} />);
+
+    expect(screen.getByText("EN COURS")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Reprendre/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Commencer" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Revoir" })).toBeInTheDocument();
+  });
+
+  it("n'invite pas à créer depuis un catalogue vide", () => {
+    render(<Catalogue {...enLecture} catalogue={catalogue({ formations: [] })} />);
+
+    expect(screen.getByText("Aucune formation.")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Créer une formation/ }),
+    ).not.toBeInTheDocument();
   });
 });

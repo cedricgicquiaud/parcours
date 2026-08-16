@@ -30,9 +30,22 @@ En développement, ouvrez `http://localhost:5173`. En production, `npm run build
 puis `npm start` : un seul process sert l'API et l'interface sur
 `http://127.0.0.1:4620`.
 
+## Lire ou écrire
+
+Parcours démarre en **lecture** : le catalogue, les formations et les leçons,
+rien d'autre. Les outils d'auteur sont derrière l'interrupteur **« Édition »**,
+au pied de la colonne latérale (icône crayon), réservé aux administrateurs et
+éteint par défaut. Allumé, il fait apparaître la création, l'import, la
+modification de structure, l'édition des leçons, la couverture, l'archivage et
+la corbeille. Le choix est mémorisé par navigateur.
+
+Un compte lecteur ne voit ni l'interrupteur ni ces outils, et les adresses
+d'administration lui répondent par un refus expliqué. Côté serveur, l'écriture
+reste refusée à quiconque n'est pas administrateur, interrupteur ou pas.
+
 ## Créer une formation
 
-Deux voies, au choix :
+Édition allumée, deux voies au choix :
 
 - **Depuis l'application** : bouton « Nouvelle formation » sur le catalogue.
   Vous saisissez le titre, les modules et les leçons ; Parcours crée le dossier,

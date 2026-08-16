@@ -123,3 +123,60 @@ describe("fiche nue — aucune régression (FI-R11, FI-R12)", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 });
+
+describe("en lecture — aucun geste d'écriture (ED-R7, ED-R9)", () => {
+  function rendre(peutEcrire: boolean) {
+    const reponse = garnie();
+    reponse.avancement.orphelines = ["disparue"];
+    render(
+      <PageFormation
+        formation={reponse}
+        chargement={false}
+        erreur={null}
+        naviguer={vi.fn()}
+        surNettoyer={vi.fn()}
+        surReinitialiser={vi.fn()}
+        occupe={false}
+        surArchiver={vi.fn()}
+        surSupprimer={vi.fn()}
+        peutEcrire={peutEcrire}
+        surCouverture={vi.fn()}
+      />,
+    );
+  }
+
+  it("cache la structure, l'archivage, la corbeille et le dépôt de couverture", () => {
+    rendre(false);
+
+    expect(
+      screen.queryByRole("button", { name: /Modifier la structure/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Archiver/ })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Mettre à la corbeille/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/couverture/i)).not.toBeInTheDocument();
+  });
+
+  it("garde tout ce qui appartient à l'apprenant", () => {
+    rendre(false);
+
+    expect(
+      screen.getByRole("button", { name: /Réinitialiser ma progression/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Nettoyer" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Reprendre/ })).toBeInTheDocument();
+    // La couverture se regarde, elle ne se remplace plus.
+    expect(screen.getByRole("img", { name: "Formation pratique Claude" })).toBeInTheDocument();
+  });
+
+  it("rend tout quand l'édition est allumée (ED-R8)", () => {
+    rendre(true);
+
+    expect(
+      screen.getByRole("button", { name: /Modifier la structure/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Archiver/ })).toBeInTheDocument();
+    expect(screen.getByLabelText(/couverture/i)).toBeInTheDocument();
+  });
+});
