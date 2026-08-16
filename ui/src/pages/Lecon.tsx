@@ -247,12 +247,6 @@ export function PageLecon({
         </div>
 
         {erreurCoche ? <Bandeau icone="warning">{erreurCoche}</Bandeau> : null}
-        {avertissement ? (
-          <Bandeau icone="warning">
-            {total - faits} critère{total - faits > 1 ? "s restent" : " reste"} ouvert
-            {total - faits > 1 ? "s" : ""} — la leçon est marquée terminée quand même.
-          </Bandeau>
-        ) : null}
 
         <div
           className="contenu-lecon"
@@ -264,6 +258,17 @@ export function PageLecon({
       </article>
 
       <div className="barre-actions">
+        {/* CR-R11 : le message naît là où l'on vient de cliquer. En tête
+            d'article, il apparaissait hors de l'écran sur une leçon longue. */}
+        {avertissement ? (
+          <div className="barre-actions-avertissement" role="status">
+            <Icone nom="warning" taille={14} />
+            <span>
+              {total - faits} critère{total - faits > 1 ? "s restent" : " reste"} ouvert
+              {total - faits > 1 ? "s" : ""} — la leçon est marquée terminée quand même.
+            </span>
+          </div>
+        ) : null}
         <div className="barre-actions-contenu">
           {lecon.precedente ? (
             <button

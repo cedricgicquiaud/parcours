@@ -1572,6 +1572,17 @@ summary::-webkit-details-marker {
   border-top: 1px solid var(--line);
 }
 
+.barre-actions-avertissement {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--accent-text);
+}
+
 .barre-actions-contenu {
   width: 100%;
   max-width: 700px;
