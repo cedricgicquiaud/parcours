@@ -3,6 +3,10 @@
 Une formation est un dossier posé dans `formations/`. Le dossier peut être
 déplacé ailleurs avec la variable d'environnement `PARCOURS_FORMATIONS_DIR`.
 
+Les gestes d'écriture décrits ci-dessous vivent derrière l'interrupteur
+**« Édition »** du pied de colonne (icône crayon), réservé aux administrateurs
+et éteint par défaut : en lecture, Parcours n'affiche aucun outil d'auteur.
+
 Trois façons de créer une formation, au choix :
 
 - **Depuis l'application** : « Nouvelle formation » sur le catalogue. Vous
@@ -124,8 +128,8 @@ Déterministe, pour que le message d'erreur affiché soit toujours le même :
 CommonMark, plus les tableaux et les cases à cocher GitHub.
 
 - Le HTML écrit à la main est **affiché en texte**, jamais interprété.
-- Les cases à cocher du contenu sont décoratives : désactivées, jamais
-  enregistrées. La progression est à la leçon, pas à la case.
+- Les cases à cocher du contenu sont des **critères de réussite** cochables et
+  mémorisés par compte — voir « Les critères de réussite » plus bas.
 - Les titres du contenu descendent d'un niveau au rendu (`#` devient `<h2>`) :
   le seul `<h1>` de l'écran est le titre de la leçon, pris dans le manifeste.
 
