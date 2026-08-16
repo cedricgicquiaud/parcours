@@ -1,0 +1,50 @@
+{
+  "formatVersion": 1,
+  "id": "prise-en-main",
+  "titre": "Prise en main de Parcours",
+  "description": "Le format des formations, vu de l'intérieur : manifeste, blocs, exercices et progression. Projet indépendant, non affilié à Anthropic.",
+  "modules": [
+    {
+      "id": "decouverte",
+      "titre": "Découverte",
+      "lecons": [
+        {
+          "id": "bienvenue",
+          "titre": "Bienvenue",
+          "fichier": "lecons/bienvenue.md"
+        },
+        {
+          "id": "anatomie-formation",
+          "titre": "Anatomie d'une formation",
+          "fichier": "lecons/anatomie-formation.md"
+        },
+        {
+          "id": "progression",
+          "titre": "Comment la progression est gardée",
+          "fichier": "lecons/progression.md"
+        }
+      ]
+    },
+    {
+      "id": "ecriture",
+      "titre": "Écrire une leçon",
+      "lecons": [
+        {
+          "id": "blocs-speciaux",
+          "titre": "Les blocs spéciaux",
+          "fichier": "lecons/blocs-speciaux.md"
+        },
+        {
+          "id": "exercice-guide",
+          "titre": "Exercice guidé",
+          "fichier": "lecons/exercice-guide.md"
+        },
+        {
+          "id": "cloture",
+          "titre": "Clôture du module",
+          "fichier": "lecons/cloture.md"
+        }
+      ]
+    }
+  ]
+}

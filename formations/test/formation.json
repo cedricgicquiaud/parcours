@@ -1,0 +1,18 @@
+{
+  "formatVersion": 1,
+  "id": "test",
+  "titre": "Test",
+  "modules": [
+    {
+      "id": "fondations",
+      "titre": "Fondations",
+      "lecons": [
+        {
+          "id": "lecon-1",
+          "titre": "Lecon 1",
+          "fichier": "lecons/lecon-1.md"
+        }
+      ]
+    }
+  ]
+}

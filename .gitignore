@@ -2,3 +2,9 @@ node_modules/
 dist/
 *.log
 .DS_Store
+
+# Emplacements techniques du cycle de vie des formations (P010) : contenu local,
+# jamais versionné — c'est le dossier de travail de l'utilisateur.
+formations/.archives/
+formations/.corbeille/
+formations/.import-*

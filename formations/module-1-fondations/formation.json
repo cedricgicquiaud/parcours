@@ -1,0 +1,44 @@
+{
+  "formatVersion": 1,
+  "id": "module-1-fondations",
+  "titre": "Module 1 — Fondations Claude Code",
+  "description": "Piloter Claude Code avec méthode : plan mode, CLAUDE.md, slash command, hooks, TDD.",
+  "modules": [
+    {
+      "id": "fondations",
+      "titre": "Fondations",
+      "lecons": [
+        {
+          "id": "avant-de-commencer",
+          "titre": "Avant de commencer",
+          "fichier": "lecons/avant-de-commencer.md"
+        },
+        {
+          "id": "ex-1-1-initialiser-le-projet-en-plan-mode",
+          "titre": "Ex 1.1 — Initialiser le projet en plan mode",
+          "fichier": "lecons/ex-1-1-initialiser-le-projet-en-plan-mode.md"
+        },
+        {
+          "id": "ex-1-2-un-claude-md-qui-agit-vraiment",
+          "titre": "Ex 1.2 — Un CLAUDE.md qui agit vraiment",
+          "fichier": "lecons/ex-1-2-un-claude-md-qui-agit-vraiment.md"
+        },
+        {
+          "id": "ex-1-3-la-slash-command-progress",
+          "titre": "Ex 1.3 — La slash command /progress",
+          "fichier": "lecons/ex-1-3-la-slash-command-progress.md"
+        },
+        {
+          "id": "ex-1-4-deux-hooks-qualite-et-garde-fou",
+          "titre": "Ex 1.4 — Deux hooks : qualité et garde-fou",
+          "fichier": "lecons/ex-1-4-deux-hooks-qualite-et-garde-fou.md"
+        },
+        {
+          "id": "ex-1-5-une-feature-en-tdd-pilote",
+          "titre": "Ex 1.5 — Une feature en TDD piloté",
+          "fichier": "lecons/ex-1-5-une-feature-en-tdd-pilote.md"
+        }
+      ]
+    }
+  ]
+}

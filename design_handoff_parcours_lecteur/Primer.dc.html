@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/nocturne-0cc673e3-55db-479a-9b3b-ca304a6d7713/styles.css">
+<script src="_ds/nocturne-0cc673e3-55db-479a-9b3b-ca304a6d7713/_ds_bundle.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+body{margin:0;background:var(--bg,#ffffff);font-family:var(--font,Inter,system-ui,sans-serif)}
+.app,.p-solaire-clair{--bg:#ffffff;--pane:#faf9f7;--rail:#f6f4f1;--text:#302a22;--prose:#3c352c;--muted:#5f574d;--faint:#655d53;--line:#eae4dc;--accent:#f2701f;--accent-text:#a8480a;--accent-soft:rgba(242,112,31,.10);--code:#f6f4f1;--bar:rgba(255,255,255,.94);--r:14px;--r-lg:20px;--r-sm:12px;--font:'Open Sans',system-ui,sans-serif}
+.p-solaire-sombre{--bg:#0b0a09;--pane:#211f1c;--rail:#141311;--text:#eae7e4;--prose:#dcd8d4;--muted:#9a938c;--faint:#968f88;--line:#37342f;--accent:#f2701f;--accent-text:#f59a5f;--accent-soft:rgba(242,112,31,.14);--code:#161412;--bar:rgba(11,10,9,.93);--r:14px;--r-lg:20px;--r-sm:12px;--font:'Open Sans',system-ui,sans-serif}
+a{color:var(--accent-text);text-decoration:none}a:hover{color:var(--accent)}
+summary{list-style:none;cursor:pointer}summary::-webkit-details-marker{display:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::selection{background:var(--accent-soft)}
+input::placeholder{color:var(--faint)}
+</style>
+</helmet>
+
+<div class="app {{ paletteClass }}" style="min-height:100vh;display:flex;background:var(--bg);color:var(--text);font:400 15px/1.55 var(--font);-webkit-font-smoothing:antialiased">
+
+  <sc-if value="{{ collapsed }}">
+  <div style="width:62px;flex:none;background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:16px;padding:18px 0;position:sticky;top:0;height:100vh">
+    <a href="#" title="Catalogue" style="width:17px;height:17px;border:1.5px solid var(--accent);border-radius:5px"></a>
+    <button onClick="{{ toggleRail }}" title="Ouvrir le sommaire" aria-label="Ouvrir le sommaire" style="display:flex;padding:6px;color:var(--muted);background:transparent;border:0;border-radius:var(--r-sm);cursor:pointer" style-hover="background:var(--pane);color:var(--text)"><i class="ph ph-sidebar-simple" style="font-size:17px"></i></button>
+    <sc-if value="{{ isLecon }}">
+    <div onClick="{{ toggleRail }}" title="Module 01 — leçon 4 sur 5" style="display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;padding:6px 0">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--accent)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--accent)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--accent)"></span>
+      <span style="width:9px;height:9px;border-radius:50%;border:1.5px solid var(--accent);box-shadow:0 0 0 3px var(--accent-soft)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--line)"></span>
+      <span style="width:1px;height:14px;background:var(--line)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--line)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--line)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--line)"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--line)"></span>
+    </div>
+    <span style="font:400 10.5px ui-monospace,Menlo,monospace;color:var(--faint);writing-mode:vertical-rl;letter-spacing:.1em">39 %</span>
+    </sc-if>
+    <i class="ph ph-magnifying-glass" style="margin-top:auto;font-size:16px;color:var(--faint);cursor:pointer"></i>
+    <button onClick="{{ toggleMode }}" aria-label="Changer de mode" style="display:flex;padding:5px;color:var(--faint);background:transparent;border:0;border-radius:6px;cursor:pointer" style-hover="color:var(--text)"><i class="{{ modeIcon }}" style="font-size:16px"></i></button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ docked }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:272px;flex:none;background:var(--rail);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+    <div style="padding:18px 18px 0;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <a href="#" style="display:flex;align-items:center;gap:9px;color:var(--text)">
+          <span style="width:16px;height:16px;border:1.5px solid var(--accent);border-radius:5px"></span>
+          <span style="font-size:14.5px;font-weight:500;letter-spacing:-.01em">Primer</span>
+        </a>
+        <button onClick="{{ toggleRail }}" title="Replier le sommaire" aria-label="Replier le sommaire" style="margin-left:auto;display:flex;padding:5px;color:var(--faint);background:transparent;border:0;border-radius:6px;cursor:pointer" style-hover="background:var(--pane);color:var(--text)"><i class="ph ph-sidebar-simple" style="font-size:16px"></i></button>
+      </div>
+      <sc-if value="{{ isLecon }}">
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <a href="#" style="font-size:14px;color:var(--text);letter-spacing:-.005em">Formation pratique Claude</a>
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden"><div style="width:39%;height:100%;background:var(--accent)"></div></div>
+          <span style="font-size:11.5px;color:var(--faint)">12/31</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;padding:8px 10px;background:var(--pane);border:1px solid var(--line);border-radius:var(--r)">
+        <i class="ph ph-magnifying-glass" style="font-size:14px;color:var(--faint)"></i>
+        <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Rechercher" aria-label="Rechercher dans cette formation" style="flex:1;min-width:0;font:400 13px var(--font);color:var(--text);background:transparent;border:0;outline:none">
+        <span style="font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:0 4px">/</span>
+      </div>
+      </sc-if>
+      <sc-if value="{{ isCatalogue }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <span style="font-size:13.5px;color:var(--text)">Mes formations</span>
+        <span style="font-size:11.5px;color:var(--faint)">3 formations · 47 leçons · 12 terminées</span>
+      </div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ searching }}">
+    <div style="flex:1;overflow:auto;padding:18px 12px;display:flex;flex-direction:column;gap:15px">
+      <span aria-live="polite" style="padding:0 8px;font-size:11.5px;color:var(--faint)">3 résultats</span>
+      <a href="#" style="display:flex;flex-direction:column;gap:4px;padding:0 8px;color:var(--text)"><span style="display:flex;align-items:center;gap:9px;font-size:13.5px"><span style="width:5px;height:5px;border-radius:50%;background:var(--accent)"></span>Les hooks</span><span style="font-size:12.5px;color:var(--muted);padding-left:14px">…un <mark style="background:var(--accent-soft);color:var(--text)">hook</mark> se déclenche à chaque écriture…</span></a>
+      <a href="#" style="display:flex;flex-direction:column;gap:4px;padding:0 8px;color:var(--text)"><span style="display:flex;align-items:center;gap:9px;font-size:13.5px"><i class="ph ph-check" style="font-size:12px;color:var(--accent-text)"></i>Le mode plan</span><span style="font-size:12.5px;color:var(--muted);padding-left:14px">…contrairement aux <mark style="background:var(--accent-soft);color:var(--text)">hooks</mark>, le mode plan…</span></a>
+      <a href="#" style="display:flex;flex-direction:column;gap:4px;padding:0 8px;color:var(--text)"><span style="display:flex;align-items:center;gap:9px;font-size:13.5px"><span style="width:5px;height:5px;border-radius:50%;background:var(--line)"></span>Journaliser les sessions</span><span style="font-size:12.5px;color:var(--muted);padding-left:14px">…brancher un <mark style="background:var(--accent-soft);color:var(--text)">hook</mark> de fin de session…</span></a>
+      <span style="margin-top:auto;padding:10px 8px 0;border-top:1px solid var(--line);font-size:11px;color:var(--faint)">Échap revient au sommaire. Indices et solutions ne sont jamais indexés.</span>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isCatalogue }}" hint-placeholder-val="{{ true }}">
+    <nav style="flex:1;overflow:auto;padding:18px 12px 12px;display:flex;flex-direction:column;gap:3px">
+      <a href="#" onClick="{{ goLecon }}" style="display:flex;flex-direction:column;gap:6px;padding:9px 8px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--text)">
+        <span style="font-size:13.5px">Formation pratique Claude</span>
+        <span style="display:flex;align-items:center;gap:8px"><span style="flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden"><span style="display:block;width:39%;height:100%;background:var(--accent)"></span></span><span style="font-size:11px;color:var(--faint)">12/31</span></span>
+      </a>
+      <a href="#" style="display:flex;flex-direction:column;gap:6px;padding:9px 8px;border-radius:var(--r-sm);color:var(--muted)" style-hover="background:var(--pane);color:var(--text)">
+        <span style="font-size:13.5px">Écrire pour le web</span>
+        <span style="display:flex;align-items:center;gap:8px"><span style="flex:1;height:3px;background:var(--line);border-radius:2px"></span><span style="font-size:11px;color:var(--faint)">0/12</span></span>
+      </a>
+      <a href="#" style="display:flex;flex-direction:column;gap:6px;padding:9px 8px;border-radius:var(--r-sm);color:var(--muted)" style-hover="background:var(--pane);color:var(--text)">
+        <span style="font-size:13.5px">SQLite en pratique</span>
+        <span style="display:flex;align-items:center;gap:8px"><span style="flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden"><span style="display:block;width:100%;height:100%;background:var(--accent)"></span></span><span style="font-size:11px;color:var(--faint)">12/12</span></span>
+      </a>
+      <div style="display:flex;align-items:center;gap:9px;padding:9px 8px;color:var(--faint)">
+        <i class="ph ph-warning" style="font-size:14px"></i>
+        <span style="font:400 12.5px ui-monospace,Menlo,monospace">mauvais-dossier</span>
+      </div>
+    </nav>
+    </sc-if>
+    <sc-if value="{{ showSommaire }}">
+    <nav style="flex:1;overflow:auto;padding:18px 12px 12px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 8px 7px"><span style="font-size:10.5px;letter-spacing:.11em;color:var(--faint)">01 · FONDATIONS</span><span style="margin-left:auto;font-size:11px;color:var(--faint)">4/5</span></div>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><i class="ph ph-check" style="font-size:13px;color:var(--accent-text)"></i>Installer Claude Code</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><i class="ph ph-check" style="font-size:13px;color:var(--accent-text)"></i>Le mode plan</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><i class="ph ph-check" style="font-size:13px;color:var(--accent-text)"></i>Les sous-agents</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--text);background:var(--accent-soft)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--accent)"></span>Les hooks</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--line)"></span>Clôture du module</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 8px 7px"><span style="font-size:10.5px;letter-spacing:.11em;color:var(--faint)">02 · AGENT SKILLS</span><span style="margin-left:auto;font-size:11px;color:var(--faint)">0/4</span></div>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--line)"></span>Anatomie d'une skill</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--line)"></span>Écrire le manifeste</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--line)"></span>Tester la skill</a>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--line)"></span>Clôture du module</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:0 8px 7px"><span style="font-size:10.5px;letter-spacing:.11em;color:var(--faint)">03 · MCP</span><span style="margin-left:auto;font-size:11px;color:var(--faint)">0/9</span></div>
+        <a href="#" style="display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm);font-size:13.5px;color:var(--muted)" style-hover="background:var(--pane);color:var(--text)"><span style="width:5px;height:5px;margin:0 4px;border-radius:50%;background:var(--line)"></span>Brancher un serveur</a>
+      </div>
+    </nav>
+    </sc-if>
+
+    <div style="padding:12px 18px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:12px">
+      <a href="#" onClick="{{ goCatalogue }}" style="font-size:12px;color:var(--faint)" style-hover="color:var(--text)">Catalogue</a>
+      <a href="#" style="font-size:12px;color:var(--faint)" style-hover="color:var(--text)">Réinitialiser</a>
+      <button onClick="{{ toggleMode }}" aria-label="Changer de mode" style="margin-left:auto;display:flex;padding:4px;color:var(--faint);background:transparent;border:0;border-radius:6px;cursor:pointer" style-hover="color:var(--text)"><i class="{{ modeIcon }}" style="font-size:15px"></i></button>
+    </div>
+  </aside>
+  </sc-if>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <sc-if value="{{ isCatalogue }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;width:100%;max-width:940px;margin:0 auto;padding:56px 40px 44px;display:flex;flex-direction:column;gap:26px">
+      <div style="display:flex;align-items:baseline;gap:12px">
+        <h1 style="margin:0;font:500 32px/1.15 var(--font);letter-spacing:-.025em">Mes formations</h1>
+        <span style="font-size:12.5px;color:var(--faint)">3 formations · 47 leçons</span>
+      </div>
+
+      <div style="display:flex;gap:32px;align-items:flex-start;padding:24px 26px;background:var(--pane);border:1px solid var(--line);border-radius:var(--r-lg)">
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:11px;letter-spacing:.11em;color:var(--accent-text)">EN COURS</span>
+          <a href="#" onClick="{{ goLecon }}" style="font:500 22px/1.22 var(--font);letter-spacing:-.018em;color:var(--text)" style-hover="color:var(--accent-text)">Formation pratique Claude</a>
+          <p style="margin:0;max-width:60ch;font-size:14.5px;line-height:1.6;color:var(--muted);text-wrap:pretty">Compagnon pratique de l'Anthropic Academy : un exercice par leçon, du premier lancement de Claude Code à la mise en production d'un agent.</p>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:2px">
+            <div style="flex:1;max-width:300px;height:4px;background:var(--line);border-radius:2px;overflow:hidden"><div style="width:39%;height:100%;background:var(--accent)"></div></div>
+            <span style="font-size:12.5px;color:var(--faint)">12 leçons sur 31 — 39 %</span>
+          </div>
+        </div>
+        <div style="flex:none;display:flex;flex-direction:column;gap:9px;align-items:flex-start;padding-left:32px;border-left:1px solid var(--line)">
+          <span style="font-size:11px;letter-spacing:.11em;color:var(--faint)">PROCHAINE LEÇON</span>
+          <span style="font-size:14.5px">Module 01 · Les hooks</span>
+          <button onClick="{{ goLecon }}" style="margin-top:8px;display:flex;align-items:center;gap:9px;padding:10px 16px;font:400 14px var(--font);color:var(--accent-text);background:transparent;border:1px solid var(--accent);border-radius:var(--r);cursor:pointer" style-hover="background:var(--accent-soft)">Reprendre<i class="ph ph-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <span style="font-size:11px;letter-spacing:.11em;color:var(--faint)">TOUTES MES FORMATIONS</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(244px,1fr));gap:14px">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:17px;background:var(--pane);border:1px solid var(--line);border-radius:var(--r-lg)">
+            <a href="#" style="font:500 16px/1.3 var(--font);color:var(--text)" style-hover="color:var(--accent-text)">Écrire pour le web</a>
+            <p style="margin:0;font-size:13px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Structure, ton et relecture d'un texte technique destiné à être lu à l'écran.</p>
+            <div style="height:4px;background:var(--line);border-radius:2px;margin-top:2px"></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--faint)">0/12 leçons</span>
+              <button style="margin-left:auto;padding:6px 12px;font:400 13px var(--font);color:var(--accent-text);background:transparent;border:1px solid var(--accent);border-radius:var(--r);cursor:pointer" style-hover="background:var(--accent-soft)">Commencer</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;padding:17px;background:var(--pane);border:1px solid var(--line);border-radius:var(--r-lg)">
+            <a href="#" style="font:500 16px/1.3 var(--font);color:var(--text)" style-hover="color:var(--accent-text)">SQLite en pratique</a>
+            <p style="margin:0;font-size:13px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">Schéma, index, WAL et sauvegardes, sur une base locale mono-utilisateur.</p>
+            <div style="height:4px;background:var(--line);border-radius:2px;margin-top:2px;overflow:hidden"><div style="width:100%;height:100%;background:var(--accent)"></div></div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--faint)">12/12 leçons</span>
+              <button style="margin-left:auto;padding:6px 12px;font:400 13px var(--font);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:var(--r);cursor:pointer" style-hover="border-color:var(--accent);color:var(--text)">Revoir</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:9px;padding:17px;background:var(--pane);border:1px solid var(--line);border-left:2px solid var(--faint);border-radius:var(--r-lg)">
+            <div style="display:flex;align-items:center;gap:9px"><i class="ph ph-warning" style="font-size:15px;color:var(--muted)"></i><code style="font:400 13px ui-monospace,Menlo,monospace;color:var(--text)">mauvais-dossier</code></div>
+            <p style="margin:0;font-size:13px;line-height:1.5;color:var(--muted)">formation.json : <code style="font:400 12.5px ui-monospace,Menlo,monospace">modules[0].id</code> manquant</p>
+            <span style="margin-top:auto;font-size:12px;color:var(--faint)">Corrigez le manifeste, puis rechargez.</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;text-align:center;padding:17px;min-height:132px;border:1px dashed var(--line);border-radius:var(--r-lg)">
+            <span style="font-size:13px;color:var(--faint);max-width:20ch">Déposez un dossier dans <code style="font:400 12.5px ui-monospace,Menlo,monospace">formations/</code></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:6px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--faint)">Projet indépendant, non affilié à Anthropic.</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ isLecon }}">
+    <article style="flex:1;width:100%;max-width:700px;margin:0 auto;padding:56px 40px 44px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--faint);letter-spacing:.02em">
+        <a href="#" onClick="{{ goCatalogue }}" style="color:var(--faint)" style-hover="color:var(--text)">Formation pratique Claude</a><span>/</span><span>MODULE 01</span><span>·</span><span>LEÇON 4 SUR 5</span>
+      </div>
+      <h1 style="margin:0;font:500 34px/1.15 var(--font);letter-spacing:-.025em">Les hooks</h1>
+
+      <div style="display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--pane);border:1px solid var(--line);border-radius:var(--r)">
+        <i class="ph ph-arrow-square-out" style="font-size:15px;color:var(--accent-text)"></i>
+        <span style="font-size:12px;letter-spacing:.09em;color:var(--muted)">AVANT CETTE LEÇON</span>
+        <a href="https://anthropic.skilljar.com" target="_blank" rel="noopener" style="font-size:14px">Cours Academy : Claude Code in Action</a>
+      </div>
+
+      <p style="margin:0;font-size:16.5px;line-height:1.65;color:var(--prose);text-wrap:pretty">Un hook est une commande que Claude Code exécute lui-même à un moment précis de la session : avant un appel d'outil, après une écriture de fichier, à la fin d'une conversation. Vous ne lui demandez rien — c'est le déclenchement qui est configuré, une fois, dans un fichier de réglages.</p>
+      <p style="margin:0;font-size:16.5px;line-height:1.65;color:var(--prose);text-wrap:pretty">La différence avec une instruction écrite dans un prompt est nette : une instruction peut être oubliée ou reformulée, un hook s'exécute toujours. C'est le bon endroit pour ce qui ne doit jamais dépendre de la bonne volonté du modèle : formater le code, refuser une écriture hors du dépôt, journaliser ce qui a été touché.</p>
+
+      <figure style="margin:4px 0;display:flex;flex-direction:column;gap:9px">
+        <pre style="margin:0;padding:17px 19px;background:var(--code);border:1px solid var(--line);border-radius:var(--r);overflow-x:auto;font:400 13.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace"><span style="color:var(--muted)">// .claude/settings.json</span>
+{
+  <span style="color:var(--accent-text)">"hooks"</span>: {
+    <span style="color:var(--accent-text)">"PostToolUse"</span>: [
+      { <span style="color:var(--accent-text)">"matcher"</span>: "Write|Edit",
+        <span style="color:var(--accent-text)">"command"</span>: "npm run format -- $CLAUDE_FILE" }
+    ]
+  }
+}</pre>
+        <figcaption style="font-size:12.5px;color:var(--faint)">Le hook reçoit le chemin du fichier touché par variable d'environnement.</figcaption>
+      </figure>
+
+      <div style="display:flex;gap:13px;padding:15px 17px;background:var(--accent-soft);border-radius:var(--r)">
+        <i class="ph ph-lightbulb" style="font-size:17px;color:var(--accent-text);margin-top:2px"></i>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <span style="font-size:11.5px;letter-spacing:.07em;color:var(--accent-text)">ASTUCE</span>
+          <p style="margin:0;font-size:15px;line-height:1.58">Commencez par un hook qui ne fait qu'écrire une ligne dans un fichier de log. Vous verrez l'ordre réel des événements avant d'y brancher quelque chose de bloquant.</p>
+        </div>
+      </div>
+
+      <h2 style="margin:16px 0 0;font:500 21px/1.3 var(--font);letter-spacing:-.012em">À vous</h2>
+      <p style="margin:0;font-size:16.5px;line-height:1.65;color:var(--prose);text-wrap:pretty">Configurez un hook <code style="padding:2px 5px;background:var(--code);border-radius:4px;font:400 14px ui-monospace,Menlo,monospace">PreToolUse</code> qui refuse toute écriture en dehors du dossier du projet, et vérifiez qu'il bloque bien une tentative d'écriture dans <code style="padding:2px 5px;background:var(--code);border-radius:4px;font:400 14px ui-monospace,Menlo,monospace">/tmp</code>.</p>
+      <ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:16px;color:var(--prose)">
+        <li>Le hook s'exécute avant l'écriture, pas après</li>
+        <li>Une écriture hors du projet est refusée avec un message lisible</li>
+        <li>Une écriture légitime dans le projet passe sans friction</li>
+      </ul>
+
+      <details style="border:1px solid var(--line);border-radius:var(--r);background:var(--pane)">
+        <summary style="display:flex;align-items:center;gap:10px;padding:13px 16px;font-size:14.5px"><i class="ph ph-caret-right" style="font-size:12px;color:var(--faint)"></i>Indice 1 — La direction</summary>
+        <div style="padding:0 16px 15px 40px;font-size:15px;line-height:1.6;color:var(--muted)">Le hook doit sortir avec un code non nul pour bloquer l'action. Regardez ce que Claude Code passe sur l'entrée standard avant de décider.</div>
+      </details>
+      <details style="border:1px solid var(--line);border-radius:var(--r);background:var(--pane)">
+        <summary style="display:flex;align-items:center;gap:10px;padding:13px 16px;font-size:14.5px"><i class="ph ph-caret-right" style="font-size:12px;color:var(--faint)"></i>Solution</summary>
+        <div style="padding:0 16px 15px 40px;font-size:15px;line-height:1.6;color:var(--muted)">Un script court lit le JSON sur stdin, extrait le chemin cible, le compare au dossier du projet et sort en 2 avec un message si le chemin est ailleurs.</div>
+      </details>
+    </article>
+
+    <div style="position:sticky;bottom:0;padding:13px 40px;background:var(--bar);backdrop-filter:blur(8px);border-top:1px solid var(--line)">
+      <div style="width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;gap:10px">
+        <a href="#" style="display:flex;align-items:center;gap:8px;padding:9px 13px;font-size:13.5px;color:var(--muted);border:1px solid var(--line);border-radius:var(--r)" style-hover="border-color:var(--accent);color:var(--text)"><i class="ph ph-arrow-left"></i>Les sous-agents</a>
+        <button onClick="{{ toggleDone }}" style="{{ doneStyle }}"><i class="{{ doneIcon }}" style="font-size:16px"></i>{{ doneLabel }}</button>
+        <a href="#" style="display:flex;align-items:center;gap:8px;padding:9px 13px;font-size:13.5px;color:var(--muted);border:1px solid var(--line);border-radius:var(--r)" style-hover="border-color:var(--accent);color:var(--text)">Clôture du module<i class="ph ph-arrow-right"></i></a>
+      </div>
+    </div>
+    </sc-if>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;clair&quot;,&quot;sombre&quot;],&quot;default&quot;:&quot;clair&quot;,&quot;tsType&quot;:&quot;'clair'|'sombre'&quot;,&quot;section&quot;:&quot;Apparence&quot;},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;catalogue&quot;,&quot;lecon&quot;],&quot;default&quot;:&quot;catalogue&quot;,&quot;tsType&quot;:&quot;'catalogue'|'lecon'&quot;},&quot;railCollapsed&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;lessonDone&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { collapsed: props.railCollapsed ?? false, query: '', done: props.lessonDone ?? false, screen: props.screen ?? 'catalogue', mode: null };
+  }
+  componentDidMount() {
+    this._keys = (e) => {
+      if (e.key === 'Escape') this.setState({ query: '' });
+      if (e.key === '/' && document.activeElement && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        const el = document.querySelector('aside input');
+        if (el) el.focus(); else this.setState({ collapsed: false });
+      }
+    };
+    window.addEventListener('keydown', this._keys);
+  }
+  componentWillUnmount() { window.removeEventListener('keydown', this._keys); }
+  componentDidUpdate(prevProps) {
+    if (prevProps.mode !== this.props.mode) this.setState({ mode: null });
+    if (prevProps.screen !== this.props.screen) this.setState({ screen: this.props.screen ?? 'catalogue' });
+  }
+  renderVals() {
+    const s = this.state, q = s.query.trim();
+    const palette = this.props.palette ?? 'solaire';
+    const mode = s.mode ?? this.props.mode ?? 'clair';
+    const paletteClass = 'p-' + palette + '-' + mode;
+    if (document.body.className !== paletteClass) document.body.className = paletteClass;
+    return {
+      paletteClass: paletteClass,
+      modeIcon: mode === 'sombre' ? 'ph ph-sun' : 'ph ph-moon',
+      toggleMode: (e) => { if (e) e.preventDefault(); this.setState({ mode: mode === 'sombre' ? 'clair' : 'sombre' }); },
+      collapsed: s.collapsed,
+      docked: !s.collapsed,
+      toggleRail: (e) => { if (e) e.preventDefault(); this.setState({ collapsed: !s.collapsed }); },
+      query: s.query,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      searching: q.length >= 2 && s.screen === 'lecon',
+      notSearching: q.length < 2,
+      isCatalogue: s.screen === 'catalogue',
+      isLecon: s.screen === 'lecon',
+      showSommaire: s.screen === 'lecon' && q.trim().length < 2,
+      goCatalogue: (e) => { if (e) e.preventDefault(); this.setState({ screen: 'catalogue', query: '' }); },
+      goLecon: (e) => { if (e) e.preventDefault(); this.setState({ screen: 'lecon' }); },
+      doneLabel: s.done ? 'Terminé' : 'Marquer comme terminé',
+      doneIcon: s.done ? 'ph ph-check-circle' : 'ph ph-check',
+      doneStyle: 'flex:1;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 16px;font:400 14px var(--font);color:var(--accent-text);border-radius:var(--r);cursor:pointer;border:1px solid var(--accent);' + (s.done ? 'background:var(--accent-soft)' : 'background:transparent'),
+      toggleDone: () => this.setState({ done: !s.done })
+    };
+  }
+}
+</script>
+</body>
+</html>
