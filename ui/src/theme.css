@@ -250,6 +250,58 @@ summary::-webkit-details-marker {
   gap: 3px;
 }
 
+/* ---------- Fiche de présentation d'une formation (phase 07) ---------- */
+
+.couverture-formation {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  display: block;
+}
+
+.carte-couverture {
+  width: calc(100% + 2px);
+  margin: -1px -1px 4px;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border-radius: var(--r) var(--r) 0 0;
+  display: block;
+}
+
+.fiche-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 66ch;
+}
+
+.fiche-liste {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 15px;
+  color: var(--prose);
+}
+
+.module-description {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+  color: var(--muted);
+  max-width: 66ch;
+}
+
+.ligne-lecon-duree {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
 /* Spine : latéral replié */
 .spine {
   width: 62px;

@@ -1,4 +1,6 @@
+import { useMemo, useState } from "react";
 import type { ReponseFormation } from "../api";
+import { formaterDuree } from "../duree";
 import {
   Bandeau,
   Barre,
@@ -7,6 +9,30 @@ import {
   Squelette,
 } from "../composants/communs";
 import type { Route } from "../routeur";
+
+/** Une liste de la fiche : objectifs, prérequis. Absente ou vide → rien (FI-R11). */
+function ListeFiche({
+  titre,
+  entrees,
+}: {
+  titre: string;
+  entrees?: string[];
+}) {
+  if (!entrees || entrees.length === 0) return null;
+  const identifiant = titre.toLowerCase().replace(/[^a-z]+/g, "-");
+  return (
+    <section className="fiche-bloc">
+      <span className="kicker-faible" id={identifiant}>
+        {titre}
+      </span>
+      <ul className="fiche-liste" aria-labelledby={identifiant}>
+        {entrees.map((entree) => (
+          <li key={entree}>{entree}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 const LIBELLES_ACTION = {
   commencer: "Commencer",
@@ -35,6 +61,14 @@ export function PageFormation({
   surSupprimer?: () => void;
   occupe?: boolean;
 }) {
+  const [couvertureCassee, setCouvertureCassee] = useState(false);
+  // Référence stable : React compare l'objet, pas la chaîne — sans mémo, le
+  // contenu serait réinjecté à chaque rendu (régression corrigée en phase 05).
+  const presentation = useMemo(
+    () => ({ __html: formation?.presentationHtml ?? "" }),
+    [formation?.presentationHtml],
+  );
+
   if (erreur) {
     return (
       <div className="page">
@@ -69,10 +103,22 @@ export function PageFormation({
 
   return (
     <div className="page">
+      {formation.couverture && !couvertureCassee ? (
+        <img
+          className="couverture-formation"
+          src={`/api/formations/${encodeURIComponent(formation.id)}/assets/${formation.couverture.replace(/^assets\//, "")}`}
+          alt={formation.titre}
+          // FI-R12 : une couverture introuvable disparaît, elle ne laisse pas
+          // de cadre vide au sommet de la fiche.
+          onError={() => setCouvertureCassee(true)}
+        />
+      ) : null}
+
       <div className="titre-page">
         <h1>{formation.titre}</h1>
         <span className="meta-faible">
           {avancement.faites}/{avancement.total} leçons — {avancement.pourcentage} %
+          {formation.duree !== undefined ? ` — ${formaterDuree(formation.duree)}` : ""}
         </span>
       </div>
 
@@ -94,6 +140,20 @@ export function PageFormation({
       <div className="barre-ligne" style={{ maxWidth: 420 }}>
         <Barre pourcentage={avancement.pourcentage} epaisse />
       </div>
+
+      {formation.presentationHtml ? (
+        <section className="fiche-bloc">
+          <span className="kicker-faible">À PROPOS</span>
+          <div
+            className="contenu-lecon"
+            // HTML déjà assaini par le serveur (A-R5).
+            dangerouslySetInnerHTML={presentation}
+          />
+        </section>
+      ) : null}
+
+      <ListeFiche titre="CE QUE VOUS SAUREZ FAIRE" entrees={formation.objectifs} />
+      <ListeFiche titre="AVANT DE COMMENCER" entrees={formation.prerequis} />
 
       {avancement.prochaine ? (
         <button
@@ -142,8 +202,12 @@ export function PageFormation({
               </span>
               <span className="module-compteur">
                 {module.faites}/{module.total}
+                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
               </span>
             </div>
+            {module.description ? (
+              <p className="module-description">{module.description}</p>
+            ) : null}
             {module.lecons.map((lecon) => (
               <a
                 key={lecon.id}
@@ -159,7 +223,10 @@ export function PageFormation({
                 ) : (
                   <span className="pastille" />
                 )}
-                {lecon.titre}
+                <span className="ligne-lecon-titre">{lecon.titre}</span>
+                {lecon.duree !== undefined ? (
+                  <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
+                ) : null}
               </a>
             ))}
           </section>
