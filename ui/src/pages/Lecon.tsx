@@ -16,6 +16,7 @@ export function PageLecon({
   naviguer,
   surBasculerFaite,
   surBasculerCritere,
+  peutEcrire = false,
 }: {
   lecon: ReponseLecon | null;
   chargement: boolean;
@@ -25,6 +26,8 @@ export function PageLecon({
   surBasculerFaite: () => void;
   /** Bascule un critère ; `false` = le serveur a refusé, on revient en arrière. */
   surBasculerCritere: (id: string, coche: boolean) => Promise<boolean>;
+  /** Administrateur avec l'édition allumée (ED-R7) : la leçon devient éditable. */
+  peutEcrire?: boolean;
 }) {
   const contenu = useRef<HTMLDivElement>(null);
   const criteresServeur = lecon?.criteres;
@@ -194,16 +197,18 @@ export function PageLecon({
               Leçon {lecon.position} sur {lecon.total}
             </span>
           </nav>
-          <button
-            type="button"
-            className="bouton bouton-petit bouton-neutre"
-            onClick={() =>
-              naviguer({ nom: "editer", fid: lecon.formationId, lid: lecon.leconId })
-            }
-          >
-            <Icone nom="pencil-simple" taille={14} />
-            Modifier cette leçon
-          </button>
+          {peutEcrire ? (
+            <button
+              type="button"
+              className="bouton bouton-petit bouton-neutre"
+              onClick={() =>
+                naviguer({ nom: "editer", fid: lecon.formationId, lid: lecon.leconId })
+              }
+            >
+              <Icone nom="pencil-simple" taille={14} />
+              Modifier cette leçon
+            </button>
+          ) : null}
         </div>
 
         <h1>{lecon.titre}</h1>
