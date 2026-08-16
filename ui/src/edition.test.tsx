@@ -228,3 +228,83 @@ describe("rail replié (ED-R15)", () => {
     expect(screen.queryByRole("button", { name: /l'édition/ })).not.toBeInTheDocument();
   });
 });
+
+describe("routes d'écriture — compte lecteur (ED-R2)", () => {
+  const routes = [
+    ["/administration", "création d'une formation"],
+    ["/formation/prise-en-main/structure", "structure"],
+    ["/formation/prise-en-main/lecon/anatomie/editer", "éditeur"],
+  ] as const;
+
+  for (const [chemin, quoi] of routes) {
+    it(`refuse ${quoi} et n'affiche aucun formulaire`, async () => {
+      brancher(LECTEUR);
+      window.history.pushState(null, "", chemin);
+      render(<App />);
+
+      expect(
+        await screen.findByRole("heading", { name: /Réservé aux administrateurs/ }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Retour au catalogue/ }),
+      ).toBeInTheDocument();
+    });
+  }
+
+  it("n'appelle jamais la route d'administration du serveur", async () => {
+    brancher(LECTEUR);
+    window.history.pushState(null, "", "/formation/prise-en-main/structure");
+    render(<App />);
+
+    await screen.findByRole("heading", { name: /Réservé aux administrateurs/ });
+    expect(appels.some((appel) => appel.includes("/structure"))).toBe(false);
+  });
+});
+
+describe("routes d'écriture — admin, édition éteinte (ED-R10)", () => {
+  it("explique et propose d'allumer, sans décider à la place", async () => {
+    brancher(ADMIN);
+    window.history.pushState(null, "", "/formation/prise-en-main/structure");
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: /L'édition est désactivée/ }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Activer l'édition" }));
+
+    // L'écran demandé s'affiche enfin, sans rechargement ni changement d'adresse.
+    await waitFor(() => expect(screen.getAllByRole("textbox").length).toBeGreaterThan(0));
+    expect(window.location.pathname).toBe("/formation/prise-en-main/structure");
+  });
+
+  it("laisse passer quand l'édition est déjà allumée (ED-R8)", async () => {
+    window.localStorage.setItem(CLE_EDITION, "oui");
+    brancher(ADMIN);
+    window.history.pushState(null, "", "/formation/prise-en-main/structure");
+    render(<App />);
+
+    await waitFor(() => expect(screen.getAllByRole("textbox").length).toBeGreaterThan(0));
+    expect(
+      screen.queryByRole("heading", { name: /L'édition est désactivée/ }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("éteindre depuis un écran d'écriture (ED-R11)", () => {
+  it("ramène au catalogue", async () => {
+    window.localStorage.setItem(CLE_EDITION, "oui");
+    brancher(ADMIN);
+    window.history.pushState(null, "", "/formation/prise-en-main/structure");
+    render(<App />);
+
+    await waitFor(() => expect(screen.getAllByRole("textbox").length).toBeGreaterThan(0));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Désactiver l'édition" }),
+    );
+
+    await waitFor(() => expect(window.location.pathname).toBe("/"));
+  });
+});
