@@ -110,38 +110,6 @@ export function PageFormation({
 
   return (
     <div className="page">
-      {estAdmin && surCouverture ? (
-        <div className="couverture-depot">
-          <label className="lien" htmlFor="champ-couverture">
-            {formation.couverture ? "Changer la couverture" : "Ajouter une couverture"}
-          </label>
-          <input
-            id="champ-couverture"
-            type="file"
-            accept="image/png,image/jpeg,image/gif,image/webp"
-            disabled={envoiEnCours}
-            onChange={(evenement) => {
-              const fichier = evenement.target.files?.[0];
-              evenement.target.value = "";
-              if (!fichier) return;
-              setErreurCouverture(null);
-              setEnvoiEnCours(true);
-              void surCouverture(fichier)
-                .then(() => setCouvertureCassee(false))
-                .catch((cause: unknown) => {
-                  // La couverture précédente reste en place (FI-R16).
-                  setErreurCouverture(
-                    cause instanceof Error ? cause.message : "envoi impossible",
-                  );
-                })
-                .finally(() => setEnvoiEnCours(false));
-            }}
-          />
-        </div>
-      ) : null}
-
-      {erreurCouverture ? <Bandeau icone="warning">{erreurCouverture}</Bandeau> : null}
-
       {formation.couverture && !couvertureCassee ? (
         <img
           className="couverture-formation"
@@ -175,6 +143,46 @@ export function PageFormation({
           {formation.description}
         </p>
       ) : null}
+
+      {estAdmin && surCouverture ? (
+        <div className="couverture-depot">
+          <label
+            htmlFor="champ-couverture"
+            className="bouton bouton-petit bouton-neutre"
+          >
+            <Icone nom="image" taille={14} />
+            {formation.couverture ? "Changer la couverture" : "Ajouter une couverture"}
+          </label>
+          {/* Le champ natif est laid et n'a rien à faire en tête de fiche : le
+              label lui sert de bouton, il reste atteignable au clavier. */}
+          <input
+            id="champ-couverture"
+            type="file"
+            className="visuellement-cache"
+            accept="image/png,image/jpeg,image/gif,image/webp"
+            disabled={envoiEnCours}
+            onChange={(evenement) => {
+              const fichier = evenement.target.files?.[0];
+              evenement.target.value = "";
+              if (!fichier) return;
+              setErreurCouverture(null);
+              setEnvoiEnCours(true);
+              void surCouverture(fichier)
+                .then(() => setCouvertureCassee(false))
+                .catch((cause: unknown) => {
+                  // La couverture précédente reste en place (FI-R16).
+                  setErreurCouverture(
+                    cause instanceof Error ? cause.message : "envoi impossible",
+                  );
+                })
+                .finally(() => setEnvoiEnCours(false));
+            }}
+          />
+          {envoiEnCours ? <span className="meta-faible">envoi…</span> : null}
+        </div>
+      ) : null}
+
+      {erreurCouverture ? <Bandeau icone="warning">{erreurCouverture}</Bandeau> : null}
 
       <div className="barre-ligne" style={{ maxWidth: 420 }}>
         <Barre pourcentage={avancement.pourcentage} epaisse />

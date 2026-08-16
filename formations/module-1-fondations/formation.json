@@ -2,7 +2,6 @@
   "formatVersion": 1,
   "id": "module-1-fondations",
   "titre": "Module 1 — Fondations Claude Code",
-  "description": "Piloter Claude Code avec méthode : plan mode, CLAUDE.md, slash command, hooks, TDD.",
   "modules": [
     {
       "id": "fondations",
@@ -48,7 +47,8 @@
       "description": "Le socle du pilotage : plan mode, CLAUDE.md, slash command, hooks, TDD."
     }
   ],
-  "presentation": "## À propos\n\nCe module est le compagnon pratique des cours **Claude Code 101** et **Claude Code in Action** de l'Anthropic Academy. Suivez-les d'abord : ici, on ne réexplique pas la théorie, on la transforme en réflexes.\n\nVous n'écrirez pas une ligne de code vous-même. Claude Code l'écrit ; votre travail — celui que la certification évalue — c'est de diriger et de vérifier.\n\n:::attention\nLa règle d'or, valable tout le parcours : on ne valide jamais ce qu'on n'a pas compris, et c'est à Claude de se rendre compréhensible.\n:::",
+  "description": "Piloter Claude Code avec méthode : plan mode, CLAUDE.md, slash command, hooks, TDD.",
+  "presentation": "Ce module est le compagnon pratique des cours **Claude Code 101** et **Claude Code in Action** de l'Anthropic Academy. Suivez-les d'abord : ici, on ne réexplique pas la théorie, on la transforme en réflexes.\n\nVous n'écrirez pas une ligne de code vous-même : Claude Code l'écrit, et votre travail — celui que la certification évalue — c'est de diriger et de vérifier.\n\n:::attention\nLa règle d'or, valable tout le parcours : on ne valide jamais ce qu'on n'a pas compris, et c'est à Claude de se rendre compréhensible.\n:::",
   "objectifs": [
     "Faire proposer un plan à Claude Code, puis le négocier avant d'écrire une ligne",
     "Écrire un CLAUDE.md qui change réellement le comportement de Claude",
@@ -60,5 +60,6 @@
     "Un terminal et Claude Code installé",
     "Les cours Claude Code 101 et Claude Code in Action, suivis",
     "Aucune expérience de Python n'est nécessaire"
-  ]
+  ],
+  "couverture": "assets/couverture-20260816-141053.png"
 }
