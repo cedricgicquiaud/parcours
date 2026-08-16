@@ -111,39 +111,68 @@ export function PageFormation({
 
   return (
     <div className="page">
-      {formation.couverture && !couvertureCassee ? (
-        <img
-          className="couverture-formation"
-          src={urlAsset(formation.id, formation.couverture)}
-          alt={formation.titre}
-          // FI-R12 : une couverture introuvable disparaît, elle ne laisse pas
-          // de cadre vide au sommet de la fiche.
-          onError={() => setCouvertureCassee(true)}
-        />
-      ) : null}
+      <header className="fiche-entete">
+        <div className="fiche-entete-texte">
+          <nav className="fil-ariane" aria-label="Fil d'Ariane">
+            <a
+              href="/"
+              onClick={(evenement) => {
+                evenement.preventDefault();
+                naviguer({ nom: "catalogue" });
+              }}
+            >
+              Mes formations
+            </a>
+          </nav>
 
-      <div className="titre-page">
-        <h1>{formation.titre}</h1>
-        <span className="meta-faible">
-          {avancement.faites}/{avancement.total} leçons — {avancement.pourcentage} %
-          {formation.duree !== undefined ? ` — ${formaterDuree(formation.duree)}` : ""}
-        </span>
-      </div>
+          <h1>{formation.titre}</h1>
 
-      {formation.description ? (
-        <p
-          style={{
-            margin: 0,
-            maxWidth: "66ch",
-            fontSize: 15.5,
-            lineHeight: 1.6,
-            color: "var(--muted)",
-            textWrap: "pretty",
-          }}
-        >
-          {formation.description}
-        </p>
-      ) : null}
+          {formation.description ? (
+            <p className="fiche-promesse">{formation.description}</p>
+          ) : null}
+
+          {avancement.prochaine ? (
+            <button
+              type="button"
+              className="bouton"
+              style={{ alignSelf: "flex-start" }}
+              onClick={() =>
+                naviguer({
+                  nom: "lecon",
+                  fid: formation.id,
+                  lid: avancement.prochaine!.id,
+                })
+              }
+            >
+              {LIBELLES_ACTION[avancement.action]} — {avancement.prochaine.titre}
+              <Icone nom="arrow-right" />
+            </button>
+          ) : null}
+        </div>
+
+        <div className="fiche-entete-visuel">
+          {formation.couverture && !couvertureCassee ? (
+            <img
+              className="couverture-formation"
+              src={urlAsset(formation.id, formation.couverture)}
+              alt={formation.titre}
+              // FI-R12 : une couverture introuvable disparaît, elle ne laisse
+              // pas de cadre vide en tête de fiche.
+              onError={() => setCouvertureCassee(true)}
+            />
+          ) : null}
+
+          <div className="fiche-metas">
+            <span className="meta-faible">
+              {avancement.total} leçon{avancement.total > 1 ? "s" : ""}
+              {formation.duree !== undefined
+                ? ` · ${formaterDuree(formation.duree)}`
+                : ""}
+              {` · ${avancement.faites}/${avancement.total} fait`}
+              {avancement.faites > 1 ? "s" : ""}
+            </span>
+            <Barre pourcentage={avancement.pourcentage} epaisse />
+          </div>
 
       {estAdmin && surCouverture ? (
         <div className="couverture-depot">
@@ -183,11 +212,11 @@ export function PageFormation({
         </div>
       ) : null}
 
-      {erreurCouverture ? <Bandeau icone="warning">{erreurCouverture}</Bandeau> : null}
-
-      <div className="barre-ligne" style={{ maxWidth: 420 }}>
-        <Barre pourcentage={avancement.pourcentage} epaisse />
-      </div>
+          {erreurCouverture ? (
+            <Bandeau icone="warning">{erreurCouverture}</Bandeau>
+          ) : null}
+        </div>
+      </header>
 
       {formation.presentationHtml ? (
         <section className="fiche-bloc">
@@ -202,24 +231,6 @@ export function PageFormation({
 
       <ListeFiche titre="CE QUE VOUS SAUREZ FAIRE" entrees={formation.objectifs} />
       <ListeFiche titre="AVANT DE COMMENCER" entrees={formation.prerequis} />
-
-      {avancement.prochaine ? (
-        <button
-          type="button"
-          className="bouton"
-          style={{ alignSelf: "flex-start" }}
-          onClick={() =>
-            naviguer({
-              nom: "lecon",
-              fid: formation.id,
-              lid: avancement.prochaine!.id,
-            })
-          }
-        >
-          {LIBELLES_ACTION[avancement.action]} — {avancement.prochaine.titre}
-          <Icone nom="arrow-right" />
-        </button>
-      ) : null}
 
       {avancement.orphelines.length > 0 ? (
         <Bandeau
