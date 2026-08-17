@@ -74,7 +74,7 @@ couverture, présentation, objectifs, prérequis et durées (tous facultatifs) ;
 l'écran d'une formation devient une vraie page d'entrée, et une couverture se
 dépose depuis la fiche sans jamais écraser l'ancienne. Règles :
 `.workflow/phases/07-fiche-formation/SPEC.md`.
-570 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+574 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
@@ -101,6 +101,18 @@ donc elle ne contredit pas la priorité posée par P013.
 Suite envisagée, non cadrée : la **révision espacée** — ramener les critères
 restés ouverts au bout de quelques jours. Chaque bascule est déjà datée en base ;
 le rythme se décidera après usage réel.
+
+**Formation d'accueil réécrite (2026-08-16)** : « Prise en main de Parcours »
+passe à 5 modules, 17 leçons, 2 h 41, et **sert de recette manuelle** — ses 94
+critères de réussite sont des gestes à faire dans l'application.
+
+**Phase 09 en cours, non terminée** : « Une leçon peut dire ce qu'elle suppose »
+(décision P017 à écrire à la livraison). Branche `feature/lecon-suppose`, 2
+tâches sur 4. Une leçon déclare `suppose: ["id"]` ; à l'ouverture, un bandeau
+nomme les leçons supposées non terminées, avec un lien. **Il ne verrouille
+rien** — on prévient, on ne confisque pas la décision. Règles :
+`.workflow/phases/09-lecon-suppose/SPEC.md`. Reste T3 (l'API filtre par compte)
+et T4 (le bandeau).
 
 Restent : la recette manuelle (UAT), puis la conversion éditoriale de
 FORMATION_CLAUDE au format Parcours (chantier dédié — après conversion,
