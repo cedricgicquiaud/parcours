@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReponseLecon } from "../api";
 import {
   Bandeau,
@@ -8,7 +8,7 @@ import {
 } from "../composants/communs";
 import { variablesMermaid } from "../mermaid";
 import type { Mode } from "../preferences";
-import { estClicSimple, type Route } from "../routeur";
+import { cheminDe, estClicSimple, type Route } from "../routeur";
 
 export function PageLecon({
   lecon,
@@ -245,6 +245,36 @@ export function PageLecon({
             </span>
           ) : null}
         </div>
+
+        {lecon.suppose?.length ? (
+          <Bandeau icone="warning">
+            Cette leçon suppose que vous ayez terminé{" "}
+            {lecon.suppose.map((supposee, index, liste) => (
+              <Fragment key={supposee.id}>
+                {index === 0 ? "" : index === liste.length - 1 ? " et " : ", "}
+                <a
+                  href={cheminDe({
+                    nom: "lecon",
+                    fid: lecon.formationId,
+                    lid: supposee.id,
+                  })}
+                  onClick={(evenement) => {
+                    if (!estClicSimple(evenement)) return;
+                    evenement.preventDefault();
+                    naviguer({
+                      nom: "lecon",
+                      fid: lecon.formationId,
+                      lid: supposee.id,
+                    });
+                  }}
+                >
+                  {supposee.titre}
+                </a>
+              </Fragment>
+            ))}
+            .
+          </Bandeau>
+        ) : null}
 
         {erreurCoche ? <Bandeau icone="warning">{erreurCoche}</Bandeau> : null}
 

@@ -249,12 +249,19 @@ manifeste mis à jour. **L'ancienne couverture reste sur le disque.**
   "position": 1,
   "total": 6,
   "precedente": null,
-  "suivante": { "id": "anatomie-formation", "titre": "Anatomie d'une formation" }
+  "suivante": { "id": "anatomie-formation", "titre": "Anatomie d'une formation" },
+  "suppose": [{ "id": "installer", "titre": "Installer Claude Code" }]
 }
 ```
 
 `html` est **déjà assaini** : le rendu markdown se fait côté serveur, l'interface
 n'en fait jamais (A-R5). Le HTML écrit par l'auteur est échappé, pas interprété.
+
+`suppose` liste les leçons que celle-ci déclare supposer (champ `suppose` du
+manifeste) et que **ce compte** n'a pas encore terminées, dans l'ordre du champ.
+Le filtre est fait à chaque requête sur la progression du compte connecté :
+deux personnes n'obtiennent pas la même réponse. Champ **omis** quand il n'y a
+rien à signaler ; référence inconnue, auto-référence et doublons sont ignorés.
 
 ## GET /api/formations/:fid/recherche?q=
 

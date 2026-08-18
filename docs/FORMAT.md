@@ -112,6 +112,33 @@ Une couverture peut aussi se déposer depuis la fiche, en tant qu'administrateur
 L'image est datée et l'ancienne reste sur le disque : Parcours ne supprime
 jamais un fichier.
 
+## Ce qu'une leçon suppose
+
+Une leçon peut déclarer les leçons qu'elle suppose faites, avec le champ
+facultatif `suppose` :
+
+```json
+{ "id": "deux-hooks", "titre": "Deux hooks", "fichier": "lecons/deux-hooks.md",
+  "suppose": ["installer", "ecrire-claude-md"] }
+```
+
+À l'ouverture, si l'une de ces leçons n'est pas terminée pour le compte
+connecté, un bandeau la nomme avec un lien. **Il ne verrouille rien** : le
+contenu, les critères et « Marquer comme terminé » restent intacts — on
+prévient, on ne confisque pas la décision.
+
+Règles :
+
+- Des identifiants de leçons de la **même** formation, 5 au plus. Un tableau
+  vide équivaut à un champ absent.
+- Une entrée qui n'est pas un slug rend la formation invalide, avec le chemin
+  JSON exact.
+- Une entrée qui ne correspond plus à aucune leçon est **ignorée en silence** :
+  retirer une leçon du sommaire ne casse jamais la formation. L'auto-référence
+  est ignorée de la même façon.
+- Parcours ne remonte jamais au-delà des leçons déclarées : pas de chaîne de
+  prérequis, pas de cycle possible.
+
 ## Ordre de validation
 
 Déterministe, pour que le message d'erreur affiché soit toujours le même :

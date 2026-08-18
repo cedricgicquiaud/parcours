@@ -47,7 +47,7 @@ import {
 } from "./formations/scan";
 import { FORMAT_ID_CRITERE } from "./markdown/criteres";
 import type { CollecteCriteres, MoteurRendu } from "./markdown/rendu";
-import { calculerAvancement, voisines } from "./progression/calculs";
+import { calculerAvancement, leconsSupposees, voisines } from "./progression/calculs";
 import type { BaseCriteres } from "./progression/criteres";
 import type { BaseProgression } from "./progression/db";
 import type { MoteurRecherche } from "./recherche/moteur";
@@ -647,6 +647,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
     if (rendue instanceof Response) return rendue;
     const { entree, html, criteres, idsLecons } = rendue;
     const { precedente, suivante, position } = voisines(formation.manifeste, lid);
+    const cochees = deps.base.leconsCochees(c.get("compte").id, formation.id);
 
     const reponse: ReponseLecon = {
       formationId: formation.id,
@@ -656,7 +657,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
       moduleId: entree.module.id,
       moduleTitre: entree.module.titre,
       html,
-      faite: deps.base.leconsCochees(c.get("compte").id, formation.id).has(lid),
+      faite: cochees.has(lid),
       criteres: criteres.liste,
       criteresTronques: criteres.tronquee,
       position: position + 1,
@@ -664,6 +665,8 @@ export function creerApi(deps: DependancesApi): AppParcours {
       precedente,
       suivante,
     };
+    const suppose = leconsSupposees(formation.manifeste, entree.lecon, cochees);
+    if (suppose.length > 0) reponse.suppose = suppose;
     return c.json(reponse);
   });
 

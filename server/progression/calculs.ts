@@ -1,4 +1,8 @@
-import { leconsOrdonnees, type Manifeste } from "../formations/manifeste";
+import {
+  leconsOrdonnees,
+  type LeconManifeste,
+  type Manifeste,
+} from "../formations/manifeste";
 
 export interface AvancementModule {
   id: string;
@@ -81,6 +85,32 @@ export function calculerAvancement(
     orphelines,
     modules,
   };
+}
+
+/**
+ * Leçons que `lecon` suppose faites et que ce compte n'a pas terminées
+ * (SU-R6, SU-R7), dans l'ordre du champ `suppose`. L'auto-référence (SU-R5),
+ * les doublons et les références inconnues (SU-R4) sont ignorés en silence —
+ * jamais une erreur.
+ */
+export function leconsSupposees(
+  manifeste: Manifeste,
+  lecon: LeconManifeste,
+  cochees: ReadonlySet<string>,
+): { id: string; titre: string }[] {
+  // Le Set déduplique en gardant l'ordre du champ. Filtrer avant de résoudre
+  // les titres : dans le cas courant (tout est fait), on ne parcourt rien.
+  const restantes = new Set(
+    (lecon.suppose ?? []).filter((id) => id !== lecon.id && !cochees.has(id)),
+  );
+  if (restantes.size === 0) return [];
+  const titres = new Map<string, string>();
+  for (const entree of leconsOrdonnees(manifeste)) {
+    if (restantes.has(entree.lecon.id)) titres.set(entree.lecon.id, entree.lecon.titre);
+  }
+  return [...restantes]
+    .filter((id) => titres.has(id))
+    .map((id) => ({ id, titre: titres.get(id)! }));
 }
 
 /** Leçons précédente et suivante dans l'ordre du manifeste (U-R3). */
