@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { MoteurRendu } from "./markdown/rendu";
-import { creerContexteTest, type ContexteTest } from "./test-utils";
+import { creerContexteTest, ecrireFormation, type ContexteTest } from "./test-utils";
 import type { EtatCritere, ReponseCritere, ReponseLecon } from "./types-api";
 
 let rendu: MoteurRendu;
@@ -30,17 +30,9 @@ afterEach(async () => {
 });
 
 async function creerFormation(exercice: string) {
-  const dossier = path.join(contexte.racine, "formation-claude");
-  await fs.mkdir(path.join(dossier, "lecons"), { recursive: true });
-  await fs.writeFile(path.join(dossier, "lecons", "exercice.md"), exercice, "utf8");
-  await fs.writeFile(
-    path.join(dossier, "lecons", "theorie.md"),
-    "Une leçon sans exercice.",
-    "utf8",
-  );
-  await fs.writeFile(
-    path.join(dossier, "formation.json"),
-    JSON.stringify({
+  await ecrireFormation(
+    contexte.racine,
+    {
       formatVersion: 1,
       id: "formation-claude",
       titre: "Formation pratique Claude",
@@ -54,8 +46,11 @@ async function creerFormation(exercice: string) {
           ],
         },
       ],
-    }),
-    "utf8",
+    },
+    {
+      "lecons/exercice.md": exercice,
+      "lecons/theorie.md": "Une leçon sans exercice.",
+    },
   );
 }
 

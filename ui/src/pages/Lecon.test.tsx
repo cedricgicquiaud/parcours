@@ -1,42 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { ReponseLecon } from "../api";
+import { lecon, proprietesLecon as proprietes } from "./fixtures-lecon";
 import { PageLecon } from "./Lecon";
-
-function lecon(surcharge: Partial<ReponseLecon> = {}): ReponseLecon {
-  return {
-    formationId: "formation-claude",
-    formationTitre: "Formation pratique Claude",
-    leconId: "les-hooks",
-    titre: "Les hooks",
-    moduleId: "fondations",
-    moduleTitre: "Fondations",
-    html:
-      '<p>Un hook se déclenche à chaque écriture.</p>' +
-      '<details class="repliable repliable-solution"><summary>Solution</summary>' +
-      '<div class="repliable-corps">Le contenu de la solution.</div></details>',
-    faite: false,
-    criteres: [],
-    criteresTronques: false,
-    position: 4,
-    total: 5,
-    precedente: { id: "sous-agents", titre: "Les sous-agents" },
-    suivante: { id: "cloture", titre: "Clôture du module" },
-    ...surcharge,
-  };
-}
-
-const proprietes = {
-  chargement: false,
-  erreur: null,
-  erreurCoche: null,
-  naviguer: () => undefined,
-  surBasculerFaite: () => undefined,
-  surBasculerCritere: () => Promise.resolve(true),
-  // Les tests historiques décrivent un auteur au travail (ED-R8).
-  peutEcrire: true,
-};
 
 describe("PageLecon (U-R3, U-R4, U-R5)", () => {
   it("affiche le fil d'Ariane et le titre, un seul h1 (U-R7)", () => {

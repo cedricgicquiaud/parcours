@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { MoteurRendu } from "./markdown/rendu";
-import { creerContexteTest, type ContexteTest } from "./test-utils";
+import { creerContexteTest, ecrireFormation, type ContexteTest } from "./test-utils";
 import type { CarteFormationValide, ReponseCatalogue, ReponseFormation } from "./types-api";
 
 let rendu: MoteurRendu;
@@ -28,15 +28,9 @@ afterEach(async () => {
 });
 
 async function creerFormation(fiche: Record<string, unknown> = {}) {
-  const dossier = path.join(contexte.racine, "formation-claude");
-  await fs.mkdir(path.join(dossier, "lecons"), { recursive: true });
-  await fs.mkdir(path.join(dossier, "assets"), { recursive: true });
-  await fs.writeFile(path.join(dossier, "assets", "couverture.png"), "png", "utf8");
-  await fs.writeFile(path.join(dossier, "lecons", "installer.md"), "Un texte.", "utf8");
-  await fs.writeFile(path.join(dossier, "lecons", "hooks.md"), "Un texte.", "utf8");
-  await fs.writeFile(
-    path.join(dossier, "formation.json"),
-    JSON.stringify({
+  await ecrireFormation(
+    contexte.racine,
+    {
       formatVersion: 1,
       id: "formation-claude",
       titre: "Formation pratique Claude",
@@ -53,8 +47,12 @@ async function creerFormation(fiche: Record<string, unknown> = {}) {
           ],
         },
       ],
-    }),
-    "utf8",
+    },
+    {
+      "assets/couverture.png": "png",
+      "lecons/installer.md": "Un texte.",
+      "lecons/hooks.md": "Un texte.",
+    },
   );
 }
 

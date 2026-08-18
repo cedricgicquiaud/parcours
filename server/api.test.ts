@@ -7,7 +7,7 @@ import { NOM_COOKIE } from "./comptes/auth";
 import { MoteurRendu } from "./markdown/rendu";
 import { MoteurRecherche } from "./recherche/moteur";
 import type { BaseProgression } from "./progression/db";
-import { creerContexteTest, type ContexteTest } from "./test-utils";
+import { creerContexteTest, ecrireFormation, type ContexteTest } from "./test-utils";
 
 let rendu: MoteurRendu;
 let contexte: ContexteTest;
@@ -30,24 +30,9 @@ afterEach(async () => {
 });
 
 async function creerFormationDemo() {
-  const dossier = path.join(racine, "formation-claude");
-  await fs.mkdir(path.join(dossier, "lecons"), { recursive: true });
-  await fs.mkdir(path.join(dossier, "assets"), { recursive: true });
-  await fs.writeFile(
-    path.join(dossier, "lecons", "installer.md"),
-    "Installer Claude Code, c'est une commande.\n\n:::solution\nmotsecret\n:::",
-    "utf8",
-  );
-  await fs.writeFile(
-    path.join(dossier, "lecons", "hooks.md"),
-    "Un hook se déclenche à chaque écriture.",
-    "utf8",
-  );
-  await fs.writeFile(path.join(dossier, "assets", "schema.png"), "png", "utf8");
-  await fs.writeFile(path.join(dossier, "assets", "secret.env"), "TOKEN=1", "utf8");
-  await fs.writeFile(
-    path.join(dossier, "formation.json"),
-    JSON.stringify({
+  await ecrireFormation(
+    racine,
+    {
       formatVersion: 1,
       id: "formation-claude",
       titre: "Formation pratique Claude",
@@ -62,17 +47,22 @@ async function creerFormationDemo() {
           ],
         },
       ],
-    }),
-    "utf8",
+    },
+    {
+      "lecons/installer.md":
+        "Installer Claude Code, c'est une commande.\n\n:::solution\nmotsecret\n:::",
+      "lecons/hooks.md": "Un hook se déclenche à chaque écriture.",
+      "assets/schema.png": "png",
+      "assets/secret.env": "TOKEN=1",
+    },
   );
 
-  const casse = path.join(racine, "cassee");
-  await fs.mkdir(casse, { recursive: true });
-  await fs.writeFile(
-    path.join(casse, "formation.json"),
-    JSON.stringify({ formatVersion: 1, id: "cassee", titre: "T", modules: [] }),
-    "utf8",
-  );
+  await ecrireFormation(racine, {
+    formatVersion: 1,
+    id: "cassee",
+    titre: "T",
+    modules: [],
+  });
 }
 
 const local = { headers: { host: "127.0.0.1:4620" } };

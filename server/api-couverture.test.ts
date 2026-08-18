@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { MoteurRendu } from "./markdown/rendu";
-import { creerContexteTest, type ContexteTest } from "./test-utils";
+import { creerContexteTest, ecrireFormation, type ContexteTest } from "./test-utils";
 import type { ReponseFormation } from "./types-api";
 
 let rendu: MoteurRendu;
@@ -26,12 +26,9 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   contexte = await creerContexteTest({ rendu, prefixe: "parcours-couv-" });
-  dossier = path.join(contexte.racine, "formation-claude");
-  await fs.mkdir(path.join(dossier, "lecons"), { recursive: true });
-  await fs.writeFile(path.join(dossier, "lecons", "installer.md"), "Un texte.", "utf8");
-  await fs.writeFile(
-    path.join(dossier, "formation.json"),
-    JSON.stringify({
+  dossier = await ecrireFormation(
+    contexte.racine,
+    {
       formatVersion: 1,
       id: "formation-claude",
       titre: "Formation pratique Claude",
@@ -45,8 +42,8 @@ beforeEach(async () => {
           ],
         },
       ],
-    }),
-    "utf8",
+    },
+    { "lecons/installer.md": "Un texte." },
   );
 });
 
