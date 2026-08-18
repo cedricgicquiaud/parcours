@@ -117,6 +117,20 @@ describe("critères ouverts et fin de leçon (CR-R11)", () => {
     expect(screen.getByText(/1 critère reste ouvert/)).toBeInTheDocument();
   });
 
+  it("affiche l'avertissement DANS la barre d'actions, là où l'on vient de cliquer", async () => {
+    // Le message existait déjà, mais en tête d'article : sur une leçon longue,
+    // il naissait hors de l'écran (recette 2026-08-16).
+    const { container } = afficher();
+
+    const bouton = screen.getByRole("button", { name: /Marquer comme terminé/ });
+    await userEvent.click(bouton);
+
+    const barre = container.querySelector(".barre-actions");
+    expect(barre).not.toBeNull();
+    expect(barre).toContainElement(bouton);
+    expect(barre).toHaveTextContent(/1 critère reste ouvert/);
+  });
+
   it("n'avertit pas quand tous les critères sont cochés", () => {
     afficher({ criteres: CRITERES.map((critere) => ({ ...critere, coche: true })) });
     expect(screen.queryByText(/reste ouvert/)).not.toBeInTheDocument();

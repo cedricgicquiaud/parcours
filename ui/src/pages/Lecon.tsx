@@ -6,6 +6,8 @@ import {
   Icone,
   Squelette,
 } from "../composants/communs";
+import { variablesMermaid } from "../mermaid";
+import type { Mode } from "../preferences";
 import { cheminDe, estClicSimple, type Route } from "../routeur";
 
 export function PageLecon({
@@ -17,6 +19,7 @@ export function PageLecon({
   surBasculerFaite,
   surBasculerCritere,
   peutEcrire = false,
+  mode = "clair",
 }: {
   lecon: ReponseLecon | null;
   chargement: boolean;
@@ -28,6 +31,8 @@ export function PageLecon({
   surBasculerCritere: (id: string, coche: boolean) => Promise<boolean>;
   /** Administrateur avec l'édition allumée (ED-R7) : la leçon devient éditable. */
   peutEcrire?: boolean;
+  /** Palette courante : les schémas sont redessinés quand elle change. */
+  mode?: Mode;
 }) {
   const contenu = useRef<HTMLDivElement>(null);
   const criteresServeur = lecon?.criteres;
@@ -120,11 +125,18 @@ export function PageLecon({
       try {
         const { default: mermaid } = await import("mermaid");
         if (annule) return;
-        mermaid.initialize({ startOnLoad: false, securityLevel: "strict" });
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: "strict",
+          theme: "base",
+          themeVariables: variablesMermaid(document.documentElement),
+        });
         for (const [index, schema] of schemas.entries()) {
           const source = schema.dataset.source ?? "";
           try {
-            const { svg } = await mermaid.render(`schema-${index}`, source);
+            // L'identifiant porte le mode : re-rendre après une bascule
+            // clair/sombre ne doit pas réutiliser le SVG précédent.
+            const { svg } = await mermaid.render(`schema-${mode}-${index}`, source);
             if (annule) return;
             schema.innerHTML = svg;
           } catch {
@@ -142,7 +154,7 @@ export function PageLecon({
     return () => {
       annule = true;
     };
-  }, [lecon]);
+  }, [lecon, mode]);
 
   if (erreur) {
     return (
@@ -265,12 +277,6 @@ export function PageLecon({
         ) : null}
 
         {erreurCoche ? <Bandeau icone="warning">{erreurCoche}</Bandeau> : null}
-        {avertissement ? (
-          <Bandeau icone="warning">
-            {total - faits} critère{total - faits > 1 ? "s restent" : " reste"} ouvert
-            {total - faits > 1 ? "s" : ""} — la leçon est marquée terminée quand même.
-          </Bandeau>
-        ) : null}
 
         <div
           className="contenu-lecon"
@@ -282,6 +288,17 @@ export function PageLecon({
       </article>
 
       <div className="barre-actions">
+        {/* CR-R11 : le message naît là où l'on vient de cliquer. En tête
+            d'article, il apparaissait hors de l'écran sur une leçon longue. */}
+        {avertissement ? (
+          <div className="barre-actions-avertissement" role="status">
+            <Icone nom="warning" taille={14} />
+            <span>
+              {total - faits} critère{total - faits > 1 ? "s restent" : " reste"} ouvert
+              {total - faits > 1 ? "s" : ""} — la leçon est marquée terminée quand même.
+            </span>
+          </div>
+        ) : null}
         <div className="barre-actions-contenu">
           {lecon.precedente ? (
             <button

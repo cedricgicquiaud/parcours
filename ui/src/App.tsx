@@ -523,6 +523,7 @@ function ApplicationConnectee({
             surBasculerFaite={() => void basculerFaite()}
             surBasculerCritere={basculerCritere}
             peutEcrire={peutEcrire}
+            mode={mode}
           />
         ) : (
           <div className="page">

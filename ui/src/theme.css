@@ -422,10 +422,22 @@ summary::-webkit-details-marker {
 }
 
 .spine-pourcent {
-  font: 400 10.5px var(--mono);
-  color: var(--faint);
-  writing-mode: vertical-rl;
-  letter-spacing: 0.1em;
+  /* Un jeton rond, dans la même famille visuelle que les pastilles de leçons :
+     à la verticale, le chiffre était illisible. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  /* Proportionnelle plutôt que monospace : en si petit, le chasse-fixe
+     déséquilibre le bloc dans le cercle. */
+  font: 500 12px/1 var(--font);
+  letter-spacing: 0;
+  color: var(--accent-text);
+  text-align: center;
+  white-space: nowrap;
 }
 
 .spine-bas {
@@ -1544,7 +1556,11 @@ summary::-webkit-details-marker {
 
 .mermaid-source svg {
   max-width: 100%;
+  height: auto;
 }
+
+/* Aucune règle de police ici : le SVG porte la sienne, celle avec laquelle
+   mermaid a mesuré ses boîtes. La lui remplacer fait déborder le texte. */
 
 /* Barre d'actions de leçon */
 .barre-actions {
@@ -1554,6 +1570,17 @@ summary::-webkit-details-marker {
   background: var(--bar);
   backdrop-filter: blur(8px);
   border-top: 1px solid var(--line);
+}
+
+.barre-actions-avertissement {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 9px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--accent-text);
 }
 
 .barre-actions-contenu {
