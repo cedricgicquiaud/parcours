@@ -74,7 +74,7 @@ couverture, présentation, objectifs, prérequis et durées (tous facultatifs) ;
 l'écran d'une formation devient une vraie page d'entrée, et une couverture se
 dépose depuis la fiche sans jamais écraser l'ancienne. Règles :
 `.workflow/phases/07-fiche-formation/SPEC.md`.
-574 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
+598 tests verts, typecheck et build verts. Cahier de recette : `.workflow/UAT.md`.
 
 Design de référence : `design_handoff_parcours_lecteur/` (palette solaire,
 colonne latérale de 272 px, aucune ombre). **Écart assumé avec la SPEC § 5.2** :
@@ -106,13 +106,12 @@ le rythme se décidera après usage réel.
 passe à 5 modules, 17 leçons, 2 h 41, et **sert de recette manuelle** — ses 94
 critères de réussite sont des gestes à faire dans l'application.
 
-**Phase 09 en cours, non terminée** : « Une leçon peut dire ce qu'elle suppose »
-(décision P017 à écrire à la livraison). Branche `feature/lecon-suppose`, 2
-tâches sur 4. Une leçon déclare `suppose: ["id"]` ; à l'ouverture, un bandeau
-nomme les leçons supposées non terminées, avec un lien. **Il ne verrouille
-rien** — on prévient, on ne confisque pas la décision. Règles :
-`.workflow/phases/09-lecon-suppose/SPEC.md`. Reste T3 (l'API filtre par compte)
-et T4 (le bandeau).
+**Une leçon peut dire ce qu'elle suppose (2026-08-18, décision P017)** : une
+leçon déclare `suppose: ["id"]` (5 au plus) ; à l'ouverture, un bandeau nomme
+les leçons supposées non terminées **pour ce compte**, avec un lien. **Il ne
+verrouille rien** — on prévient, on ne confisque pas la décision. Une référence
+disparue du sommaire est ignorée en silence : retirer une leçon ne casse jamais
+la formation. Règles : `.workflow/phases/09-lecon-suppose/SPEC.md`.
 
 Restent : la recette manuelle (UAT), puis la conversion éditoriale de
 FORMATION_CLAUDE au format Parcours (chantier dédié — après conversion,
@@ -154,7 +153,8 @@ identité dérivée du texte, donc reformuler un critère perd sa coche ; Parcou
 n'exécute jamais de code et ne corrige jamais), P016 (lire et écrire ne sont
 plus le même écran : interrupteur « Édition » réservé aux admins, éteint par
 défaut ; `peutEcrire = admin && edition` est la seule notion d'écriture côté
-interface)**.
+interface), P017 (une leçon déclare ce qu'elle suppose ; on prévient d'un
+bandeau, on ne verrouille jamais ; référence disparue ignorée en silence)**.
 
 Non négociables du PRD : tout local par défaut (serveur sur 127.0.0.1, aucune
 requête sortante depuis l'interface ; **seule exception, P012 : l'envoi SMTP,
