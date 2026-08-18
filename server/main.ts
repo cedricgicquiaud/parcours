@@ -1,9 +1,8 @@
-import fs from "node:fs";
 import path from "node:path";
 import { serve } from "@hono/node-server";
-import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { creerApi } from "./api";
+import { servirInterface } from "./production";
 import { ouvrirBase } from "./base";
 import { BaseComptes } from "./comptes/db";
 import { BaseJetons } from "./comptes/jetons";
@@ -51,13 +50,7 @@ async function demarrer(): Promise<void> {
   );
 
   // En production, le même process sert l'UI construite (1 process, PRD).
-  if (fs.existsSync(DOSSIER_UI)) {
-    app.use("/*", serveStatic({ root: path.relative(process.cwd(), DOSSIER_UI) }));
-    app.get("*", (c) => {
-      const index = path.join(DOSSIER_UI, "index.html");
-      return c.html(fs.readFileSync(index, "utf8"));
-    });
-  }
+  servirInterface(app, DOSSIER_UI);
 
   const serveur = serve({ fetch: app.fetch, port: PORT, hostname: HOTE }, () => {
     console.log(`Parcours écoute sur http://${HOTE}:${PORT}`);
