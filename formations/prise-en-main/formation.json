@@ -26,7 +26,7 @@
       "lecons": [
         { "id": "bienvenue", "titre": "Bienvenue", "fichier": "lecons/bienvenue.md", "duree": 5 },
         { "id": "se-reperer", "titre": "Se repérer dans l'écran", "fichier": "lecons/se-reperer.md", "duree": 8 },
-        { "id": "progression", "titre": "Ce que Parcours retient de vous", "fichier": "lecons/progression.md", "duree": 8 },
+        { "id": "progression", "titre": "Ce que Parcours retient de vous", "fichier": "lecons/progression.md", "duree": 10 },
         { "id": "criteres", "titre": "Les critères de réussite", "fichier": "lecons/criteres.md", "duree": 10 }
       ]
     },
@@ -36,7 +36,7 @@
       "description": "L'interrupteur qui sépare la lecture de l'écriture, puis le format lui-même.",
       "lecons": [
         { "id": "mode-edition", "titre": "L'interrupteur Édition", "fichier": "lecons/mode-edition.md", "duree": 8 },
-        { "id": "anatomie-formation", "titre": "Anatomie d'une formation", "fichier": "lecons/anatomie-formation.md", "duree": 12, "suppose": ["mode-edition"] },
+        { "id": "anatomie-formation", "titre": "Anatomie d'une formation", "fichier": "lecons/anatomie-formation.md", "duree": 14, "suppose": ["mode-edition"] },
         { "id": "fiche-presentation", "titre": "La fiche de présentation", "fichier": "lecons/fiche-presentation.md", "duree": 10 },
         { "id": "blocs-speciaux", "titre": "Le markdown et ses blocs", "fichier": "lecons/blocs-speciaux.md", "duree": 12 },
         { "id": "ecrire-criteres", "titre": "Écrire de bons critères", "fichier": "lecons/ecrire-criteres.md", "duree": 8 }
