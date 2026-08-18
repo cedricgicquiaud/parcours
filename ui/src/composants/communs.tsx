@@ -1,4 +1,47 @@
 import type { ReactNode } from "react";
+import { cheminDe, estClicSimple, type Route } from "../routeur";
+
+/**
+ * Lien de navigation interne : l'adresse vient du routeur (une seule source
+ * de vérité), un clic simple navigue côté client, un clic modifié
+ * (Cmd/Ctrl/Shift, bouton du milieu) garde le comportement du navigateur.
+ */
+export function LienInterne({
+  route,
+  naviguer,
+  className,
+  courante = false,
+  title,
+  ariaLabel,
+  children,
+}: {
+  route: Route;
+  naviguer: (route: Route) => void;
+  className?: string;
+  /** Vrai pour la page affichée : pose `aria-current="page"`. */
+  courante?: boolean;
+  title?: string;
+  /** Pour un lien-icône sans texte visible. */
+  ariaLabel?: string;
+  children: ReactNode;
+}) {
+  return (
+    <a
+      href={cheminDe(route)}
+      className={className}
+      title={title}
+      aria-label={ariaLabel}
+      aria-current={courante ? "page" : undefined}
+      onClick={(evenement) => {
+        if (!estClicSimple(evenement)) return;
+        evenement.preventDefault();
+        naviguer(route);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
 export function Icone({ nom, taille }: { nom: string; taille?: number }) {
   return (

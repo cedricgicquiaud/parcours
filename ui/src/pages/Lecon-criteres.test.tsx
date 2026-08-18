@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { EtatCritere, ReponseLecon } from "../api";
+import { lecon as leconDeBase } from "./fixtures-lecon";
 import { PageLecon } from "./Lecon";
 
 const CRITERES: EtatCritere[] = [
@@ -23,23 +24,17 @@ function html(criteres: EtatCritere[]): string {
 
 function lecon(surcharge: Partial<ReponseLecon> = {}): ReponseLecon {
   const criteres = surcharge.criteres ?? CRITERES;
-  return {
-    formationId: "formation-claude",
-    formationTitre: "Formation pratique Claude",
+  return leconDeBase({
     leconId: "exercice",
     titre: "Exercice 1.1",
-    moduleId: "fondations",
-    moduleTitre: "Fondations",
     html: html(criteres),
-    faite: false,
     criteres,
-    criteresTronques: false,
     position: 1,
     total: 3,
     precedente: null,
     suivante: null,
     ...surcharge,
-  };
+  });
 }
 
 function afficher(surcharge: Partial<ReponseLecon> = {}, props: Partial<Props> = {}) {

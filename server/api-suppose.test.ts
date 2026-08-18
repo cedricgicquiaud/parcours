@@ -1,8 +1,6 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { MoteurRendu } from "./markdown/rendu";
-import { creerContexteTest, type ContexteTest } from "./test-utils";
+import { creerContexteTest, ecrireFormation, type ContexteTest } from "./test-utils";
 
 let rendu: MoteurRendu;
 let contexte: ContexteTest;
@@ -26,8 +24,6 @@ afterEach(async () => {
  * auto-référence, un doublon.
  */
 async function creerFormationDemo() {
-  const dossier = path.join(contexte.racine, "fil-rouge");
-  await fs.mkdir(path.join(dossier, "lecons"), { recursive: true });
   const lecons = [
     { id: "installer", titre: "Installer Claude Code" },
     { id: "claudemd", titre: "Écrire un CLAUDE.md" },
@@ -37,16 +33,9 @@ async function creerFormationDemo() {
     { id: "auto", titre: "Auto-référence", suppose: ["auto", "installer"] },
     { id: "doublon", titre: "Doublon", suppose: ["installer", "installer"] },
   ];
-  for (const lecon of lecons) {
-    await fs.writeFile(
-      path.join(dossier, "lecons", `${lecon.id}.md`),
-      `Contenu de ${lecon.titre}.`,
-      "utf8",
-    );
-  }
-  await fs.writeFile(
-    path.join(dossier, "formation.json"),
-    JSON.stringify({
+  await ecrireFormation(
+    contexte.racine,
+    {
       formatVersion: 1,
       id: "fil-rouge",
       titre: "Formation fil rouge",
@@ -60,8 +49,10 @@ async function creerFormationDemo() {
           })),
         },
       ],
-    }),
-    "utf8",
+    },
+    Object.fromEntries(
+      lecons.map((lecon) => [`lecons/${lecon.id}.md`, `Contenu de ${lecon.titre}.`]),
+    ),
   );
 }
 

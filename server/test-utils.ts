@@ -43,6 +43,32 @@ export interface ContexteTest {
 
 export const MOT_DE_PASSE_TEST = "motdepasse-de-test";
 
+/**
+ * Écrit une formation sur le disque pour un test d'API : les fichiers donnés
+ * (chemin relatif → contenu), puis le manifeste TEL QUEL — non validé, pour
+ * que les tests d'invalidité puissent écrire des manifestes cassés exprès.
+ * Renvoie le chemin du dossier.
+ */
+export async function ecrireFormation(
+  racine: string,
+  manifeste: { id: string } & Record<string, unknown>,
+  fichiers: Record<string, string> = {},
+): Promise<string> {
+  const dossier = path.join(racine, manifeste.id);
+  await fs.mkdir(dossier, { recursive: true });
+  for (const [relatif, contenu] of Object.entries(fichiers)) {
+    const complet = path.join(dossier, relatif);
+    await fs.mkdir(path.dirname(complet), { recursive: true });
+    await fs.writeFile(complet, contenu, "utf8");
+  }
+  await fs.writeFile(
+    path.join(dossier, "formation.json"),
+    JSON.stringify(manifeste),
+    "utf8",
+  );
+  return dossier;
+}
+
 export async function creerContexteTest(options: {
   rendu: MoteurRendu;
   prefixe?: string;

@@ -2,37 +2,25 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { ReponseLecon } from "../api";
+import { lecon as leconDeBase, proprietesLecon } from "./fixtures-lecon";
 import { PageLecon } from "./Lecon";
 
-function lecon(surcharge: Partial<ReponseLecon> = {}): ReponseLecon {
-  return {
+const lecon = (surcharge: Partial<ReponseLecon> = {}): ReponseLecon =>
+  leconDeBase({
     formationId: "fil-rouge",
     formationTitre: "Formation fil rouge",
     leconId: "deux-hooks",
     titre: "Deux hooks",
-    moduleId: "fondations",
-    moduleTitre: "Fondations",
     html: "<p>Un hook se déclenche à chaque écriture.</p>",
-    faite: false,
     criteres: [{ id: "c-aaaa1111", texte: "Créer le hook", coche: false }],
-    criteresTronques: false,
     position: 4,
     total: 6,
     precedente: null,
     suivante: null,
     ...surcharge,
-  };
-}
+  });
 
-const proprietes = {
-  chargement: false,
-  erreur: null,
-  erreurCoche: null,
-  naviguer: () => undefined,
-  surBasculerFaite: () => undefined,
-  surBasculerCritere: () => Promise.resolve(true),
-  peutEcrire: false,
-};
+const proprietes = { ...proprietesLecon, peutEcrire: false };
 
 const UNE = [{ id: "installer", titre: "Installer Claude Code" }];
 const DEUX = [...UNE, { id: "claudemd", titre: "Écrire un CLAUDE.md" }];

@@ -3,7 +3,7 @@ import type { Compte, ReponseCatalogue, ReponseFormation } from "../api";
 import type { Mode } from "../preferences";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
-import { Barre, Icone } from "./communs";
+import { Barre, Icone, LienInterne } from "./communs";
 
 export interface ProprietesRail {
   route: Route;
@@ -65,16 +65,10 @@ export function ColonneLaterale(props: ProprietesRail) {
     >
       <div className="rail-entete">
         <div className="rail-marque">
-          <a
-            href="/"
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              props.naviguer({ nom: "catalogue" });
-            }}
-          >
+          <LienInterne route={{ nom: "catalogue" }} naviguer={props.naviguer}>
             <span className="marque-carre" />
             <span className="marque-nom">Parcours</span>
-          </a>
+          </LienInterne>
           <button
             type="button"
             className="bouton-icone"
@@ -90,15 +84,12 @@ export function ColonneLaterale(props: ProprietesRail) {
         {formation ? (
           <>
             <div className="rail-titre-formation">
-              <a
-                href={`/formation/${encodeURIComponent(formation.id)}`}
-                onClick={(evenement) => {
-                  evenement.preventDefault();
-                  props.naviguer({ nom: "formation", fid: formation.id });
-                }}
+              <LienInterne
+                route={{ nom: "formation", fid: formation.id }}
+                naviguer={props.naviguer}
               >
                 {formation.titre}
-              </a>
+              </LienInterne>
               <div className="barre-ligne">
                 <Barre pourcentage={formation.avancement.pourcentage} />
                 <span className="meta-faible">
@@ -122,30 +113,24 @@ export function ColonneLaterale(props: ProprietesRail) {
       )}
 
       <div className="rail-compte">
-        <a
+        <LienInterne
           className="rail-compte-identite"
-          href="/profil"
-          onClick={(evenement) => {
-            evenement.preventDefault();
-            props.naviguer({ nom: "profil" });
-          }}
+          route={{ nom: "profil" }}
+          naviguer={props.naviguer}
         >
           <Icone nom="user-circle" taille={17} />
           <span className="rail-compte-nom">{props.compte.nom}</span>
-        </a>
+        </LienInterne>
         {props.compte.role === "admin" ? (
-          <a
+          <LienInterne
             className="rail-compte-lien"
-            href="/comptes"
+            route={{ nom: "comptes" }}
             title="Gérer les comptes"
-            aria-label="Gérer les comptes"
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              props.naviguer({ nom: "comptes" });
-            }}
+            ariaLabel="Gérer les comptes"
+            naviguer={props.naviguer}
           >
             <Icone nom="users-three" taille={15} />
-          </a>
+          </LienInterne>
         ) : null}
         {props.compte.role === "admin" ? (
           <BoutonEdition
@@ -301,18 +286,11 @@ function Resultats(props: ProprietesRail & { formation: ReponseFormation }) {
       ) : null}
 
       {(reponse?.resultats ?? []).map((resultat) => (
-        <a
+        <LienInterne
           key={resultat.leconId}
           className="resultat"
-          href={`/formation/${encodeURIComponent(formation.id)}/lecon/${encodeURIComponent(resultat.leconId)}`}
-          onClick={(evenement) => {
-            evenement.preventDefault();
-            props.naviguer({
-              nom: "lecon",
-              fid: formation.id,
-              lid: resultat.leconId,
-            });
-          }}
+          route={{ nom: "lecon", fid: formation.id, lid: resultat.leconId }}
+          naviguer={props.naviguer}
         >
           <span className="resultat-titre">
             {estFaite(props.formation, resultat.leconId) ? (
@@ -332,7 +310,7 @@ function Resultats(props: ProprietesRail & { formation: ReponseFormation }) {
                 ),
             )}
           </span>
-        </a>
+        </LienInterne>
       ))}
 
       {reponse && reponse.nonIndexees > 0 ? (
@@ -370,15 +348,12 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
             </span>
           </div>
           {module.lecons.map((lecon) => (
-            <a
+            <LienInterne
               key={lecon.id}
               className={`ligne-lecon${lecon.id === leconCourante ? " courante" : ""}`}
-              href={`/formation/${encodeURIComponent(formation.id)}/lecon/${encodeURIComponent(lecon.id)}`}
-              aria-current={lecon.id === leconCourante ? "page" : undefined}
-              onClick={(evenement) => {
-                evenement.preventDefault();
-                props.naviguer({ nom: "lecon", fid: formation.id, lid: lecon.id });
-              }}
+              route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
+              courante={lecon.id === leconCourante}
+              naviguer={props.naviguer}
             >
               {lecon.faite ? (
                 <Icone nom="check" taille={13} />
@@ -391,7 +366,7 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
                   {props.criteresCourants.faits}/{props.criteresCourants.total}
                 </span>
               ) : null}
-            </a>
+            </LienInterne>
           ))}
         </div>
       ))}
@@ -405,14 +380,11 @@ function ListeFormations(props: ProprietesRail) {
     <nav className="rail-nav rail-nav-formations" aria-label="Mes formations">
       {formations.map((formation) =>
         formation.statut === "valide" ? (
-          <a
+          <LienInterne
             key={formation.id}
             className="ligne-formation"
-            href={`/formation/${encodeURIComponent(formation.id)}`}
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              props.naviguer({ nom: "formation", fid: formation.id });
-            }}
+            route={{ nom: "formation", fid: formation.id }}
+            naviguer={props.naviguer}
           >
             <span>{formation.titre}</span>
             <span className="barre-ligne">
@@ -421,7 +393,7 @@ function ListeFormations(props: ProprietesRail) {
                 {formation.faites}/{formation.lecons}
               </span>
             </span>
-          </a>
+          </LienInterne>
         ) : (
           <div key={formation.id} className="ligne-formation-invalide">
             <Icone nom="warning" taille={14} />
@@ -441,12 +413,14 @@ function Spine(props: ProprietesRail) {
 
   return (
     <div className="spine">
-      <a href="/" title="Catalogue" aria-label="Catalogue" onClick={(evenement) => {
-        evenement.preventDefault();
-        props.naviguer({ nom: "catalogue" });
-      }}>
+      <LienInterne
+        route={{ nom: "catalogue" }}
+        title="Catalogue"
+        ariaLabel="Catalogue"
+        naviguer={props.naviguer}
+      >
         <span className="spine-marque" />
-      </a>
+      </LienInterne>
       <button
         type="button"
         className="bouton-icone"
@@ -496,18 +470,15 @@ function Spine(props: ProprietesRail) {
             <Icone nom="magnifying-glass" taille={16} />
           </button>
         ) : null}
-        <a
-          href="/profil"
+        <LienInterne
+          route={{ nom: "profil" }}
           className="bouton-icone"
           title={props.compte.nom}
-          aria-label="Mon profil"
-          onClick={(evenement) => {
-            evenement.preventDefault();
-            props.naviguer({ nom: "profil" });
-          }}
+          ariaLabel="Mon profil"
+          naviguer={props.naviguer}
         >
           <Icone nom="user-circle" taille={16} />
-        </a>
+        </LienInterne>
         {props.compte.role === "admin" ? (
           <BoutonEdition
             edition={props.edition}
