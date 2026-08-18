@@ -647,6 +647,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
     if (rendue instanceof Response) return rendue;
     const { entree, html, criteres, idsLecons } = rendue;
     const { precedente, suivante, position } = voisines(formation.manifeste, lid);
+    const cochees = deps.base.leconsCochees(c.get("compte").id, formation.id);
 
     const reponse: ReponseLecon = {
       formationId: formation.id,
@@ -656,7 +657,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
       moduleId: entree.module.id,
       moduleTitre: entree.module.titre,
       html,
-      faite: deps.base.leconsCochees(c.get("compte").id, formation.id).has(lid),
+      faite: cochees.has(lid),
       criteres: criteres.liste,
       criteresTronques: criteres.tronquee,
       position: position + 1,
@@ -664,6 +665,8 @@ export function creerApi(deps: DependancesApi): AppParcours {
       precedente,
       suivante,
     };
+    const suppose = leconsSupposees(formation, entree.lecon, cochees);
+    if (suppose.length > 0) reponse.suppose = suppose;
     return c.json(reponse);
   });
 
@@ -838,6 +841,33 @@ export function creerApi(deps: DependancesApi): AppParcours {
   );
 
   return app;
+}
+
+/**
+ * Leçons que `lecon` suppose faites et que ce compte n'a pas terminées
+ * (SU-R6, SU-R7). Une référence inconnue (SU-R4), l'auto-référence (SU-R5)
+ * et les doublons sont ignorés en silence — jamais une erreur.
+ */
+function leconsSupposees(
+  formation: FormationValide,
+  lecon: { id: string; suppose?: string[] },
+  cochees: Set<string>,
+): { id: string; titre: string }[] {
+  if (!lecon.suppose) return [];
+  const titres = new Map(
+    leconsOrdonnees(formation.manifeste).map((entree) => [
+      entree.lecon.id,
+      entree.lecon.titre,
+    ]),
+  );
+  const manquantes: { id: string; titre: string }[] = [];
+  for (const id of lecon.suppose) {
+    if (id === lecon.id || cochees.has(id)) continue;
+    if (manquantes.some((deja) => deja.id === id)) continue;
+    const titre = titres.get(id);
+    if (titre !== undefined) manquantes.push({ id, titre });
+  }
+  return manquantes;
 }
 
 function reponseProgression(

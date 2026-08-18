@@ -152,6 +152,11 @@ export interface ReponseLecon {
   total: number;
   precedente: { id: string; titre: string } | null;
   suivante: { id: string; titre: string } | null;
+  /**
+   * Leçons supposées faites et non encore terminées par ce compte (SU-R6,
+   * SU-R7), dans l'ordre du manifeste. Omis quand il n'y a rien à signaler.
+   */
+  suppose?: { id: string; titre: string }[];
 }
 
 export interface ReponseRechercheApi {
