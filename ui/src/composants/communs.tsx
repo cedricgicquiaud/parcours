@@ -11,6 +11,8 @@ export function LienInterne({
   naviguer,
   className,
   courante = false,
+  title,
+  ariaLabel,
   children,
 }: {
   route: Route;
@@ -18,12 +20,17 @@ export function LienInterne({
   className?: string;
   /** Vrai pour la page affichée : pose `aria-current="page"`. */
   courante?: boolean;
+  title?: string;
+  /** Pour un lien-icône sans texte visible. */
+  ariaLabel?: string;
   children: ReactNode;
 }) {
   return (
     <a
       href={cheminDe(route)}
       className={className}
+      title={title}
+      aria-label={ariaLabel}
       aria-current={courante ? "page" : undefined}
       onClick={(evenement) => {
         if (!estClicSimple(evenement)) return;

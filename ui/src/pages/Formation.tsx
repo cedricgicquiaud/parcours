@@ -7,6 +7,7 @@ import {
   Barre,
   BlocErreur,
   Icone,
+  LienInterne,
   Squelette,
 } from "../composants/communs";
 import type { Route } from "../routeur";
@@ -271,14 +272,11 @@ export function PageFormation({
               <p className="module-description">{module.description}</p>
             ) : null}
             {module.lecons.map((lecon) => (
-              <a
+              <LienInterne
                 key={lecon.id}
                 className="ligne-lecon"
-                href={`/formation/${encodeURIComponent(formation.id)}/lecon/${encodeURIComponent(lecon.id)}`}
-                onClick={(evenement) => {
-                  evenement.preventDefault();
-                  naviguer({ nom: "lecon", fid: formation.id, lid: lecon.id });
-                }}
+                route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
+                naviguer={naviguer}
               >
                 {lecon.faite ? (
                   <Icone nom="check" taille={13} />
@@ -289,7 +287,7 @@ export function PageFormation({
                 {lecon.duree !== undefined ? (
                   <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
                 ) : null}
-              </a>
+              </LienInterne>
             ))}
           </section>
         ))}

@@ -4,11 +4,12 @@ import {
   Bandeau,
   BlocErreur,
   Icone,
+  LienInterne,
   Squelette,
 } from "../composants/communs";
 import { variablesMermaid } from "../mermaid";
 import type { Mode } from "../preferences";
-import { cheminDe, estClicSimple, type Route } from "../routeur";
+import { estClicSimple, type Route } from "../routeur";
 
 export function PageLecon({
   lecon,
@@ -193,15 +194,12 @@ export function PageLecon({
       <article className="page page-lecon lecon">
         <div className="lecon-entete">
           <nav className="fil-ariane" aria-label="Fil d'Ariane">
-          <a
-            href={`/formation/${encodeURIComponent(lecon.formationId)}`}
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              naviguer({ nom: "formation", fid: lecon.formationId });
-            }}
+          <LienInterne
+            route={{ nom: "formation", fid: lecon.formationId }}
+            naviguer={naviguer}
           >
             {lecon.formationTitre}
-          </a>
+          </LienInterne>
           <span>/</span>
           <span style={{ textTransform: "uppercase" }}>{lecon.moduleTitre}</span>
           <span>·</span>
@@ -252,24 +250,12 @@ export function PageLecon({
             {lecon.suppose.map((supposee, index, liste) => (
               <Fragment key={supposee.id}>
                 {index === 0 ? "" : index === liste.length - 1 ? " et " : ", "}
-                <a
-                  href={cheminDe({
-                    nom: "lecon",
-                    fid: lecon.formationId,
-                    lid: supposee.id,
-                  })}
-                  onClick={(evenement) => {
-                    if (!estClicSimple(evenement)) return;
-                    evenement.preventDefault();
-                    naviguer({
-                      nom: "lecon",
-                      fid: lecon.formationId,
-                      lid: supposee.id,
-                    });
-                  }}
+                <LienInterne
+                  route={{ nom: "lecon", fid: lecon.formationId, lid: supposee.id }}
+                  naviguer={naviguer}
                 >
                   {supposee.titre}
-                </a>
+                </LienInterne>
               </Fragment>
             ))}
             .
