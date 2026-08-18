@@ -154,7 +154,8 @@ export interface ReponseLecon {
   suivante: { id: string; titre: string } | null;
   /**
    * Leçons supposées faites et non encore terminées par ce compte (SU-R6,
-   * SU-R7), dans l'ordre du manifeste. Omis quand il n'y a rien à signaler.
+   * SU-R7), dans l'ordre du champ `suppose` du manifeste. Omis quand il n'y a
+   * rien à signaler.
    */
   suppose?: { id: string; titre: string }[];
 }

@@ -114,12 +114,14 @@ function validerSuppose(
   if (valeur.length > MAX_SUPPOSE) {
     return echec(`${champ} : ${MAX_SUPPOSE} identifiants au plus`);
   }
+  const entrees: string[] = [];
   for (const [index, entree] of valeur.entries()) {
     if (typeof entree !== "string" || !slugValide(entree)) {
       return echec(`${champ}[${index}] : slug invalide`);
     }
+    entrees.push(entree);
   }
-  return { ok: true, valeur: valeur as string[] };
+  return { ok: true, valeur: entrees };
 }
 
 function estObjet(valeur: unknown): valeur is Record<string, unknown> {

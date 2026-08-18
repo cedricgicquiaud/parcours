@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReponseLecon } from "../api";
 import {
   Bandeau,
@@ -6,7 +6,7 @@ import {
   Icone,
   Squelette,
 } from "../composants/communs";
-import { estClicSimple, type Route } from "../routeur";
+import { cheminDe, estClicSimple, type Route } from "../routeur";
 
 export function PageLecon({
   lecon,
@@ -238,10 +238,14 @@ export function PageLecon({
           <Bandeau icone="warning">
             Cette leçon suppose que vous ayez terminé{" "}
             {lecon.suppose.map((supposee, index, liste) => (
-              <span key={supposee.id}>
-                {index > 0 ? (index === liste.length - 1 ? " et " : ", ") : ""}
+              <Fragment key={supposee.id}>
+                {index === 0 ? "" : index === liste.length - 1 ? " et " : ", "}
                 <a
-                  href={`/formation/${encodeURIComponent(lecon.formationId)}/lecon/${encodeURIComponent(supposee.id)}`}
+                  href={cheminDe({
+                    nom: "lecon",
+                    fid: lecon.formationId,
+                    lid: supposee.id,
+                  })}
                   onClick={(evenement) => {
                     if (!estClicSimple(evenement)) return;
                     evenement.preventDefault();
@@ -254,7 +258,7 @@ export function PageLecon({
                 >
                   {supposee.titre}
                 </a>
-              </span>
+              </Fragment>
             ))}
             .
           </Bandeau>

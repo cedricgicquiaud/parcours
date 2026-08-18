@@ -47,7 +47,7 @@ import {
 } from "./formations/scan";
 import { FORMAT_ID_CRITERE } from "./markdown/criteres";
 import type { CollecteCriteres, MoteurRendu } from "./markdown/rendu";
-import { calculerAvancement, voisines } from "./progression/calculs";
+import { calculerAvancement, leconsSupposees, voisines } from "./progression/calculs";
 import type { BaseCriteres } from "./progression/criteres";
 import type { BaseProgression } from "./progression/db";
 import type { MoteurRecherche } from "./recherche/moteur";
@@ -665,7 +665,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
       precedente,
       suivante,
     };
-    const suppose = leconsSupposees(formation, entree.lecon, cochees);
+    const suppose = leconsSupposees(formation.manifeste, entree.lecon, cochees);
     if (suppose.length > 0) reponse.suppose = suppose;
     return c.json(reponse);
   });
@@ -841,33 +841,6 @@ export function creerApi(deps: DependancesApi): AppParcours {
   );
 
   return app;
-}
-
-/**
- * Leçons que `lecon` suppose faites et que ce compte n'a pas terminées
- * (SU-R6, SU-R7). Une référence inconnue (SU-R4), l'auto-référence (SU-R5)
- * et les doublons sont ignorés en silence — jamais une erreur.
- */
-function leconsSupposees(
-  formation: FormationValide,
-  lecon: { id: string; suppose?: string[] },
-  cochees: Set<string>,
-): { id: string; titre: string }[] {
-  if (!lecon.suppose) return [];
-  const titres = new Map(
-    leconsOrdonnees(formation.manifeste).map((entree) => [
-      entree.lecon.id,
-      entree.lecon.titre,
-    ]),
-  );
-  const manquantes: { id: string; titre: string }[] = [];
-  for (const id of lecon.suppose) {
-    if (id === lecon.id || cochees.has(id)) continue;
-    if (manquantes.some((deja) => deja.id === id)) continue;
-    const titre = titres.get(id);
-    if (titre !== undefined) manquantes.push({ id, titre });
-  }
-  return manquantes;
 }
 
 function reponseProgression(
