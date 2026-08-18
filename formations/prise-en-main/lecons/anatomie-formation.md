@@ -56,6 +56,26 @@ votre progression.
 Le `id` de la formation doit correspondre **exactement** au nom du dossier,
 majuscules comprises. `Mon-Essai` et `mon-essai` sont deux choses différentes.
 
+## Une leçon peut dire ce qu'elle suppose
+
+Dans une formation fil rouge, chaque leçon construit sur la précédente. Une
+leçon peut le déclarer avec le champ facultatif `suppose` :
+
+```json
+{ "id": "deux-hooks", "titre": "Deux hooks", "fichier": "lecons/deux-hooks.md",
+  "suppose": ["installer", "ecrire-claude-md"] }
+```
+
+À l'ouverture, si une de ces leçons n'est pas terminée pour le compte connecté,
+un bandeau la nomme avec un lien. **Il ne verrouille rien** : on prévient, on ne
+confisque pas la décision du lecteur.
+
+Les règles : des identifiants de leçons de la même formation, 5 au plus, un
+tableau vide vaut un champ absent. Une entrée qui ne correspond plus à aucune
+leçon est **ignorée en silence** — retirer une leçon du sommaire ne casse jamais
+votre formation. Cette leçon-ci en est un exemple vivant : elle déclare supposer
+« L'interrupteur Édition ».
+
 ## Quand quelque chose cloche
 
 Une formation dont le manifeste est refusé reste visible au catalogue, avec le
@@ -74,3 +94,5 @@ l'unicité des identifiants, puis l'existence des fichiers.
 - [ ] j'ai retiré une virgule du manifeste : le catalogue affiche la carte en erreur, avec le message
 - [ ] j'ai remis la virgule et rechargé : la carte est redevenue normale, sans redémarrer le serveur
 - [ ] j'ai vérifié qu'un titre de leçon vient du manifeste, pas du fichier markdown
+- [ ] j'ai ajouté `"suppose": ["bienvenue"]` à une leçon de ce manifeste, rechargé sans l'avoir terminée : le bandeau la nomme (puis j'ai retiré le champ)
+- [ ] j'ai mis un identifiant inconnu dans `suppose` : la formation est restée valide, aucun bandeau pour cette entrée

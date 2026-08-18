@@ -103,7 +103,7 @@ restés ouverts au bout de quelques jours. Chaque bascule est déjà datée en b
 le rythme se décidera après usage réel.
 
 **Formation d'accueil réécrite (2026-08-16)** : « Prise en main de Parcours »
-passe à 5 modules, 17 leçons, 2 h 41, et **sert de recette manuelle** — ses 94
+passe à 5 modules, 17 leçons, 2 h 45, et **sert de recette manuelle** — ses 100
 critères de réussite sont des gestes à faire dans l'application.
 
 **Une leçon peut dire ce qu'elle suppose (2026-08-18, décision P017)** : une

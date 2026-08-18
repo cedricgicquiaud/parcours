@@ -38,6 +38,20 @@ Changer son `id`, en revanche, revient à créer une leçon neuve. L'ancienne co
 devient **orpheline**. Parcours vous le signale sur la fiche, avec un bouton
 « Nettoyer » — il ne le fait jamais dans votre dos.
 
+## Quand une leçon en suppose d'autres
+
+Certaines leçons s'appuient sur ce qui précède. L'auteur peut le déclarer, et
+Parcours compare alors cette liste à **votre** progression : à l'ouverture, si
+une leçon supposée n'est pas terminée, un bandeau la nomme, avec un lien pour y
+aller.
+
+Le bandeau ne verrouille rien. Le contenu est entier, les critères se cochent,
+« Marquer comme terminé » fonctionne — on vous prévient, on ne décide pas à
+votre place. Terminez la leçon supposée, revenez : le bandeau a disparu.
+
+Vous pouvez le voir dans cette formation : l'exercice guidé du dernier module
+déclare trois leçons supposées.
+
 ## Faire le ménage
 
 Deux actions, toutes deux confirmées avant d'agir, et toutes deux disponibles
@@ -54,3 +68,7 @@ même en lecture : elles vous appartiennent, elles ne touchent aucun fichier.
 - [ ] j'ai ouvert deux onglets sur la même formation, coché dans l'un, et l'autre s'est mis à jour tout seul
 - [ ] j'ai retrouvé ma progression après avoir rechargé la page
 - [ ] j'ai vu que « Réinitialiser ma progression » demande confirmation avant d'agir
+- [ ] j'ai ouvert « Exercice guidé : une formation de zéro » sans avoir terminé les leçons qu'il suppose : un bandeau les nomme, sous le titre et avant le texte
+- [ ] j'ai cliqué un titre dans le bandeau : je suis arrivé sur la leçon, sans rechargement de la page
+- [ ] j'ai vérifié qu'avec le bandeau, le contenu est entier et « Marquer comme terminé » reste actif
+- [ ] j'ai terminé une leçon supposée puis suis revenu : elle a quitté le bandeau
