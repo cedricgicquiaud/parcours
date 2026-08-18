@@ -234,6 +234,32 @@ export function PageLecon({
           ) : null}
         </div>
 
+        {lecon.suppose?.length ? (
+          <Bandeau icone="warning">
+            Cette leçon suppose que vous ayez terminé{" "}
+            {lecon.suppose.map((supposee, index, liste) => (
+              <span key={supposee.id}>
+                {index > 0 ? (index === liste.length - 1 ? " et " : ", ") : ""}
+                <a
+                  href={`/formation/${encodeURIComponent(lecon.formationId)}/lecon/${encodeURIComponent(supposee.id)}`}
+                  onClick={(evenement) => {
+                    if (!estClicSimple(evenement)) return;
+                    evenement.preventDefault();
+                    naviguer({
+                      nom: "lecon",
+                      fid: lecon.formationId,
+                      lid: supposee.id,
+                    });
+                  }}
+                >
+                  {supposee.titre}
+                </a>
+              </span>
+            ))}
+            .
+          </Bandeau>
+        ) : null}
+
         {erreurCoche ? <Bandeau icone="warning">{erreurCoche}</Bandeau> : null}
         {avertissement ? (
           <Bandeau icone="warning">

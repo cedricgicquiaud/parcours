@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { ReponseLecon } from "../api";
@@ -67,7 +67,7 @@ describe("le bandeau des leçons supposées (SU-R9, SU-R10, SU-R13)", () => {
     expect(screen.getByRole("status")).toHaveTextContent(
       "Installer Claude Code, Écrire un CLAUDE.md et Initialiser le projet.",
     );
-    expect(screen.getAllByRole("link")).toHaveLength(3);
+    expect(within(screen.getByRole("status")).getAllByRole("link")).toHaveLength(3);
   });
 
   it("apparaît sous l'en-tête et AVANT le contenu de la leçon (SU-R9)", () => {
