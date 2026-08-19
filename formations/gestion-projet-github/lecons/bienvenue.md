@@ -18,9 +18,11 @@ Chaque brique passe par le même rythme, en deux temps :
 
 1. **À la main.** Vous faites le geste vous-même, dans votre navigateur, pour
    voir ce que GitHub fait — et savoir reconnaître un résultat correct.
-2. **Par Claude Code.** Vous demandez le même geste à Claude Code, qui pilote
-   GitHub avec `gh` — l'outil en ligne de commande officiel de GitHub, qui fait
-   depuis le terminal tout ce que le site fait à la souris.
+2. **Par Claude Code.** Vous demandez le même geste à Claude Code, depuis
+   l'environnement où vous l'utilisez d'habitude — Visual Studio Code, CMux,
+   ou un simple terminal. Sous le capot, Claude pilote GitHub avec `gh` —
+   l'outil en ligne de commande officiel de GitHub, qui fait tout ce que le
+   site fait à la souris.
 
 Le point d'orgue arrive au module 6 : partir d'un projet vide et obtenir un
 backlog — la liste structurée de tout le travail à faire — généré par Claude
@@ -60,12 +62,14 @@ GitHub, et c'est exactement ce que la formation entraîne.
 
 ## Vérifiez votre équipement
 
-Le terrain de toute la formation : votre navigateur et votre terminal. Trois
-vérifications, à faire maintenant.
+Le terrain de toute la formation : votre navigateur, et l'environnement où vit
+Claude Code — Visual Studio Code, CMux ou un simple terminal, peu importe :
+tous embarquent un terminal, et c'est là que se tapent les commandes `gh`.
+Trois vérifications, à faire maintenant.
 
 1. **Le compte** : ouvrez [github.com](https://github.com) et connectez-vous.
-2. **L'outil `gh`** : dans un terminal, tapez `gh --version`. Une ligne avec un
-   numéro de version doit s'afficher.
+2. **L'outil `gh`** : dans le terminal de votre environnement, tapez
+   `gh --version`. Une ligne avec un numéro de version doit s'afficher.
 3. **La connexion de `gh`** : tapez `gh auth status`. Votre nom de compte doit
    apparaître, avec la mention « Logged in ».
 
