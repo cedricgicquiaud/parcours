@@ -29,13 +29,26 @@ Ces deux versions ne seront jamais programmées — mais elles vont nourrir tous
 les modules : les tâches de la V1 deviendront des issues, « V1 » et « V2 »
 deviendront des milestones, et la V2 fournira le backlog du module 6.
 
+## Le dépôt vit en deux exemplaires
+
+Un dépôt a une version de référence sur github.com — le dépôt **distant** — et
+peut avoir une copie sur votre machine : le **clone**. C'est cette copie
+locale que votre environnement de travail ouvre (Visual Studio Code, CMux…),
+et c'est dedans que Claude Code travaille. Les deux exemplaires se
+synchronisent ; les allers-retours, c'est Claude qui les gérera.
+
+C'est la façon normale de travailler avec un IDE : le dossier du projet
+ouvert, Claude dedans, et github.com comme référence que le navigateur permet
+de consulter.
+
 ## À vous
 
-Créez le dépôt du bac à sable. L'objectif :
+Créez le dépôt du bac à sable, en deux exemplaires. L'objectif :
 
 - un dépôt nommé `todo-app`, sur votre compte ;
 - **privé** ;
-- avec un `README.md` qui décrit la V1 et la V2.
+- avec un `README.md` qui décrit la V1 et la V2 ;
+- et sa copie locale (le clone) ouverte dans votre environnement de travail.
 
 Le texte du README, à reprendre tel quel :
 
@@ -53,52 +66,57 @@ Des comptes, le partage d'une liste à plusieurs, la synchronisation.
 ```
 
 :::indice
-Deux chemins mènent au même dépôt : le bouton **New** (en haut à gauche sur
-github.com, à côté de la liste de vos dépôts), ou une demande à Claude Code —
-décrivez le dépôt voulu (son nom, privé, avec un README) et laissez-le faire.
-Dans les deux cas, le plus simple est de créer le README en même temps que le
-dépôt, puis de le modifier depuis la page du dépôt — l'icône crayon, en haut à
-droite du README.
+Le chemin le plus direct : placez-vous (ou ouvrez votre environnement) dans le
+dossier où vous rangez vos projets, et décrivez à Claude Code le dépôt voulu —
+son nom, privé, un README avec le texte ci-dessus, et une copie locale ici.
+Laissez-le faire, regardez passer les commandes, puis ouvrez le dossier
+`todo-app` dans votre environnement. Le chemin manuel existe aussi : le bouton
+**New** sur github.com, puis un clone — mais c'est plus de gestes pour le même
+résultat.
 :::
 
 :::indice
-Ce que vous verrez passer si Claude s'en charge (ou ce que vous pouvez taper
-vous-même) : `gh repo create todo-app --private --add-readme` — l'option
-`--private` rend le dépôt privé, `--add-readme` y met un README de départ.
-Puis `gh repo view todo-app --web` ouvre la page du dépôt dans votre
-navigateur ; l'icône crayon sur le README permet d'y coller le texte, et le
-bouton vert **Commit changes** enregistre.
+Ce que vous verrez passer :
+`gh repo create todo-app --private --add-readme --clone` — `--private` rend le
+dépôt privé, `--add-readme` y met un README de départ, `--clone` en télécharge
+aussitôt la copie locale, dans un dossier `todo-app` créé là où la commande
+tourne. Pour le texte du README, demandez à Claude de l'y écrire et de le
+publier — c'est lui qui gère les allers-retours entre la copie locale et
+github.com.
 :::
 
 :::solution
-Que vous les tapiez ou que Claude les lance pour vous, les commandes sont :
+Ce que Claude lance (ou que vous pouvez taper vous-même), depuis le dossier de
+vos projets :
 
 ```bash
-# créer le dépôt privé, avec un README de départ
-gh repo create todo-app --private --add-readme
+# créer le dépôt distant privé, avec un README, et sa copie locale
+gh repo create todo-app --private --add-readme --clone
 
-# ouvrir sa page dans le navigateur
+# ouvrir la page du dépôt distant dans le navigateur
 gh repo view todo-app --web
 ```
 
-Sur la page du dépôt : cliquer l'icône crayon du README, remplacer son contenu
-par le texte donné plus haut, puis **Commit changes** (deux fois : le bouton
-ouvre un petit panneau de confirmation).
+Puis : « écris ce texte dans le README et publie-le » (avec le texte donné plus
+haut) — Claude modifie le fichier local et pousse la modification vers
+github.com. Rechargez la page du dépôt : le README affiche la V1 et la V2.
+Enfin, ouvrez le dossier `todo-app` dans votre environnement de travail.
 
 **Pourquoi ça marche** : `gh` parle à GitHub avec votre compte déjà connecté
-(vérifié à la leçon Bienvenue). Une seule commande crée donc le dépôt à
-distance, exactement comme le formulaire « New » du site — les deux chemins
-produisent le même résultat, et c'est le fil conducteur de toute la formation.
+(vérifié à la leçon Bienvenue). Une commande crée le dépôt de référence chez
+GitHub et sa copie locale d'un coup ; ensuite, tout ce qui s'écrit localement
+se publie vers github.com — et le navigateur reste votre poste d'observation.
 
 **L'erreur fréquente** : « Name already exists on this account » — un dépôt
 `todo-app` existe déjà, par exemple créé lors d'un essai précédent. S'il est
-vide ou quasi vide, réutilisez-le tel quel (vérifiez juste qu'il est bien
-privé, badge « Private » à côté du nom) ; inutile d'en créer un deuxième.
+vide ou quasi vide, réutilisez-le : demandez alors juste son clone
+(`gh repo clone votre-compte/todo-app`) au lieu d'en créer un deuxième, et
+vérifiez qu'il est bien privé (badge « Private » à côté du nom).
 :::
 
 ## Critères de réussite
 
 - [ ] mon dépôt `todo-app` existe et porte le badge « Private » à côté de son nom
 - [ ] son `README.md` décrit la V1 et la V2 sur la page d'accueil du dépôt
-- [ ] j'ai vu `gh repo view todo-app` confirmer l'existence du dépôt
+- [ ] le dossier `todo-app` (la copie locale) est ouvert dans mon environnement de travail
 - [ ] l'onglet Issues de mon dépôt est vide — le bac à sable est prêt pour le module suivant
