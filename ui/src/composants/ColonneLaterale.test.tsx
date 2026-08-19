@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Compte, ReponseFormation } from "../api";
 import type { EtatRecherche } from "../recherche";
 import { ColonneLaterale } from "./ColonneLaterale";
@@ -78,6 +78,8 @@ const proprietes = {
 };
 
 describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => {
+  beforeEach(() => window.localStorage.clear());
+
   it("rend chaque module comme un repliable natif, déplié par défaut", () => {
     render(<ColonneLaterale {...proprietes} />);
     for (const titre of [/Découvrir/, /Écrire/]) {
@@ -87,6 +89,16 @@ describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => 
       expect(screen.getByText(titre).closest("summary")).not.toBeNull();
     }
     expect(screen.getByRole("link", { name: /Bienvenue/ })).toBeInTheDocument();
+  });
+
+  it("replie un module au clic sur son en-tête, et le redéplie au clic suivant", () => {
+    render(<ColonneLaterale {...proprietes} />);
+    const entete = screen.getByText(/Écrire/).closest("summary")!;
+    const module = entete.closest("details")!;
+    fireEvent.click(entete);
+    expect(module.open).toBe(false);
+    fireEvent.click(entete);
+    expect(module.open).toBe(true);
   });
 });
 
