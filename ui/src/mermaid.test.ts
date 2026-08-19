@@ -43,18 +43,19 @@ describe("thème des schémas (mode sombre)", () => {
     // La police de la page s'applique au SVG par héritage CSS : si mermaid
     // mesure ses boîtes avec une autre, le dernier mot des libellés déborde
     // et disparaît (« Pull request » rendu « Pull », recette du 2026-08-19).
-    const racine = document.documentElement;
-    racine.style.fontFamily = '"Open Sans", system-ui, sans-serif';
-    racine.style.fontSize = "15px";
+    const racine = racineAvec({ "--font": "Georgia, serif" });
+    (racine as HTMLElement).style.fontSize = "17px";
 
     const variables = variablesMermaid(racine);
-    expect(variables.fontFamily).toBe('"Open Sans", system-ui, sans-serif');
-    expect(variables.fontSize).toBe("15px");
+    expect(variables.fontFamily).toBe("Georgia, serif");
+    expect(variables.fontSize).toBe("17px");
   });
 
-  it("retombe sur la police de la palette si le calcul ne donne rien", () => {
+  it("retombe sur la police du thème si la palette est absente", () => {
     const variables = variablesMermaid(document.documentElement);
     expect(variables.fontFamily).toBe('"Open Sans", system-ui, sans-serif');
-    expect(variables.fontSize).toBe("15px");
+    // La taille calculée est une vraie valeur en px (défaut du navigateur de
+    // test) : elle est reprise telle quelle, jamais écrasée.
+    expect(variables.fontSize).toBe("16px");
   });
 });
