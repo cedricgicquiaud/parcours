@@ -189,6 +189,13 @@ describe("compteurs de formation — en modules, pas en leçons (recette 2026-08
     expect(points[1]!.className).toContain("faite"); // Écrire est terminé
     expect(screen.getByTitle("1 module sur 2")).toBeInTheDocument();
   });
+
+  it("affiche les modules terminés dans le rond de la colonne repliée, pas un pourcentage", () => {
+    const { container } = render(<ColonneLaterale {...proprietes} replie />);
+    const rond = container.querySelector(".spine-pourcent")!;
+    expect(rond.textContent).toBe("1/2");
+    expect(rond).toHaveAttribute("title", "1 module terminé sur 2");
+  });
 });
 
 describe("sommaire latéral — durées (recette 2026-08-19)", () => {
