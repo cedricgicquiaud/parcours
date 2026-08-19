@@ -54,7 +54,9 @@ code applicatif. Et à la dernière leçon, le bac à sable sera jeté.
 
 Cette formation n'enseigne pas non plus git en profondeur (l'outil d'historique
 du code) : on utilisera une branche et une pull request au module 5, en
-expliquant juste ce qu'il faut.
+expliquant juste ce qu'il faut. La raison est simple : dans le mode de travail
+visé, c'est Claude Code qui manipule git — nous, on juge le résultat sur
+GitHub, et c'est exactement ce que la formation entraîne.
 
 ## Vérifiez votre équipement
 
