@@ -70,20 +70,30 @@ const proprietes = {
   basculerEdition: () => undefined,
 };
 
-describe("sommaire latéral — durées des leçons", () => {
-  it("affiche la durée à côté de chaque leçon qui en a une", () => {
+describe("sommaire latéral — durées (recette 2026-08-19)", () => {
+  it("affiche la durée sur l'en-tête de chaque module qui en a une", () => {
     render(<ColonneLaterale {...proprietes} />);
-    const ligne = screen.getByRole("link", { name: /Se repérer/ });
-    expect(ligne).toHaveTextContent("12 min");
-    expect(screen.getByRole("link", { name: /Bienvenue/ })).toHaveTextContent("8 min");
+    expect(screen.getByText(/Découvrir/).closest(".module-entete")).toHaveTextContent(
+      "20 min",
+    );
   });
 
-  it("n'affiche rien quand la leçon n'a pas de durée", () => {
-    const sansDuree: ReponseFormation = structuredClone(formation);
-    for (const lecon of sansDuree.avancement.modules[0]!.lecons) delete lecon.duree;
-    render(<ColonneLaterale {...proprietes} formation={sansDuree} />);
+  it("n'affiche PAS la durée sur les lignes de leçons — trop dense", () => {
+    render(<ColonneLaterale {...proprietes} />);
     expect(screen.getByRole("link", { name: /Se repérer/ })).not.toHaveTextContent(
-      "min",
+      /min/,
     );
+    expect(screen.getByRole("link", { name: /Bienvenue/ })).not.toHaveTextContent(
+      /min/,
+    );
+  });
+
+  it("laisse l'en-tête de module sans durée quand le module n'en a pas", () => {
+    const sansDuree: ReponseFormation = structuredClone(formation);
+    delete sansDuree.avancement.modules[0]!.duree;
+    render(<ColonneLaterale {...proprietes} formation={sansDuree} />);
+    expect(
+      screen.getByText(/Découvrir/).closest(".module-entete"),
+    ).not.toHaveTextContent(/min/);
   });
 });
