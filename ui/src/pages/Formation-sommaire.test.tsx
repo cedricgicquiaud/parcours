@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ReponseFormation } from "../api";
+import type { Compte, ReponseFormation } from "../api";
+import { ColonneLaterale } from "../composants/ColonneLaterale";
+import type { EtatRecherche } from "../recherche";
 import { PageFormation } from "./Formation";
 
 function formation(): ReponseFormation {
@@ -88,5 +90,70 @@ describe("sommaire de la fiche — modules repliables (recette 2026-08-19)", () 
     afficher();
     expect(screen.getByText(/Pratique/).closest("details")!.open).toBe(false);
     expect(screen.getByText(/Fondations/).closest("details")!.open).toBe(true);
+  });
+
+  it("replie en direct dans le rail quand on replie depuis la fiche", () => {
+    // Sur l'écran d'une formation, le rail et la fiche montrent le sommaire
+    // en même temps : un pli fait d'un côté doit se voir de l'autre.
+    const reponse = formation();
+    const compte: Compte = {
+      id: 1,
+      identifiant: "cedric@parcours.test",
+      nom: "Cédric",
+      role: "lecteur",
+      actif: true,
+      emailVerifie: true,
+      creeLe: "2026-08-18",
+      derniereConnexion: null,
+    };
+    const recherche: EtatRecherche = {
+      requete: "",
+      setRequete: () => undefined,
+      effacer: () => undefined,
+      active: false,
+      chargement: false,
+      reponse: null,
+      erreur: null,
+    };
+    render(
+      <>
+        <ColonneLaterale
+          route={{ nom: "formation", fid: reponse.id }}
+          naviguer={vi.fn()}
+          catalogue={null}
+          formation={reponse}
+          leconCourante={null}
+          criteresCourants={null}
+          recherche={recherche}
+          mode="clair"
+          basculerMode={() => undefined}
+          replie={false}
+          basculerReplie={() => undefined}
+          compte={compte}
+          surDeconnexion={() => undefined}
+          edition={false}
+          basculerEdition={() => undefined}
+        />
+        <PageFormation
+          formation={reponse}
+          chargement={false}
+          erreur={null}
+          naviguer={vi.fn()}
+          surNettoyer={vi.fn()}
+          surReinitialiser={vi.fn()}
+          occupe={false}
+        />
+      </>,
+    );
+
+    const sommaires = screen
+      .getAllByText(/Pratique/)
+      .map((titre) => titre.closest("details")!);
+    const fiche = sommaires.find((module) => module.classList.contains("carte"))!;
+    const rail = sommaires.find((module) => !module.classList.contains("carte"))!;
+
+    fireEvent.click(within(fiche).getByText(/Pratique/).closest("summary")!);
+    expect(rail.open).toBe(false);
+    expect(fiche.open).toBe(false);
   });
 });
