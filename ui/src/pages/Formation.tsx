@@ -56,8 +56,7 @@ function SommaireFiche({
       {formation.avancement.modules.map((module, index) => (
         <ModuleRepliable
           key={module.id}
-          className="carte"
-          style={{ background: "transparent", borderStyle: "solid" }}
+          className="module-fiche"
           ouvert={!estReplie(module.id)}
           surBascule={() => basculer(module.id)}
           enTete={

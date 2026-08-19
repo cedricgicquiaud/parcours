@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cheminDe, estClicSimple, type Route } from "../routeur";
 
 /**
@@ -119,20 +119,18 @@ export function ModuleRepliable({
   ouvert,
   surBascule,
   className = "module",
-  style,
   enTete,
   children,
 }: {
   ouvert: boolean;
   surBascule: () => void;
   className?: string;
-  style?: CSSProperties;
   /** Contenu du `summary` (titre, durée, compteur). */
   enTete: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <details className={className} style={style} open={ouvert}>
+    <details className={className} open={ouvert}>
       <summary
         className="module-entete"
         onClick={(evenement) => {

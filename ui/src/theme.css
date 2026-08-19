@@ -590,8 +590,28 @@ summary.module-entete:hover .module-titre {
   grid-column: 1 / -1;
 }
 
-.carte > .module-entete {
-  padding: 0;
+/* Cartes du sommaire de la fiche : même aspect que les repliables d'une
+   leçon (indices, solution) — fond levé, en-tête compact (recette 2026-08-19). */
+.module-fiche {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px;
+  background: var(--pane);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+.module-fiche[open] {
+  padding-bottom: 8px;
+}
+
+.module-fiche > .module-entete {
+  padding: 13px 8px;
+}
+
+.module-fiche .module-description {
+  margin: 0 8px 6px;
 }
 
 .ligne-lecon {
