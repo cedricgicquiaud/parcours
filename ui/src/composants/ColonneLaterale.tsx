@@ -337,6 +337,18 @@ function estFaite(formation: ReponseFormation | null, leconId: string): boolean 
 function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
   const { formation, leconCourante } = props;
   const { estReplie, replier } = useModulesReplies(formation.id);
+
+  // On ne cache jamais l'endroit où l'on est : ouvrir une leçon déplie son
+  // module. Le replier ensuite à la main reste possible (l'effet ne dépend
+  // que de l'identité du module courant, pas de son état).
+  const moduleCourant =
+    formation.avancement.modules.find((module) =>
+      module.lecons.some((lecon) => lecon.id === leconCourante),
+    )?.id ?? null;
+  useEffect(() => {
+    if (moduleCourant) replier(moduleCourant, false);
+  }, [moduleCourant, replier]);
+
   return (
     <nav className="rail-nav" aria-label="Sommaire de la formation">
       {formation.avancement.modules.map((module, index) => (
