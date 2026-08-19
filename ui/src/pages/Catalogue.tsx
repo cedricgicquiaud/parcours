@@ -371,7 +371,8 @@ function CarteEnCours({
             <Barre pourcentage={formation.pourcentage} epaisse />
           </div>
           <span className="meta-faible" style={{ fontSize: 12.5 }}>
-            {formation.faites} leçons sur {formation.lecons}
+            {formation.modulesFaits} module{formation.modulesFaits > 1 ? "s" : ""} sur{" "}
+            {formation.modules}
             {formation.duree !== undefined ? ` · ${formaterDuree(formation.duree)}` : ""}
             {" — "}
             {formation.pourcentage} %
@@ -482,7 +483,8 @@ function Carte({
       <Barre pourcentage={formation.pourcentage} epaisse />
       <div className="carte-pied">
         <span className="meta-faible" style={{ fontSize: 12 }}>
-          {formation.faites}/{formation.lecons} leçons
+          {formation.modulesFaits}/{formation.modules} module
+          {formation.modules > 1 ? "s" : ""}
           {formation.duree !== undefined ? ` · ${formaterDuree(formation.duree)}` : ""}
         </span>
         {peutEcrire ? (

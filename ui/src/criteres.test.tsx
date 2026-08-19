@@ -29,6 +29,7 @@ const catalogue: ReponseCatalogue = {
       id: "formation-claude",
       titre: "Formation pratique Claude",
       modules: 1,
+      modulesFaits: 0,
       lecons: 1,
       faites: 0,
       pourcentage: 0,

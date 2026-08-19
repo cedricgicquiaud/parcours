@@ -101,7 +101,7 @@ export function ColonneLaterale(props: ProprietesRail) {
             <ChampRecherche champ={champ} recherche={recherche} />
           </>
         ) : (
-          <ResumeCatalogue catalogue={props.catalogue} />
+          <ResumeCatalogue />
         )}
       </div>
 
@@ -196,19 +196,11 @@ function BoutonEdition({
   );
 }
 
-function ResumeCatalogue({ catalogue }: { catalogue: ReponseCatalogue | null }) {
-  const valides = (catalogue?.formations ?? []).filter(
-    (formation) => formation.statut === "valide",
-  );
-  const lecons = valides.reduce((total, formation) => total + formation.lecons, 0);
-  const faites = valides.reduce((total, formation) => total + formation.faites, 0);
+/** Juste le titre : le décompte de leçons a été retiré (recette 2026-08-19). */
+function ResumeCatalogue() {
   return (
     <div className="rail-resume">
       <span className="rail-resume-titre">Mes formations</span>
-      <span className="rail-resume-detail">
-        {valides.length} formation{valides.length > 1 ? "s" : ""} · {lecons} leçon
-        {lecons > 1 ? "s" : ""} · {faites} terminée{faites > 1 ? "s" : ""}
-      </span>
     </div>
   );
 }
@@ -432,7 +424,7 @@ function ListeFormations(props: ProprietesRail) {
             <span className="barre-ligne">
               <Barre pourcentage={formation.pourcentage} />
               <span className="meta-faible">
-                {formation.faites}/{formation.lecons}
+                {formation.modulesFaits}/{formation.modules}
               </span>
             </span>
           </LienInterne>
@@ -495,9 +487,11 @@ function Spine(props: ProprietesRail) {
           </button>
           <span
             className="spine-pourcent"
-            title={`${formation.avancement.pourcentage} % de la formation`}
+            title={`${decompte.faits} module${decompte.faits > 1 ? "s" : ""} terminé${
+              decompte.faits > 1 ? "s" : ""
+            } sur ${decompte.total}`}
           >
-            {formation.avancement.pourcentage}&#8239;%
+            {decompte.faits}/{decompte.total}
           </span>
         </>
       ) : null}

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { Compte, ReponseFormation } from "../api";
+import type { Compte, ReponseCatalogue, ReponseFormation } from "../api";
 import { CLE_MODULES_REPLIES } from "../preferences";
 import type { EtatRecherche } from "../recherche";
 import { ColonneLaterale } from "./ColonneLaterale";
@@ -123,6 +123,54 @@ describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => 
   });
 });
 
+describe("rail au catalogue — compteurs en modules (recette 2026-08-19)", () => {
+  const catalogueFixture: ReponseCatalogue = {
+    progressionReinitialisee: false,
+    archivees: [],
+    corbeille: [],
+    formations: [
+      {
+        statut: "valide",
+        id: "prise-en-main",
+        titre: "Prise en main de Parcours",
+        modules: 2,
+        modulesFaits: 1,
+        lecons: 31,
+        faites: 12,
+        pourcentage: 39,
+        action: "reprendre",
+        prochaine: null,
+      },
+    ],
+  };
+
+  function rendreAuCatalogue() {
+    return render(
+      <ColonneLaterale
+        {...proprietes}
+        route={{ nom: "catalogue" }}
+        formation={null}
+        leconCourante={null}
+        catalogue={catalogueFixture}
+      />,
+    );
+  }
+
+  it("n'affiche plus de décompte sous « Mes formations »", () => {
+    rendreAuCatalogue();
+    expect(screen.getByText("Mes formations")).toBeInTheDocument();
+    expect(screen.queryByText(/leçon/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/terminée/)).not.toBeInTheDocument();
+  });
+
+  it("compte les modules terminés sur chaque ligne de formation", () => {
+    rendreAuCatalogue();
+    const ligne = screen.getByText("Prise en main de Parcours").closest("a")!;
+    expect(ligne).toHaveTextContent("1/2");
+    expect(ligne).not.toHaveTextContent("12/31");
+  });
+});
+
 describe("compteurs de formation — en modules, pas en leçons (recette 2026-08-19)", () => {
   it("compte les modules terminés dans l'en-tête du rail", () => {
     const { container } = render(<ColonneLaterale {...proprietes} />);
@@ -140,6 +188,13 @@ describe("compteurs de formation — en modules, pas en leçons (recette 2026-08
     expect(points[0]!.className).not.toContain("faite");
     expect(points[1]!.className).toContain("faite"); // Écrire est terminé
     expect(screen.getByTitle("1 module sur 2")).toBeInTheDocument();
+  });
+
+  it("affiche les modules terminés dans le rond de la colonne repliée, pas un pourcentage", () => {
+    const { container } = render(<ColonneLaterale {...proprietes} replie />);
+    const rond = container.querySelector(".spine-pourcent")!;
+    expect(rond.textContent).toBe("1/2");
+    expect(rond).toHaveAttribute("title", "1 module terminé sur 2");
   });
 });
 

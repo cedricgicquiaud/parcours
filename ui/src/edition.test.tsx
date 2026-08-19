@@ -16,6 +16,7 @@ const catalogue: ReponseCatalogue = {
       titre: "Prise en main de Parcours",
       description: "Le format des formations, vu de l'intérieur.",
       modules: 1,
+      modulesFaits: 0,
       lecons: 2,
       faites: 1,
       pourcentage: 50,

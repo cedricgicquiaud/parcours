@@ -70,6 +70,8 @@ export interface CarteFormationValide {
   couverture?: string;
   duree?: number;
   modules: number;
+  /** Modules dont toutes les leçons sont faites — les compteurs du catalogue parlent en modules. */
+  modulesFaits: number;
   lecons: number;
   faites: number;
   pourcentage: number;
