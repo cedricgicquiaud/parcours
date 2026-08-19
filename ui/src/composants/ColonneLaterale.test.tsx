@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Compte, ReponseFormation } from "../api";
+import { CLE_MODULES_REPLIES } from "../preferences";
 import type { EtatRecherche } from "../recherche";
 import { ColonneLaterale } from "./ColonneLaterale";
 
@@ -9,9 +10,9 @@ const formation: ReponseFormation = {
   titre: "Prise en main de Parcours",
   duree: 165,
   avancement: {
-    faites: 1,
-    total: 2,
-    pourcentage: 50,
+    faites: 2,
+    total: 3,
+    pourcentage: 67,
     action: "reprendre",
     prochaine: { id: "anatomie", titre: "Anatomie", moduleTitre: "Écrire" },
     orphelines: [],
@@ -30,9 +31,9 @@ const formation: ReponseFormation = {
       {
         id: "ecrire",
         titre: "Écrire",
-        faites: 0,
+        faites: 1,
         total: 1,
-        lecons: [{ id: "anatomie", titre: "Anatomie", faite: false, duree: 15 }],
+        lecons: [{ id: "anatomie", titre: "Anatomie", faite: true, duree: 15 }],
       },
     ],
   },
@@ -109,6 +110,36 @@ describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => 
     render(<ColonneLaterale {...proprietes} />);
     expect(screen.getByText(/Écrire/).closest("details")!.open).toBe(false);
     expect(screen.getByText(/Découvrir/).closest("details")!.open).toBe(true);
+  });
+
+  it("déplie automatiquement le module de la leçon ouverte, même mémorisé replié", () => {
+    window.localStorage.setItem(
+      CLE_MODULES_REPLIES + "prise-en-main",
+      JSON.stringify(["decouvrir", "ecrire"]),
+    );
+    render(<ColonneLaterale {...proprietes} />);
+    expect(screen.getByText(/Découvrir/).closest("details")!.open).toBe(true);
+    expect(screen.getByText(/Écrire/).closest("details")!.open).toBe(false);
+  });
+});
+
+describe("compteurs de formation — en modules, pas en leçons (recette 2026-08-19)", () => {
+  it("compte les modules terminés dans l'en-tête du rail", () => {
+    const { container } = render(<ColonneLaterale {...proprietes} />);
+    const entete = container.querySelector(".rail-titre-formation")!;
+    // 1 module terminé (Écrire) sur 2 — pas 2 leçons sur 3.
+    expect(entete).toHaveTextContent("1/2");
+    expect(entete).not.toHaveTextContent("2/3");
+  });
+
+  it("montre un point par module dans la colonne repliée", () => {
+    const { container } = render(<ColonneLaterale {...proprietes} replie />);
+    const points = container.querySelectorAll(".spine-point");
+    expect(points).toHaveLength(2);
+    expect(points[0]!.className).toContain("courante"); // Bienvenue ∈ Découvrir
+    expect(points[0]!.className).not.toContain("faite");
+    expect(points[1]!.className).toContain("faite"); // Écrire est terminé
+    expect(screen.getByTitle("1 module sur 2")).toBeInTheDocument();
   });
 });
 

@@ -314,8 +314,8 @@ summary::-webkit-details-marker {
 .carte-couverture {
   width: calc(100% + 2px);
   margin: -1px -1px 4px;
-  aspect-ratio: 16 / 7;
-  object-fit: cover;
+  /* L'image entière, à son ratio naturel — jamais recadrée (recette 2026-08-19). */
+  height: auto;
   border-radius: var(--r) var(--r) 0 0;
   display: block;
 }
@@ -552,6 +552,46 @@ summary::-webkit-details-marker {
   margin-left: auto;
   font-size: 11px;
   color: var(--faint);
+}
+
+/* En-tête repliable : chevron à gauche du titre. (Le reset des summary —
+   marqueur natif, curseur — est global, plus haut dans ce fichier.) */
+summary.module-entete::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-right: 3px;
+  border-right: 1.5px solid var(--faint);
+  border-bottom: 1.5px solid var(--faint);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  flex: none;
+  align-self: center;
+}
+
+details:not([open]) > summary.module-entete::before {
+  transform: rotate(-45deg);
+}
+
+summary.module-entete:hover .module-titre {
+  color: var(--muted);
+}
+
+/* Sommaire de la fiche : les cartes repliées sont petites, la pleine largeur
+   les gaspille — grille fluide, 2-3 colonnes selon l'écran, 1 sur mobile. */
+.fiche-sommaire {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 13px;
+  align-items: start;
+}
+
+.fiche-sommaire > .kicker-faible {
+  grid-column: 1 / -1;
+}
+
+.carte > .module-entete {
+  padding: 0;
 }
 
 .ligne-lecon {

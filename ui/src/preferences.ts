@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 export type Mode = "clair" | "sombre";
 
@@ -58,6 +58,86 @@ export function useRailReplie() {
   }, []);
 
   return { replie, basculer, setReplie };
+}
+
+/** Préfixe des clés de pli du sommaire — exporté pour les tests. */
+export const CLE_MODULES_REPLIES = "parcours.modulesReplies.";
+
+function lireModulesReplies(formationId: string): ReadonlySet<string> {
+  try {
+    const liste: unknown = JSON.parse(lire(CLE_MODULES_REPLIES + formationId) ?? "[]");
+    return new Set(
+      Array.isArray(liste) ? liste.filter((id) => typeof id === "string") : [],
+    );
+  } catch {
+    return new Set();
+  }
+}
+
+// Store partagé : le rail et la fiche montrent le même sommaire en même temps,
+// un pli fait d'un côté doit se voir de l'autre sans remontage. La mémoire vit
+// ici tant qu'au moins une vue est abonnée ; la dernière partie, on relira le
+// stockage à la prochaine visite.
+const repliesParFormation = new Map<string, ReadonlySet<string>>();
+const abonnesParFormation = new Map<string, Set<() => void>>();
+
+function repliesDe(formationId: string): ReadonlySet<string> {
+  let replies = repliesParFormation.get(formationId);
+  if (!replies) {
+    replies = lireModulesReplies(formationId);
+    repliesParFormation.set(formationId, replies);
+  }
+  return replies;
+}
+
+function replierModule(formationId: string, moduleId: string, valeur: boolean): void {
+  const courant = repliesDe(formationId);
+  if (courant.has(moduleId) === valeur) return;
+  const suivant = new Set(courant);
+  if (valeur) suivant.add(moduleId);
+  else suivant.delete(moduleId);
+  repliesParFormation.set(formationId, suivant);
+  ecrire(CLE_MODULES_REPLIES + formationId, JSON.stringify([...suivant]));
+  abonnesParFormation.get(formationId)?.forEach((prevenir) => prevenir());
+}
+
+/**
+ * Modules repliés du sommaire, mémorisés par formation entre les sessions et
+ * partagés entre toutes les vues montées. Un id qui ne correspond plus à
+ * aucun module est simplement ignoré au rendu.
+ */
+export function useModulesReplies(formationId: string) {
+  const abonner = useCallback(
+    (prevenir: () => void) => {
+      let abonnes = abonnesParFormation.get(formationId);
+      if (!abonnes) {
+        abonnes = new Set();
+        abonnesParFormation.set(formationId, abonnes);
+      }
+      abonnes.add(prevenir);
+      return () => {
+        abonnes.delete(prevenir);
+        if (abonnes.size === 0) {
+          abonnesParFormation.delete(formationId);
+          repliesParFormation.delete(formationId);
+        }
+      };
+    },
+    [formationId],
+  );
+  const replies = useSyncExternalStore(abonner, () => repliesDe(formationId));
+
+  const replier = useCallback(
+    (moduleId: string, valeur: boolean) => replierModule(formationId, moduleId, valeur),
+    [formationId],
+  );
+  const basculer = useCallback(
+    (moduleId: string) =>
+      replierModule(formationId, moduleId, !repliesDe(formationId).has(moduleId)),
+    [formationId],
+  );
+
+  return { estReplie: (moduleId: string) => replies.has(moduleId), replier, basculer };
 }
 
 /**

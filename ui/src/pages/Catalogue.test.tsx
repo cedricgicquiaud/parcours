@@ -87,6 +87,18 @@ describe("Catalogue (U-R1, U-R8)", () => {
     expect(screen.getByRole("button", { name: /Reprendre/ })).toBeInTheDocument();
   });
 
+  it("n'affiche pas le résumé d'une formation — le titre suffit (recette 2026-08-19)", () => {
+    const reponse = catalogue();
+    const carte = reponse.formations[1]!;
+    if (carte.statut === "valide") carte.description = "Douze leçons pour écrire clair.";
+    render(<Catalogue {...proprietes} catalogue={reponse} />);
+    // Ni sur la carte « EN COURS » ni sur les cartes du catalogue.
+    expect(screen.queryByText("Compagnon pratique")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Douze leçons pour écrire clair."),
+    ).not.toBeInTheDocument();
+  });
+
   it("annonce la durée sur la carte en cours et sur les cartes du catalogue", () => {
     render(<Catalogue {...proprietes} catalogue={catalogue()} />);
     // La carte « EN COURS » (durée 165 min) et la carte classique (90 min).

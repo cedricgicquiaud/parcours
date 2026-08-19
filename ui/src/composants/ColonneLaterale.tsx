@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import type { Compte, ReponseCatalogue, ReponseFormation } from "../api";
-import type { Mode } from "../preferences";
+import { useModulesReplies, type Mode } from "../preferences";
 import { formaterDuree } from "../duree";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
-import { Barre, Icone, LienInterne } from "./communs";
+import { Barre, Icone, LienInterne, ModuleRepliable } from "./communs";
 
 export interface ProprietesRail {
   route: Route;
@@ -94,7 +94,7 @@ export function ColonneLaterale(props: ProprietesRail) {
               <div className="barre-ligne">
                 <Barre pourcentage={formation.avancement.pourcentage} />
                 <span className="meta-faible">
-                  {formation.avancement.faites}/{formation.avancement.total}
+                  {modulesTermines(formation).faits}/{modulesTermines(formation).total}
                 </span>
               </div>
             </div>
@@ -328,6 +328,21 @@ function Resultats(props: ProprietesRail & { formation: ReponseFormation }) {
   );
 }
 
+type ModuleAvance = ReponseFormation["avancement"]["modules"][number];
+
+function estTermine(module: ModuleAvance): boolean {
+  return module.total > 0 && module.faites === module.total;
+}
+
+/**
+ * Les compteurs de formation parlent en modules, pas en leçons (recette
+ * 2026-08-19) : « 1/2 » se lit d'un coup d'œil, « 10/31 » non.
+ */
+function modulesTermines(formation: ReponseFormation): { faits: number; total: number } {
+  const modules = formation.avancement.modules;
+  return { faits: modules.filter(estTermine).length, total: modules.length };
+}
+
 function estFaite(formation: ReponseFormation | null, leconId: string): boolean {
   return (formation?.avancement.modules ?? []).some((module) =>
     module.lecons.some((lecon) => lecon.id === leconId && lecon.faite),
@@ -336,25 +351,44 @@ function estFaite(formation: ReponseFormation | null, leconId: string): boolean 
 
 function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
   const { formation, leconCourante } = props;
+  const { estReplie, replier, basculer } = useModulesReplies(formation.id);
+
+  // On ne cache jamais l'endroit où l'on est : ouvrir une leçon déplie son
+  // module. Le replier ensuite à la main reste possible (l'effet ne dépend
+  // que de l'identité du module courant, pas de son état).
+  const moduleCourant =
+    formation.avancement.modules.find((module) =>
+      module.lecons.some((lecon) => lecon.id === leconCourante),
+    )?.id ?? null;
+  useEffect(() => {
+    if (moduleCourant) replier(moduleCourant, false);
+  }, [moduleCourant, replier]);
+
   return (
     <nav className="rail-nav" aria-label="Sommaire de la formation">
       {formation.avancement.modules.map((module, index) => (
-        <details className="module" key={module.id} open>
-          <summary className="module-entete">
-            <span className="module-titre">
-              {String(index + 1).padStart(2, "0")} · {module.titre}
-              {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
-                  chaque leçon — le rail resterait illisible sinon. */}
-              {module.duree !== undefined ? (
-                <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
-                  {formaterDuree(module.duree)}
-                </span>
-              ) : null}
-            </span>
-            <span className="module-compteur">
-              {module.faites}/{module.total}
-            </span>
-          </summary>
+        <ModuleRepliable
+          key={module.id}
+          ouvert={!estReplie(module.id)}
+          surBascule={() => basculer(module.id)}
+          enTete={
+            <>
+              <span className="module-titre">
+                {String(index + 1).padStart(2, "0")} · {module.titre}
+                {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
+                    chaque leçon — le rail resterait illisible sinon. */}
+                {module.duree !== undefined ? (
+                  <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
+                    {formaterDuree(module.duree)}
+                  </span>
+                ) : null}
+              </span>
+              <span className="module-compteur">
+                {module.faites}/{module.total}
+              </span>
+            </>
+          }
+        >
           {module.lecons.map((lecon) => (
             <LienInterne
               key={lecon.id}
@@ -376,7 +410,7 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
               ) : null}
             </LienInterne>
           ))}
-        </details>
+        </ModuleRepliable>
       ))}
     </nav>
   );
@@ -415,9 +449,8 @@ function ListeFormations(props: ProprietesRail) {
 
 function Spine(props: ProprietesRail) {
   const { formation, leconCourante } = props;
-  const lecons = (formation?.avancement.modules ?? []).flatMap(
-    (module) => module.lecons,
-  );
+  const modules = formation?.avancement.modules ?? [];
+  const decompte = formation ? modulesTermines(formation) : null;
 
   return (
     <div className="spine">
@@ -439,24 +472,26 @@ function Spine(props: ProprietesRail) {
         <Icone nom="sidebar-simple" taille={17} />
       </button>
 
-      {formation ? (
+      {formation && decompte ? (
         <>
           <button
             type="button"
             className="spine-points"
             onClick={props.basculerReplie}
-            title={`${formation.avancement.faites} leçons sur ${formation.avancement.total}`}
+            title={`${decompte.faits} module${decompte.faits > 1 ? "s" : ""} sur ${decompte.total}`}
             aria-label="Ouvrir le sommaire"
           >
-            {lecons.slice(0, 12).map((lecon) => (
+            {modules.slice(0, 12).map((module) => (
               <span
-                key={lecon.id}
-                className={`spine-point${lecon.faite ? " faite" : ""}${
-                  lecon.id === leconCourante ? " courante" : ""
+                key={module.id}
+                className={`spine-point${estTermine(module) ? " faite" : ""}${
+                  module.lecons.some((lecon) => lecon.id === leconCourante)
+                    ? " courante"
+                    : ""
                 }`}
               />
             ))}
-            {lecons.length > 12 ? <span className="spine-separateur" /> : null}
+            {modules.length > 12 ? <span className="spine-separateur" /> : null}
           </button>
           <span
             className="spine-pourcent"

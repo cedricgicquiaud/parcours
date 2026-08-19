@@ -8,8 +8,10 @@ import {
   BlocErreur,
   Icone,
   LienInterne,
+  ModuleRepliable,
   Squelette,
 } from "../composants/communs";
+import { useModulesReplies } from "../preferences";
 import type { Route } from "../routeur";
 
 /** Une liste de la fiche : objectifs, prérequis. Absente ou vide → rien (FI-R11). */
@@ -33,6 +35,67 @@ function ListeFiche({
         ))}
       </ul>
     </section>
+  );
+}
+
+/**
+ * Sommaire de la fiche : chaque module se replie, et le pli est le même que
+ * dans le rail — une seule mémoire par formation (localStorage).
+ */
+function SommaireFiche({
+  formation,
+  naviguer,
+}: {
+  formation: ReponseFormation;
+  naviguer: (route: Route) => void;
+}) {
+  const { estReplie, basculer } = useModulesReplies(formation.id);
+  return (
+    <div className="fiche-sommaire">
+      <span className="kicker-faible">SOMMAIRE</span>
+      {formation.avancement.modules.map((module, index) => (
+        <ModuleRepliable
+          key={module.id}
+          className="carte"
+          style={{ background: "transparent", borderStyle: "solid" }}
+          ouvert={!estReplie(module.id)}
+          surBascule={() => basculer(module.id)}
+          enTete={
+            <>
+              <span className="module-titre">
+                {String(index + 1).padStart(2, "0")} · {module.titre}
+              </span>
+              <span className="module-compteur">
+                {module.faites}/{module.total}
+                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
+              </span>
+            </>
+          }
+        >
+          {module.description ? (
+            <p className="module-description">{module.description}</p>
+          ) : null}
+          {module.lecons.map((lecon) => (
+            <LienInterne
+              key={lecon.id}
+              className="ligne-lecon"
+              route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
+              naviguer={naviguer}
+            >
+              {lecon.faite ? (
+                <Icone nom="check" taille={13} />
+              ) : (
+                <span className="pastille" />
+              )}
+              <span className="ligne-lecon-titre">{lecon.titre}</span>
+              {lecon.duree !== undefined ? (
+                <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
+              ) : null}
+            </LienInterne>
+          ))}
+        </ModuleRepliable>
+      ))}
+    </div>
   );
 }
 
@@ -253,47 +316,7 @@ export function PageFormation({
         </Bandeau>
       ) : null}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
-        <span className="kicker-faible">SOMMAIRE</span>
-        {avancement.modules.map((module, index) => (
-          <section
-            key={module.id}
-            className="carte"
-            style={{ background: "transparent", borderStyle: "solid" }}
-          >
-            <div className="module-entete" style={{ padding: 0 }}>
-              <span className="module-titre">
-                {String(index + 1).padStart(2, "0")} · {module.titre}
-              </span>
-              <span className="module-compteur">
-                {module.faites}/{module.total}
-                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
-              </span>
-            </div>
-            {module.description ? (
-              <p className="module-description">{module.description}</p>
-            ) : null}
-            {module.lecons.map((lecon) => (
-              <LienInterne
-                key={lecon.id}
-                className="ligne-lecon"
-                route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
-                naviguer={naviguer}
-              >
-                {lecon.faite ? (
-                  <Icone nom="check" taille={13} />
-                ) : (
-                  <span className="pastille" />
-                )}
-                <span className="ligne-lecon-titre">{lecon.titre}</span>
-                {lecon.duree !== undefined ? (
-                  <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
-                ) : null}
-              </LienInterne>
-            ))}
-          </section>
-        ))}
-      </div>
+      <SommaireFiche formation={formation} naviguer={naviguer} />
 
       {peutEcrire ? (
         <div className="actions-formulaire">
