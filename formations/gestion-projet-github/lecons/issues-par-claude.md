@@ -33,12 +33,13 @@ La V1 de todo-app mérite deux issues de plus : **ajouter une tâche à la
 liste**, et **supprimer une tâche de la liste**. Faites-les créer par Claude
 Code. L'objectif :
 
-- ouvrez Claude Code dans un terminal et demandez-lui, en français, de créer
-  ces deux issues dans votre dépôt `todo-app` — en exigeant le moule de la
+- demandez à Claude Code, en français, depuis l'environnement où vous
+  travaillez avec lui (Visual Studio Code, CMux, un terminal…), de créer ces
+  deux issues dans votre dépôt `todo-app` — en exigeant le moule de la
   formation : titre-résultat, description en trois temps, « Terminé quand »
   en cases à cocher ;
-- puis vérifiez son travail, dans le terminal ET dans le navigateur, avant de
-  l'accepter.
+- puis vérifiez son travail, par une commande `gh` ET dans le navigateur,
+  avant de l'accepter.
 
 :::indice
 Formulez la demande comme à un collègue : le dépôt visé, les deux résultats
@@ -48,9 +49,10 @@ descriptions comme vous reliriez celles d'un collègue pressé.
 :::
 
 :::indice
-Pour vérifier : `gh issue list -R votre-compte/todo-app` doit montrer les
-nouvelles issues (remplacez `votre-compte` par votre nom d'utilisateur GitHub,
-celui que `gh auth status` affiche). Et dans le navigateur, l'onglet Issues du
+Pour vérifier : `gh issue list -R votre-compte/todo-app` — dans le terminal
+intégré de votre environnement — doit montrer les nouvelles issues (remplacez
+`votre-compte` par votre nom d'utilisateur GitHub, celui que `gh auth status`
+affiche). Et dans le navigateur, l'onglet Issues du
 dépôt doit les afficher, identiques en forme à celle que vous avez écrite à la
 main.
 :::
