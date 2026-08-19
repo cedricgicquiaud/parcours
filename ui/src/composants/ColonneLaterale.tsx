@@ -487,9 +487,11 @@ function Spine(props: ProprietesRail) {
           </button>
           <span
             className="spine-pourcent"
-            title={`${formation.avancement.pourcentage} % de la formation`}
+            title={`${decompte.faits} module${decompte.faits > 1 ? "s" : ""} terminé${
+              decompte.faits > 1 ? "s" : ""
+            } sur ${decompte.total}`}
           >
-            {formation.avancement.pourcentage}&#8239;%
+            {decompte.faits}/{decompte.total}
           </span>
         </>
       ) : null}
