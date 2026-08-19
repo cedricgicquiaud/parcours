@@ -554,6 +554,37 @@ summary::-webkit-details-marker {
   color: var(--faint);
 }
 
+/* En-tête repliable : marqueur natif masqué, chevron discret à droite. */
+summary.module-entete {
+  cursor: pointer;
+  list-style: none;
+}
+
+summary.module-entete::-webkit-details-marker {
+  display: none;
+}
+
+summary.module-entete::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-left: 2px;
+  border-right: 1.5px solid var(--faint);
+  border-bottom: 1.5px solid var(--faint);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  flex: none;
+  align-self: center;
+}
+
+details:not([open]) > summary.module-entete::after {
+  transform: rotate(-45deg);
+}
+
+summary.module-entete:hover .module-titre {
+  color: var(--muted);
+}
+
 .ligne-lecon {
   display: flex;
   align-items: center;
