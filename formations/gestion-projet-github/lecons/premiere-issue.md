@@ -71,14 +71,9 @@ d'activité** : chaque événement — création, commentaire, fermeture — s'y
 empilera, horodaté. Et les cases de « Terminé quand » sont cliquables
 directement dans la page : GitHub retient leur état.
 
-Dernier détail, retournez sur la **liste** des issues (l'onglet Issues) :
-sous le titre de la vôtre, GitHub affiche un petit compteur de cases,
-« 0 of 2 » — zéro cochée sur les deux de votre « Terminé quand ».
-L'avancement d'une tâche se lit donc d'un coup d'œil, sans l'ouvrir.
 
 ## Critères de réussite
 
 - [ ] mon issue existe, avec son numéro et le badge vert « Open »
 - [ ] sa description affiche mes deux cases à cocher, cliquables
 - [ ] j'ai coché puis décoché une case : GitHub a retenu l'état à chaque fois
-- [ ] de retour sur la liste des issues, j'ai vu le compteur de cases sous le titre de la mienne
