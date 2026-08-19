@@ -73,6 +73,34 @@
         }
       ],
       "description": "La tâche : l'écrire à la main, la faire vivre, puis la faire écrire par Claude Code."
+    },
+    {
+      "id": "labels-milestones",
+      "titre": "Labels et milestones",
+      "lecons": [
+        {
+          "id": "les-labels",
+          "titre": "Les labels",
+          "fichier": "lecons/les-labels.md",
+          "duree": 15,
+          "suppose": ["issues-par-claude"]
+        },
+        {
+          "id": "les-milestones",
+          "titre": "Les milestones",
+          "fichier": "lecons/les-milestones.md",
+          "duree": 15,
+          "suppose": ["issues-par-claude"]
+        },
+        {
+          "id": "le-tri-scripte",
+          "titre": "Le tri scripté",
+          "fichier": "lecons/le-tri-scripte.md",
+          "duree": 15,
+          "suppose": ["les-labels", "les-milestones"]
+        }
+      ],
+      "description": "Trier avec les étiquettes, jalonner vers V1 et V2 — puis laisser Claude appliquer la taxonomie en masse."
     }
   ],
   "description": "GitHub est bien plus qu'un entrepôt de code : c'est un bureau de projet complet. Cette formation apprend, pour une équipe de 1 à 3 personnes, à décrire le travail en issues claires, à le classer avec les labels et les milestones, à le suivre sur un tableau Kanban qui se met à jour tout seul, à relier chaque tâche au code qui la réalise, et à automatiser les vérifications. Chaque brique s'apprend deux fois : à la main dans le navigateur, pour comprendre et savoir juger — puis pilotée par Claude Code depuis votre environnement de travail (Visual Studio Code, CMux ou un terminal). Point d'orgue : partir d'un projet vide et obtenir un backlog complet, généré depuis une simple description et validé par vous. Tout se pratique dans un bac à sable jetable, sans rien risquer.",
