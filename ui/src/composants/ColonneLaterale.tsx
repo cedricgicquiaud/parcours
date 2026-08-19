@@ -339,8 +339,8 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
   return (
     <nav className="rail-nav" aria-label="Sommaire de la formation">
       {formation.avancement.modules.map((module, index) => (
-        <div className="module" key={module.id}>
-          <div className="module-entete">
+        <details className="module" key={module.id} open>
+          <summary className="module-entete">
             <span className="module-titre">
               {String(index + 1).padStart(2, "0")} · {module.titre}
               {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
@@ -354,7 +354,7 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
             <span className="module-compteur">
               {module.faites}/{module.total}
             </span>
-          </div>
+          </summary>
           {module.lecons.map((lecon) => (
             <LienInterne
               key={lecon.id}
@@ -376,7 +376,7 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
               ) : null}
             </LienInterne>
           ))}
-        </div>
+        </details>
       ))}
     </nav>
   );
