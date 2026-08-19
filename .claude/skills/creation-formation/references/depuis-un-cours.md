@@ -26,7 +26,7 @@ n'autorise pas à le republier — et ces formations pourraient un jour se vendr
 
 ## La structure qui marche
 
-Pour chaque module, calquée sur `FORMATION_CLAUDE/PROGRAMME.md` :
+Pour chaque module :
 
 1. **Le rattachement** : le cours tiers en lien, les compétences visées
    (celles que le cours ou sa certification évalue), la durée de pratique.

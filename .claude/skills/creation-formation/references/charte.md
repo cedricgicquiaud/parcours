@@ -1,8 +1,8 @@
 # Charte de rédaction des leçons
 
-Héritée de `FORMATION_CLAUDE/STYLE.md` (qui sera gelé), enrichie des leçons de
-la recette de « Prise en main de Parcours ». C'est elle qui fait qu'une
-formation Parcours vaut d'être suivie.
+Cette charte est la référence unique du style des formations — elle vit ici et
+nulle part ailleurs. C'est elle qui fait qu'une formation Parcours vaut d'être
+suivie.
 
 Public par défaut : curieux et motivé, mais pas forcément développeur. Test de
 réussite : un indice ou une solution doit être compréhensible par quelqu'un qui
