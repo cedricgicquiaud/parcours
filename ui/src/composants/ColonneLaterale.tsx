@@ -343,6 +343,13 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
           <div className="module-entete">
             <span className="module-titre">
               {String(index + 1).padStart(2, "0")} · {module.titre}
+              {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
+                  chaque leçon — le rail resterait illisible sinon. */}
+              {module.duree !== undefined ? (
+                <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
+                  {formaterDuree(module.duree)}
+                </span>
+              ) : null}
             </span>
             <span className="module-compteur">
               {module.faites}/{module.total}
@@ -366,11 +373,6 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
                 <span className="ligne-lecon-criteres">
                   {props.criteresCourants.faits}/{props.criteresCourants.total}
                 </span>
-              ) : lecon.duree !== undefined ? (
-                // Recette 2026-08-19 : la durée manquait là où l'on choisit sa
-                // prochaine leçon. La ligne courante garde son décompte de
-                // critères, plus utile qu'une durée déjà entamée.
-                <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
               ) : null}
             </LienInterne>
           ))}
