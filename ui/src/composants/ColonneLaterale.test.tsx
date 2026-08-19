@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Compte, ReponseFormation } from "../api";
+import { CLE_MODULES_REPLIES } from "../preferences";
 import type { EtatRecherche } from "../recherche";
 import { ColonneLaterale } from "./ColonneLaterale";
 
@@ -113,7 +114,7 @@ describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => 
 
   it("déplie automatiquement le module de la leçon ouverte, même mémorisé replié", () => {
     window.localStorage.setItem(
-      "parcours.modulesReplies.prise-en-main",
+      CLE_MODULES_REPLIES + "prise-en-main",
       JSON.stringify(["decouvrir", "ecrire"]),
     );
     render(<ColonneLaterale {...proprietes} />);

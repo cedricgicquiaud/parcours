@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Compte, ReponseFormation } from "../api";
 import { ColonneLaterale } from "../composants/ColonneLaterale";
+import { CLE_MODULES_REPLIES } from "../preferences";
 import type { EtatRecherche } from "../recherche";
 import { PageFormation } from "./Formation";
 
@@ -84,7 +85,7 @@ describe("sommaire de la fiche — modules repliables (recette 2026-08-19)", () 
   it("partage l'état mémorisé avec le rail : même formation, même pli", () => {
     // La clé est celle du rail : replier ici, c'est replier là-bas.
     window.localStorage.setItem(
-      "parcours.modulesReplies.formation-claude",
+      CLE_MODULES_REPLIES + "formation-claude",
       JSON.stringify(["pratique"]),
     );
     afficher();

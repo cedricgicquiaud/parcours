@@ -554,21 +554,13 @@ summary::-webkit-details-marker {
   color: var(--faint);
 }
 
-/* En-tête repliable : marqueur natif masqué, chevron discret à droite. */
-summary.module-entete {
-  cursor: pointer;
-  list-style: none;
-}
-
-summary.module-entete::-webkit-details-marker {
-  display: none;
-}
-
-summary.module-entete::after {
+/* En-tête repliable : chevron à gauche du titre. (Le reset des summary —
+   marqueur natif, curseur — est global, plus haut dans ce fichier.) */
+summary.module-entete::before {
   content: "";
   width: 5px;
   height: 5px;
-  margin-left: 2px;
+  margin-right: 3px;
   border-right: 1.5px solid var(--faint);
   border-bottom: 1.5px solid var(--faint);
   transform: rotate(45deg);
@@ -577,12 +569,29 @@ summary.module-entete::after {
   align-self: center;
 }
 
-details:not([open]) > summary.module-entete::after {
+details:not([open]) > summary.module-entete::before {
   transform: rotate(-45deg);
 }
 
 summary.module-entete:hover .module-titre {
   color: var(--muted);
+}
+
+/* Sommaire de la fiche : les cartes repliées sont petites, la pleine largeur
+   les gaspille — grille fluide, 2-3 colonnes selon l'écran, 1 sur mobile. */
+.fiche-sommaire {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 13px;
+  align-items: start;
+}
+
+.fiche-sommaire > .kicker-faible {
+  grid-column: 1 / -1;
+}
+
+.carte > .module-entete {
+  padding: 0;
 }
 
 .ligne-lecon {

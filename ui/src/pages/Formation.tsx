@@ -8,6 +8,7 @@ import {
   BlocErreur,
   Icone,
   LienInterne,
+  ModuleRepliable,
   Squelette,
 } from "../composants/communs";
 import { useModulesReplies } from "../preferences";
@@ -48,34 +49,29 @@ function SommaireFiche({
   formation: ReponseFormation;
   naviguer: (route: Route) => void;
 }) {
-  const { estReplie, replier } = useModulesReplies(formation.id);
+  const { estReplie, basculer } = useModulesReplies(formation.id);
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
+    <div className="fiche-sommaire">
       <span className="kicker-faible">SOMMAIRE</span>
       {formation.avancement.modules.map((module, index) => (
-        <details
+        <ModuleRepliable
           key={module.id}
-          className="carte carte-module"
+          className="carte"
           style={{ background: "transparent", borderStyle: "solid" }}
-          open={!estReplie(module.id)}
+          ouvert={!estReplie(module.id)}
+          surBascule={() => basculer(module.id)}
+          enTete={
+            <>
+              <span className="module-titre">
+                {String(index + 1).padStart(2, "0")} · {module.titre}
+              </span>
+              <span className="module-compteur">
+                {module.faites}/{module.total}
+                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
+              </span>
+            </>
+          }
         >
-          {/* Clic intercepté : l'état React pilote `open`, pour le mémoriser. */}
-          <summary
-            className="module-entete"
-            style={{ padding: 0 }}
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              replier(module.id, !estReplie(module.id));
-            }}
-          >
-            <span className="module-titre">
-              {String(index + 1).padStart(2, "0")} · {module.titre}
-            </span>
-            <span className="module-compteur">
-              {module.faites}/{module.total}
-              {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
-            </span>
-          </summary>
           {module.description ? (
             <p className="module-description">{module.description}</p>
           ) : null}
@@ -97,7 +93,7 @@ function SommaireFiche({
               ) : null}
             </LienInterne>
           ))}
-        </details>
+        </ModuleRepliable>
       ))}
     </div>
   );

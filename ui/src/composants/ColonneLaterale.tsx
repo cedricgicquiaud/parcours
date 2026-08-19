@@ -4,7 +4,7 @@ import { useModulesReplies, type Mode } from "../preferences";
 import { formaterDuree } from "../duree";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
-import { Barre, Icone, LienInterne } from "./communs";
+import { Barre, Icone, LienInterne, ModuleRepliable } from "./communs";
 
 export interface ProprietesRail {
   route: Route;
@@ -336,7 +336,7 @@ function estFaite(formation: ReponseFormation | null, leconId: string): boolean 
 
 function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
   const { formation, leconCourante } = props;
-  const { estReplie, replier } = useModulesReplies(formation.id);
+  const { estReplie, replier, basculer } = useModulesReplies(formation.id);
 
   // On ne cache jamais l'endroit où l'on est : ouvrir une leçon déplie son
   // module. Le replier ensuite à la main reste possible (l'effet ne dépend
@@ -352,29 +352,28 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
   return (
     <nav className="rail-nav" aria-label="Sommaire de la formation">
       {formation.avancement.modules.map((module, index) => (
-        <details className="module" key={module.id} open={!estReplie(module.id)}>
-          {/* Clic intercepté : l'état React pilote `open`, pour le mémoriser. */}
-          <summary
-            className="module-entete"
-            onClick={(evenement) => {
-              evenement.preventDefault();
-              replier(module.id, !estReplie(module.id));
-            }}
-          >
-            <span className="module-titre">
-              {String(index + 1).padStart(2, "0")} · {module.titre}
-              {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
-                  chaque leçon — le rail resterait illisible sinon. */}
-              {module.duree !== undefined ? (
-                <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
-                  {formaterDuree(module.duree)}
-                </span>
-              ) : null}
-            </span>
-            <span className="module-compteur">
-              {module.faites}/{module.total}
-            </span>
-          </summary>
+        <ModuleRepliable
+          key={module.id}
+          ouvert={!estReplie(module.id)}
+          surBascule={() => basculer(module.id)}
+          enTete={
+            <>
+              <span className="module-titre">
+                {String(index + 1).padStart(2, "0")} · {module.titre}
+                {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
+                    chaque leçon — le rail resterait illisible sinon. */}
+                {module.duree !== undefined ? (
+                  <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
+                    {formaterDuree(module.duree)}
+                  </span>
+                ) : null}
+              </span>
+              <span className="module-compteur">
+                {module.faites}/{module.total}
+              </span>
+            </>
+          }
+        >
           {module.lecons.map((lecon) => (
             <LienInterne
               key={lecon.id}
@@ -396,7 +395,7 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
               ) : null}
             </LienInterne>
           ))}
-        </details>
+        </ModuleRepliable>
       ))}
     </nav>
   );

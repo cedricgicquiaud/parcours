@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cheminDe, estClicSimple, type Route } from "../routeur";
 
 /**
@@ -106,6 +106,44 @@ export function PiedPlateforme() {
     <footer className="pied-plateforme">
       Projet indépendant, non affilié à Anthropic.
     </footer>
+  );
+}
+
+/**
+ * Module repliable d'un sommaire (rail et fiche). Le clic sur l'en-tête est
+ * intercepté : l'état React — mémorisé par `useModulesReplies` — reste la
+ * seule source de vérité de `open`, sinon le navigateur et la mémoire
+ * divergeraient.
+ */
+export function ModuleRepliable({
+  ouvert,
+  surBascule,
+  className = "module",
+  style,
+  enTete,
+  children,
+}: {
+  ouvert: boolean;
+  surBascule: () => void;
+  className?: string;
+  style?: CSSProperties;
+  /** Contenu du `summary` (titre, durée, compteur). */
+  enTete: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <details className={className} style={style} open={ouvert}>
+      <summary
+        className="module-entete"
+        onClick={(evenement) => {
+          evenement.preventDefault();
+          surBascule();
+        }}
+      >
+        {enTete}
+      </summary>
+      {children}
+    </details>
   );
 }
 
