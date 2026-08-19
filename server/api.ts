@@ -665,6 +665,7 @@ export function creerApi(deps: DependancesApi): AppParcours {
       precedente,
       suivante,
     };
+    if (entree.lecon.duree !== undefined) reponse.duree = entree.lecon.duree;
     const suppose = leconsSupposees(formation.manifeste, entree.lecon, cochees);
     if (suppose.length > 0) reponse.suppose = suppose;
     return c.json(reponse);

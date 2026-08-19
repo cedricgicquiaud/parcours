@@ -42,7 +42,12 @@ async function creerFormationDemo() {
           id: "fondations",
           titre: "Fondations",
           lecons: [
-            { id: "installer", titre: "Installer", fichier: "lecons/installer.md" },
+            {
+              id: "installer",
+              titre: "Installer",
+              fichier: "lecons/installer.md",
+              duree: 45,
+            },
             { id: "hooks", titre: "Les hooks", fichier: "lecons/hooks.md" },
           ],
         },
@@ -196,6 +201,17 @@ describe("GET leçon (A-R5, A-R3)", () => {
     } finally {
       await fs.chmod(fichier, 0o644);
     }
+  });
+
+  it("sert la durée de la leçon quand le manifeste en donne une (FI-R6)", async () => {
+    const avec = await (
+      await appeler("/api/formations/formation-claude/lecons/installer")
+    ).json();
+    expect(avec.duree).toBe(45);
+    const sans = await (
+      await appeler("/api/formations/formation-claude/lecons/hooks")
+    ).json();
+    expect(sans).not.toHaveProperty("duree");
   });
 
   it("répond 404 sur une leçon inconnue", async () => {

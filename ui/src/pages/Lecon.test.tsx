@@ -47,6 +47,19 @@ describe("PageLecon (U-R3, U-R4, U-R5)", () => {
     expect(screen.getByText(/Progression non enregistrée/)).toBeInTheDocument();
   });
 
+  it("affiche la durée de la leçon dans l'en-tête (recette 2026-08-19)", () => {
+    render(<PageLecon {...proprietes} lecon={lecon({ duree: 12 })} />);
+    const ariane = screen.getByRole("navigation", { name: /Fil d'Ariane/ });
+    expect(ariane).toHaveTextContent("12 min");
+  });
+
+  it("n'affiche aucune durée quand la leçon n'en a pas", () => {
+    render(<PageLecon {...proprietes} lecon={lecon()} />);
+    expect(
+      screen.getByRole("navigation", { name: /Fil d'Ariane/ }),
+    ).not.toHaveTextContent(/min|\d h/);
+  });
+
   it("nomme les leçons voisines dans la barre d'actions", () => {
     render(<PageLecon {...proprietes} lecon={lecon()} />);
     expect(screen.getByRole("button", { name: /Les sous-agents/ })).toBeInTheDocument();

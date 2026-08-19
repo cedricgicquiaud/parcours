@@ -248,6 +248,7 @@ manifeste mis à jour. **L'ancienne couverture reste sur le disque.**
   "criteresTronques": false,
   "position": 1,
   "total": 6,
+  "duree": 8,
   "precedente": null,
   "suivante": { "id": "anatomie-formation", "titre": "Anatomie d'une formation" },
   "suppose": [{ "id": "installer", "titre": "Installer Claude Code" }]

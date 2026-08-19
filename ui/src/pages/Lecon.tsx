@@ -7,6 +7,7 @@ import {
   LienInterne,
   Squelette,
 } from "../composants/communs";
+import { formaterDuree } from "../duree";
 import { variablesMermaid } from "../mermaid";
 import type { Mode } from "../preferences";
 import { estClicSimple, type Route } from "../routeur";
@@ -206,6 +207,12 @@ export function PageLecon({
             <span style={{ textTransform: "uppercase" }}>
               Leçon {lecon.position} sur {lecon.total}
             </span>
+            {lecon.duree !== undefined ? (
+              <>
+                <span>·</span>
+                <span>{formaterDuree(lecon.duree)}</span>
+              </>
+            ) : null}
           </nav>
           {peutEcrire ? (
             <button

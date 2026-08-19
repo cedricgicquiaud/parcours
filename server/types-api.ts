@@ -150,6 +150,8 @@ export interface ReponseLecon {
   /** Rang de la leçon dans la formation, à partir de 1. */
   position: number;
   total: number;
+  /** Durée de la leçon en minutes (FI-R6), omise quand le manifeste n'en donne pas. */
+  duree?: number;
   precedente: { id: string; titre: string } | null;
   suivante: { id: string; titre: string } | null;
   /**
