@@ -19,6 +19,7 @@ function catalogue(surcharge: Partial<ReponseCatalogue> = {}): ReponseCatalogue 
         modules: 2,
         lecons: 31,
         faites: 12,
+        duree: 165,
         pourcentage: 39,
         action: "reprendre",
         prochaine: { id: "les-hooks", titre: "Les hooks", moduleTitre: "Module 01" },
@@ -29,6 +30,7 @@ function catalogue(surcharge: Partial<ReponseCatalogue> = {}): ReponseCatalogue 
         titre: "Écrire pour le web",
         modules: 1,
         lecons: 12,
+        duree: 90,
         faites: 0,
         pourcentage: 0,
         action: "commencer",
@@ -83,6 +85,20 @@ describe("Catalogue (U-R1, U-R8)", () => {
     expect(screen.getByText("EN COURS")).toBeInTheDocument();
     expect(screen.getByText("Module 01 · Les hooks")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Reprendre/ })).toBeInTheDocument();
+  });
+
+  it("annonce la durée sur la carte en cours et sur les cartes du catalogue", () => {
+    render(<Catalogue {...proprietes} catalogue={catalogue()} />);
+    // La carte « EN COURS » (durée 165 min) et la carte classique (90 min).
+    expect(screen.getByText(/2 h 45/)).toBeInTheDocument();
+    expect(screen.getByText(/1 h 30/)).toBeInTheDocument();
+  });
+
+  it("ne montre aucune durée quand la formation n'en a pas", () => {
+    render(<Catalogue {...proprietes} catalogue={catalogue()} />);
+    const carte = screen.getByText("SQLite en pratique").closest(".carte");
+    expect(carte).not.toBeNull();
+    expect(carte!.textContent).not.toMatch(/\d+ h|\d+ min/);
   });
 
   it("n'affiche qu'un seul bouton d'action par carte, adapté à l'avancement", () => {

@@ -89,6 +89,22 @@ describe("fiche garnie (FI-R10)", () => {
     expect(screen.getByText(/45 min/)).toBeInTheDocument();
   });
 
+  it("place les métas sous le titre, dans la colonne de texte — pas sous le visuel", () => {
+    const { container } = afficher(garnie());
+    // Recette du 2026-08-19 : « affichage très discret et pas au bon endroit »
+    // — les métas vivaient sous la couverture, à droite, où l'œil ne lit pas.
+    const texte = container.querySelector(".fiche-entete-texte");
+    expect(texte).not.toBeNull();
+    const metas = texte!.querySelector(".fiche-metas");
+    expect(metas).not.toBeNull();
+    expect(metas!.textContent).toMatch(/3 h 30/);
+    // Sous le titre : le h1 précède les métas dans l'ordre du document.
+    const titre = texte!.querySelector("h1");
+    expect(
+      titre!.compareDocumentPosition(metas!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("décrit chaque module et sa durée", () => {
     afficher(garnie());
     expect(screen.getByText("Le socle.")).toBeInTheDocument();
