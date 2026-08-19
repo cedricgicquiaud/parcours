@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { Compte, ReponseCatalogue, ReponseFormation } from "../api";
 import type { Mode } from "../preferences";
+import { formaterDuree } from "../duree";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
 import { Barre, Icone, LienInterne } from "./communs";
@@ -365,6 +366,11 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
                 <span className="ligne-lecon-criteres">
                   {props.criteresCourants.faits}/{props.criteresCourants.total}
                 </span>
+              ) : lecon.duree !== undefined ? (
+                // Recette 2026-08-19 : la durée manquait là où l'on choisit sa
+                // prochaine leçon. La ligne courante garde son décompte de
+                // critères, plus utile qu'une durée déjà entamée.
+                <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
               ) : null}
             </LienInterne>
           ))}

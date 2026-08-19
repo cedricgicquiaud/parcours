@@ -131,6 +131,20 @@ export function PageFormation({
 
           <h1>{formation.titre}</h1>
 
+          {/* Sous le titre, là où l'œil lit — pas sous le visuel (recette
+              2026-08-19). */}
+          <div className="fiche-metas">
+            <span className="meta-faible">
+              {avancement.total} leçon{avancement.total > 1 ? "s" : ""}
+              {formation.duree !== undefined
+                ? ` · ${formaterDuree(formation.duree)}`
+                : ""}
+              {` · ${avancement.faites}/${avancement.total} fait`}
+              {avancement.faites > 1 ? "s" : ""}
+            </span>
+            <Barre pourcentage={avancement.pourcentage} epaisse />
+          </div>
+
           {formation.description ? (
             <p className="fiche-promesse">{formation.description}</p>
           ) : null}
@@ -165,18 +179,6 @@ export function PageFormation({
               onError={() => setCouvertureCassee(true)}
             />
           ) : null}
-
-          <div className="fiche-metas">
-            <span className="meta-faible">
-              {avancement.total} leçon{avancement.total > 1 ? "s" : ""}
-              {formation.duree !== undefined
-                ? ` · ${formaterDuree(formation.duree)}`
-                : ""}
-              {` · ${avancement.faites}/${avancement.total} fait`}
-              {avancement.faites > 1 ? "s" : ""}
-            </span>
-            <Barre pourcentage={avancement.pourcentage} epaisse />
-          </div>
 
       {peutEcrire && surCouverture ? (
         <div className="couverture-depot">

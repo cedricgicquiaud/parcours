@@ -11,6 +11,7 @@ import {
 } from "../composants/communs";
 import { ZoneDepot } from "../composants/ZoneDepot";
 import { urlAsset } from "../assets";
+import { formaterDuree } from "../duree";
 import type { Route } from "../routeur";
 
 const LIBELLES_ACTION = {
@@ -369,7 +370,10 @@ function CarteEnCours({
             <Barre pourcentage={formation.pourcentage} epaisse />
           </div>
           <span className="meta-faible" style={{ fontSize: 12.5 }}>
-            {formation.faites} leçons sur {formation.lecons} — {formation.pourcentage} %
+            {formation.faites} leçons sur {formation.lecons}
+            {formation.duree !== undefined ? ` · ${formaterDuree(formation.duree)}` : ""}
+            {" — "}
+            {formation.pourcentage} %
           </span>
         </div>
       </div>
@@ -479,6 +483,7 @@ function Carte({
       <div className="carte-pied">
         <span className="meta-faible" style={{ fontSize: 12 }}>
           {formation.faites}/{formation.lecons} leçons
+          {formation.duree !== undefined ? ` · ${formaterDuree(formation.duree)}` : ""}
         </span>
         {peutEcrire ? (
           <MenuCarte
