@@ -28,7 +28,11 @@ Chaque leçon enchaîne trois temps, dans le même fichier :
 
 1. **Le cours** — le magistral : ce qu'est la notion, à quoi elle sert,
    comment elle s'articule avec le reste. Tableaux et schémas mermaid
-   bienvenus quand ils condensent.
+   bienvenus quand ils condensent. Dans un schéma mermaid, jamais de HTML
+   (`<br/>`) dans les étiquettes : le rendu strict de Parcours tronque les
+   secondes lignes de plusieurs mots (constaté en recette le 2026-08-19).
+   La forme sûre : des boîtes à libellé court, les rôles portés par les
+   flèches (`A -->|classe| B`).
 2. **La pratique** — une section d'exercice (titre conseillé : « Constatez-le
    sur pièce » ou « À vous ») qui pose le TERRAIN : où faire le geste, avec
    quoi, comment préparer ce qu'il faut (commandes copiables si un dossier ou

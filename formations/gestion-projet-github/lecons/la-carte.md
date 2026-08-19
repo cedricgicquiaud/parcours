@@ -25,11 +25,11 @@ déplace de gauche à droite jusqu'à la fin.
 
 ```mermaid
 graph LR
-  L[Labels<br/>classent] --> I
-  M[Milestone<br/>date] --> I
-  I[Issue<br/>la tâche] --> P[Project<br/>le tableau]
-  PR[Pull request<br/>réalise et ferme] --> I
-  A[Actions<br/>vérifient] --> PR
+  L[Labels] -->|classent| I[Issue]
+  M[Milestone] -->|date| I
+  I -->|affichée sur| P[Project]
+  PR[Pull request] -->|réalise et ferme| I
+  A[Actions] -->|vérifient| PR
 ```
 
 En une phrase : **l'issue décrit le travail, le label le classe, le milestone
