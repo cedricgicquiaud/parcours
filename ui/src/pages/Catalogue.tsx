@@ -364,7 +364,8 @@ function CarteEnCours({
             {formation.titre}
           </a>
         </h2>
-        {formation.description ? <p>{formation.description}</p> : null}
+        {/* Pas de résumé au catalogue (recette 2026-08-19) : le titre suffit,
+            la présentation complète vit sur la fiche. */}
         <div className="barre-ligne" style={{ marginTop: 2 }}>
           <div style={{ flex: 1, maxWidth: 300 }}>
             <Barre pourcentage={formation.pourcentage} epaisse />
@@ -478,7 +479,6 @@ function Carte({
       >
         {formation.titre}
       </a>
-      {formation.description ? <p>{formation.description}</p> : null}
       <Barre pourcentage={formation.pourcentage} epaisse />
       <div className="carte-pied">
         <span className="meta-faible" style={{ fontSize: 12 }}>
