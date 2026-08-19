@@ -39,9 +39,22 @@ describe("thème des schémas (mode sombre)", () => {
     expect(variables.textColor).toBe("#302a22");
   });
 
-  it("n'impose aucune police : mermaid mesure ses boîtes avec la sienne", () => {
+  it("donne à mermaid la police et la taille réellement affichées", () => {
+    // La police de la page s'applique au SVG par héritage CSS : si mermaid
+    // mesure ses boîtes avec une autre, le dernier mot des libellés déborde
+    // et disparaît (« Pull request » rendu « Pull », recette du 2026-08-19).
+    const racine = document.documentElement;
+    racine.style.fontFamily = '"Open Sans", system-ui, sans-serif';
+    racine.style.fontSize = "15px";
+
+    const variables = variablesMermaid(racine);
+    expect(variables.fontFamily).toBe('"Open Sans", system-ui, sans-serif');
+    expect(variables.fontSize).toBe("15px");
+  });
+
+  it("retombe sur la police de la palette si le calcul ne donne rien", () => {
     const variables = variablesMermaid(document.documentElement);
-    expect(variables.fontFamily).toBeUndefined();
-    expect(variables.fontSize).toBeUndefined();
+    expect(variables.fontFamily).toBe('"Open Sans", system-ui, sans-serif');
+    expect(variables.fontSize).toBe("15px");
   });
 });
