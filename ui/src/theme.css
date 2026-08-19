@@ -314,8 +314,8 @@ summary::-webkit-details-marker {
 .carte-couverture {
   width: calc(100% + 2px);
   margin: -1px -1px 4px;
-  aspect-ratio: 16 / 7;
-  object-fit: cover;
+  /* L'image entière, à son ratio naturel — jamais recadrée (recette 2026-08-19). */
+  height: auto;
   border-radius: var(--r) var(--r) 0 0;
   display: block;
 }
