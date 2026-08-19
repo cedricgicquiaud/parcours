@@ -2,17 +2,10 @@
   "formatVersion": 1,
   "id": "gestion-projet-github",
   "titre": "Gestion de projet avec GitHub",
-  "description": "Piloter un projet à 1-3 personnes avec GitHub — issues, tableau, pull requests, automatisations — à la main d'abord, puis en le faisant faire par Claude Code.",
-  "prerequis": [
-    "Un compte GitHub",
-    "Un navigateur",
-    "Un terminal avec Claude Code et gh installés"
-  ],
   "modules": [
     {
       "id": "le-decor",
       "titre": "Le décor",
-      "description": "GitHub, le dépôt, la carte du vocabulaire — et votre bac à sable.",
       "lecons": [
         {
           "id": "bienvenue",
@@ -31,9 +24,18 @@
           "titre": "Créer le bac à sable",
           "fichier": "lecons/creer-le-bac-a-sable.md",
           "duree": 15,
-          "suppose": ["bienvenue"]
+          "suppose": [
+            "bienvenue"
+          ]
         }
-      ]
+      ],
+      "description": "GitHub, le dépôt, la carte du vocabulaire — et votre bac à sable."
     }
+  ],
+  "description": "Piloter un projet  avec GitHub — issues, tableau, pull requests, automatisations — à la main d'abord, puis en le faisant faire par Claude Code.",
+  "prerequis": [
+    "Un compte GitHub",
+    "Un navigateur",
+    "Un terminal avec Claude Code et gh installés"
   ]
 }
