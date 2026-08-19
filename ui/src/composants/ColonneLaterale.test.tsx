@@ -100,6 +100,16 @@ describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => 
     fireEvent.click(entete);
     expect(module.open).toBe(true);
   });
+
+  it("mémorise l'état replié par formation et le restaure au prochain rendu", () => {
+    const premier = render(<ColonneLaterale {...proprietes} />);
+    fireEvent.click(screen.getByText(/Écrire/).closest("summary")!);
+    premier.unmount();
+
+    render(<ColonneLaterale {...proprietes} />);
+    expect(screen.getByText(/Écrire/).closest("details")!.open).toBe(false);
+    expect(screen.getByText(/Découvrir/).closest("details")!.open).toBe(true);
+  });
 });
 
 describe("sommaire latéral — durées (recette 2026-08-19)", () => {
