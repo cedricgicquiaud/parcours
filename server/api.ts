@@ -477,6 +477,9 @@ export function creerApi(deps: DependancesApi): AppParcours {
           : {}),
         ...(dureeCarte === null ? {} : { duree: dureeCarte }),
         modules: formation.manifeste.modules.length,
+        modulesFaits: avancement.modules.filter(
+          (module) => module.total > 0 && module.faites === module.total,
+        ).length,
         lecons: avancement.total,
         faites: avancement.faites,
         pourcentage: avancement.pourcentage,
