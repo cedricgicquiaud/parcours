@@ -127,13 +127,19 @@ export function PageLecon({
       try {
         const { default: mermaid } = await import("mermaid");
         if (annule) return;
+        // Le nœud de contenu, pas la racine : c'est SA police calculée qui
+        // s'applique au SVG par héritage (la racine n'hérite pas de body).
+        const variables = variablesMermaid(noeud);
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: "strict",
           theme: "base",
-          // Le nœud de contenu, pas la racine : c'est SA police calculée qui
-          // s'applique au SVG par héritage (la racine n'hérite pas de body).
-          themeVariables: variablesMermaid(noeud),
+          // `fontFamily` au niveau racine : c'est LUI que mermaid utilise pour
+          // MESURER les libellés (calculateTextDimensions). Le même nom dans
+          // themeVariables ne nourrit que le style — sans le niveau racine, la
+          // mesure se fait en Trebuchet MS et le dernier mot déborde.
+          fontFamily: variables.fontFamily,
+          themeVariables: variables,
         });
         for (const [index, schema] of schemas.entries()) {
           const source = schema.dataset.source ?? "";
