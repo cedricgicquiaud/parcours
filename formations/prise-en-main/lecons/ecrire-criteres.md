@@ -28,8 +28,10 @@ réussite](lecon:criteres).
 Parcours identifie un critère par **son texte**, une fois normalisé.
 
 Ce qui ne change **rien** : les majuscules, les accents, la ponctuation, les
-backticks, les espaces multiples, la position dans la liste, l'ajout ou la
-suppression d'autres critères autour.
+backticks — l'accent grave, tapé deux fois autour d'un mot, qui l'affiche
+`comme du code`, sur fond gris et en police à chasse fixe —, les espaces
+multiples, la position dans la liste, l'ajout ou la suppression d'autres
+critères autour.
 
 Ce qui **casse la coche** : changer les mots. « `npm test` passe » et « les tests
 passent » sont deux critères différents. L'ancienne coche est oubliée en
