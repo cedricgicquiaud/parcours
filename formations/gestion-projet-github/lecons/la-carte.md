@@ -65,4 +65,3 @@ puis :
 - [ ] j'ai ouvert une issue et repéré ses labels dans la colonne de droite
 - [ ] j'ai ouvert une pull request et vu qu'elle porte une modification du code
 - [ ] j'ai ouvert la liste des milestones et vu leur barre d'avancement
-- [ ] j'ai retrouvé dans le tableau de cette leçon lequel des six mots désigne le tableau Kanban

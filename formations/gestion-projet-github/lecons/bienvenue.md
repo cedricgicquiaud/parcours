@@ -82,4 +82,3 @@ guider — c'est exactement son rôle dans cette formation.
 - [ ] je me suis connecté à github.com dans mon navigateur
 - [ ] `gh --version` a affiché un numéro de version dans mon terminal
 - [ ] `gh auth status` a affiché mon compte, connecté
-- [ ] j'ai retrouvé dans cette leçon pourquoi le dépôt peut vivre sans que l'application existe
