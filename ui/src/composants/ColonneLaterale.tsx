@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Compte, ReponseCatalogue, ReponseFormation } from "../api";
-import type { Mode } from "../preferences";
+import { useModulesReplies, type Mode } from "../preferences";
 import { formaterDuree } from "../duree";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
@@ -336,11 +336,19 @@ function estFaite(formation: ReponseFormation | null, leconId: string): boolean 
 
 function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
   const { formation, leconCourante } = props;
+  const { estReplie, replier } = useModulesReplies(formation.id);
   return (
     <nav className="rail-nav" aria-label="Sommaire de la formation">
       {formation.avancement.modules.map((module, index) => (
-        <details className="module" key={module.id} open>
-          <summary className="module-entete">
+        <details className="module" key={module.id} open={!estReplie(module.id)}>
+          {/* Clic intercepté : l'état React pilote `open`, pour le mémoriser. */}
+          <summary
+            className="module-entete"
+            onClick={(evenement) => {
+              evenement.preventDefault();
+              replier(module.id, !estReplie(module.id));
+            }}
+          >
             <span className="module-titre">
               {String(index + 1).padStart(2, "0")} · {module.titre}
               {/* Recette 2026-08-19 : la durée vit sur le module, pas sur

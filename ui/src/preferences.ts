@@ -60,6 +60,54 @@ export function useRailReplie() {
   return { replie, basculer, setReplie };
 }
 
+const CLE_MODULES_REPLIES = "parcours.modulesReplies.";
+
+function lireModulesReplies(formationId: string): ReadonlySet<string> {
+  try {
+    const liste: unknown = JSON.parse(lire(CLE_MODULES_REPLIES + formationId) ?? "[]");
+    return new Set(
+      Array.isArray(liste) ? liste.filter((id) => typeof id === "string") : [],
+    );
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * Modules repliés du sommaire, mémorisés par formation entre les sessions.
+ * Un id qui ne correspond plus à aucun module est simplement ignoré au rendu.
+ */
+export function useModulesReplies(formationId: string) {
+  const [replies, setReplies] = useState<ReadonlySet<string>>(() =>
+    lireModulesReplies(formationId),
+  );
+
+  useEffect(() => {
+    setReplies(lireModulesReplies(formationId));
+  }, [formationId]);
+
+  const replier = useCallback(
+    (moduleId: string, valeur: boolean) => {
+      setReplies((courant) => {
+        if (courant.has(moduleId) === valeur) return courant;
+        const suivant = new Set(courant);
+        if (valeur) suivant.add(moduleId);
+        else suivant.delete(moduleId);
+        ecrire(CLE_MODULES_REPLIES + formationId, JSON.stringify([...suivant]));
+        return suivant;
+      });
+    },
+    [formationId],
+  );
+
+  const estReplie = useCallback(
+    (moduleId: string) => replies.has(moduleId),
+    [replies],
+  );
+
+  return { estReplie, replier };
+}
+
 /**
  * Mode édition (ED-R4). Éteint par défaut : Parcours est d'abord un lecteur.
  * C'est une préférence d'affichage — l'autorisation d'écrire reste celle du
