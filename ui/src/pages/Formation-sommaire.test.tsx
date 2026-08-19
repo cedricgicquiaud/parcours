@@ -60,7 +60,7 @@ describe("sommaire de la fiche — modules repliables (recette 2026-08-19)", () 
 
   it("rend chaque module comme un repliable natif, déplié par défaut", () => {
     afficher();
-    for (const titre of [/Fondations/, /^Pratique$/]) {
+    for (const titre of [/Fondations/, /Pratique/]) {
       const module = screen.getByText(titre).closest("details");
       expect(module).not.toBeNull();
       expect(module!.open).toBe(true);
@@ -86,7 +86,7 @@ describe("sommaire de la fiche — modules repliables (recette 2026-08-19)", () 
       JSON.stringify(["pratique"]),
     );
     afficher();
-    expect(screen.getByText(/^Pratique$/).closest("details")!.open).toBe(false);
+    expect(screen.getByText(/Pratique/).closest("details")!.open).toBe(false);
     expect(screen.getByText(/Fondations/).closest("details")!.open).toBe(true);
   });
 });
