@@ -101,6 +101,76 @@
         }
       ],
       "description": "Trier avec les étiquettes, jalonner vers V1 et V2 — puis laisser Claude appliquer la taxonomie en masse."
+    },
+    {
+      "id": "le-project",
+      "titre": "Le Project",
+      "lecons": [
+        { "id": "creer-le-project", "titre": "Créer le Project", "fichier": "lecons/creer-le-project.md", "duree": 15, "suppose": ["le-tri-scripte"] },
+        { "id": "vues-et-champs", "titre": "Vues et champs", "fichier": "lecons/vues-et-champs.md", "duree": 15, "suppose": ["creer-le-project"] },
+        { "id": "automatisations-du-tableau", "titre": "Les automatisations du tableau", "fichier": "lecons/automatisations-du-tableau.md", "duree": 15, "suppose": ["creer-le-project", "cycle-de-vie"] },
+        { "id": "suivi-dans-le-temps", "titre": "Le suivi dans le temps", "fichier": "lecons/suivi-dans-le-temps.md", "duree": 15, "suppose": ["vues-et-champs"] }
+      ],
+      "description": "Le tableau Kanban : le monter, le regarder autrement, et le laisser se tenir à jour tout seul."
+    },
+    {
+      "id": "lien-avec-le-code",
+      "titre": "Le lien avec le code",
+      "lecons": [
+        { "id": "branche-et-pr", "titre": "Branche et pull request", "fichier": "lecons/branche-et-pr.md", "duree": 20, "suppose": ["automatisations-du-tableau"] },
+        { "id": "closes-n", "titre": "« Closes #N »", "fichier": "lecons/closes-n.md", "duree": 15, "suppose": ["branche-et-pr"] },
+        { "id": "la-boucle-complete", "titre": "La boucle complète", "fichier": "lecons/la-boucle-complete.md", "duree": 15, "suppose": ["branche-et-pr", "closes-n"] }
+      ],
+      "description": "Branche, pull request, « Closes #N » : le clic qui déclenche toute la cascade."
+    },
+    {
+      "id": "du-vide-au-backlog",
+      "titre": "Du vide au backlog",
+      "lecons": [
+        { "id": "la-spec", "titre": "La spec", "fichier": "lecons/la-spec.md", "duree": 15, "suppose": ["la-boucle-complete"] },
+        { "id": "le-decoupage", "titre": "Le découpage en conversation", "fichier": "lecons/le-decoupage.md", "duree": 15, "suppose": ["la-spec"] },
+        { "id": "creation-en-masse", "titre": "La création en masse", "fichier": "lecons/creation-en-masse.md", "duree": 15, "suppose": ["le-decoupage"] }
+      ],
+      "description": "Le point d'orgue : d'une spec à un backlog complet — proposé, discuté, créé en masse, vérifié."
+    },
+    {
+      "id": "formulaires-issues",
+      "titre": "Les formulaires d'issues",
+      "lecons": [
+        { "id": "pourquoi-un-gabarit", "titre": "Pourquoi un gabarit", "fichier": "lecons/pourquoi-un-gabarit.md", "duree": 10 },
+        { "id": "ecrire-un-formulaire", "titre": "Écrire un formulaire", "fichier": "lecons/ecrire-un-formulaire.md", "duree": 20, "suppose": ["pourquoi-un-gabarit", "la-boucle-complete"] },
+        { "id": "claude-et-le-gabarit", "titre": "Claude suit le gabarit", "fichier": "lecons/claude-et-le-gabarit.md", "duree": 10, "suppose": ["ecrire-un-formulaire"] }
+      ],
+      "description": "Le moule inscrit dans le dépôt : un formulaire qui discipline humains et IA."
+    },
+    {
+      "id": "les-actions",
+      "titre": "Les Actions",
+      "lecons": [
+        { "id": "premiere-action", "titre": "Votre première Action", "fichier": "lecons/premiere-action.md", "duree": 20, "suppose": ["ecrire-un-formulaire"] },
+        { "id": "actions-sur-pr", "titre": "Les Actions sur les PR", "fichier": "lecons/actions-sur-pr.md", "duree": 15, "suppose": ["premiere-action"] },
+        { "id": "actions-et-tableau", "titre": "Actions et tableau", "fichier": "lecons/actions-et-tableau.md", "duree": 10, "suppose": ["actions-sur-pr"] }
+      ],
+      "description": "Les vérifications automatiques : vertes ou rouges, avant la fusion."
+    },
+    {
+      "id": "a-plusieurs",
+      "titre": "Travailler à plusieurs",
+      "lecons": [
+        { "id": "inviter-un-collaborateur", "titre": "Inviter un collaborateur", "fichier": "lecons/inviter-un-collaborateur.md", "duree": 15, "suppose": ["creer-le-bac-a-sable"] },
+        { "id": "la-revue-a-deux", "titre": "La revue à deux", "fichier": "lecons/la-revue-a-deux.md", "duree": 20, "suppose": ["inviter-un-collaborateur", "branche-et-pr"] },
+        { "id": "organisation-ou-compte", "titre": "Organisation ou compte", "fichier": "lecons/organisation-ou-compte.md", "duree": 10, "suppose": ["ecrire-un-formulaire"] }
+      ],
+      "description": "Inviter, relire à deux, et savoir quand une organisation devient utile."
+    },
+    {
+      "id": "limites-et-cloture",
+      "titre": "Limites et clôture",
+      "lecons": [
+        { "id": "limites-et-pieges", "titre": "Limites et pièges", "fichier": "lecons/limites-et-pieges.md", "duree": 15, "suppose": ["creer-le-project", "le-tri-scripte"] },
+        { "id": "cloture", "titre": "Clôture : jeter le bac à sable", "fichier": "lecons/cloture.md", "duree": 15, "suppose": ["limites-et-pieges"] }
+      ],
+      "description": "Ce que GitHub ne fait pas bien, l'audit de vos pièges — et jeter le bac à sable."
     }
   ],
   "description": "GitHub est bien plus qu'un entrepôt de code : c'est un bureau de projet complet. Cette formation apprend, pour une équipe de 1 à 3 personnes, à décrire le travail en issues claires, à le classer avec les labels et les milestones, à le suivre sur un tableau Kanban qui se met à jour tout seul, à relier chaque tâche au code qui la réalise, et à automatiser les vérifications. Chaque brique s'apprend deux fois : à la main dans le navigateur, pour comprendre et savoir juger — puis pilotée par Claude Code depuis votre environnement de travail (Visual Studio Code, CMux ou un terminal). Point d'orgue : partir d'un projet vide et obtenir un backlog complet, généré depuis une simple description et validé par vous. Tout se pratique dans un bac à sable jetable, sans rien risquer.",

@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Compte, ReponseFormation } from "../api";
 import type { EtatRecherche } from "../recherche";
 import { ColonneLaterale } from "./ColonneLaterale";
@@ -26,6 +26,13 @@ const formation: ReponseFormation = {
           { id: "bienvenue", titre: "Bienvenue", faite: true, duree: 8 },
           { id: "se-reperer", titre: "Se repérer", faite: false, duree: 12 },
         ],
+      },
+      {
+        id: "ecrire",
+        titre: "Écrire",
+        faites: 0,
+        total: 1,
+        lecons: [{ id: "anatomie", titre: "Anatomie", faite: false, duree: 15 }],
       },
     ],
   },
@@ -69,6 +76,41 @@ const proprietes = {
   edition: false,
   basculerEdition: () => undefined,
 };
+
+describe("sommaire latéral — modules repliables (recette 2026-08-19)", () => {
+  beforeEach(() => window.localStorage.clear());
+
+  it("rend chaque module comme un repliable natif, déplié par défaut", () => {
+    render(<ColonneLaterale {...proprietes} />);
+    for (const titre of [/Découvrir/, /Écrire/]) {
+      const module = screen.getByText(titre).closest("details");
+      expect(module).not.toBeNull();
+      expect(module!.open).toBe(true);
+      expect(screen.getByText(titre).closest("summary")).not.toBeNull();
+    }
+    expect(screen.getByRole("link", { name: /Bienvenue/ })).toBeInTheDocument();
+  });
+
+  it("replie un module au clic sur son en-tête, et le redéplie au clic suivant", () => {
+    render(<ColonneLaterale {...proprietes} />);
+    const entete = screen.getByText(/Écrire/).closest("summary")!;
+    const module = entete.closest("details")!;
+    fireEvent.click(entete);
+    expect(module.open).toBe(false);
+    fireEvent.click(entete);
+    expect(module.open).toBe(true);
+  });
+
+  it("mémorise l'état replié par formation et le restaure au prochain rendu", () => {
+    const premier = render(<ColonneLaterale {...proprietes} />);
+    fireEvent.click(screen.getByText(/Écrire/).closest("summary")!);
+    premier.unmount();
+
+    render(<ColonneLaterale {...proprietes} />);
+    expect(screen.getByText(/Écrire/).closest("details")!.open).toBe(false);
+    expect(screen.getByText(/Découvrir/).closest("details")!.open).toBe(true);
+  });
+});
 
 describe("sommaire latéral — durées (recette 2026-08-19)", () => {
   it("affiche la durée sur l'en-tête de chaque module qui en a une", () => {
