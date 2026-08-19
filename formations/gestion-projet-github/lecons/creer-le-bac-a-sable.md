@@ -54,22 +54,24 @@ Des comptes, le partage d'une liste à plusieurs, la synchronisation.
 
 :::indice
 Deux chemins mènent au même dépôt : le bouton **New** (en haut à gauche sur
-github.com, à côté de la liste de vos dépôts), ou une commande `gh` dans le
-terminal. Dans les deux cas, le plus simple est de créer le README en même
-temps que le dépôt, puis de le modifier depuis la page du dépôt — l'icône
-crayon, en haut à droite du README.
+github.com, à côté de la liste de vos dépôts), ou une demande à Claude Code —
+décrivez le dépôt voulu (son nom, privé, avec un README) et laissez-le faire.
+Dans les deux cas, le plus simple est de créer le README en même temps que le
+dépôt, puis de le modifier depuis la page du dépôt — l'icône crayon, en haut à
+droite du README.
 :::
 
 :::indice
-La commande : `gh repo create todo-app --private --add-readme`. L'option
+Ce que vous verrez passer si Claude s'en charge (ou ce que vous pouvez taper
+vous-même) : `gh repo create todo-app --private --add-readme` — l'option
 `--private` rend le dépôt privé, `--add-readme` y met un README de départ.
-Ensuite, `gh repo view todo-app --web` ouvre la page du dépôt dans votre
-navigateur ; l'icône crayon sur le README permet d'y coller le texte, puis le
+Puis `gh repo view todo-app --web` ouvre la page du dépôt dans votre
+navigateur ; l'icône crayon sur le README permet d'y coller le texte, et le
 bouton vert **Commit changes** enregistre.
 :::
 
 :::solution
-Dans le terminal :
+Que vous les tapiez ou que Claude les lance pour vous, les commandes sont :
 
 ```bash
 # créer le dépôt privé, avec un README de départ
@@ -98,5 +100,5 @@ privé, badge « Private » à côté du nom) ; inutile d'en créer un deuxième
 
 - [ ] mon dépôt `todo-app` existe et porte le badge « Private » à côté de son nom
 - [ ] son `README.md` décrit la V1 et la V2 sur la page d'accueil du dépôt
-- [ ] `gh repo view todo-app` affiche le dépôt dans mon terminal
+- [ ] j'ai vu `gh repo view todo-app` confirmer l'existence du dépôt
 - [ ] l'onglet Issues de mon dépôt est vide — le bac à sable est prêt pour le module suivant
