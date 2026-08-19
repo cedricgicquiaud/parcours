@@ -59,6 +59,35 @@ Vous écrivez le dossier vous-même. La formation apparaît au rechargement du
 catalogue, sans redémarrer le serveur. C'est la voie la plus directe quand vous
 générez du contenu avec un assistant.
 
+## Constatez-le sur pièce
+
+Fabriquez d'abord un dossier d'essai, hors de `formations/` — par exemple sur
+le Bureau. Dans un terminal, ces trois lignes créent un dossier `essai-import`
+avec un sous-dossier et deux leçons, sans manifeste :
+
+```bash
+mkdir -p ~/Desktop/essai-import/module-un
+echo "# La première leçon" > ~/Desktop/essai-import/module-un/01-premiere.md
+echo "# La seconde leçon" > ~/Desktop/essai-import/module-un/02-seconde.md
+```
+
+Puis, l'édition allumée, sur le catalogue :
+
+1. **Le dépôt qui marche.** Glissez le dossier `essai-import` entier sur la
+   zone pointillée. Sans manifeste, Parcours déduit le sommaire — le message
+   vous le dit — et la formation apparaît, un module « Module un », deux
+   leçons dans l'ordre des numéros.
+2. **Le vrac refusé.** Ouvrez maintenant le dossier et glissez les deux
+   fichiers `.md` eux-mêmes (pas le dossier) : Parcours demande le dossier,
+   parce que c'est lui qui porte le nom.
+3. **Le refus qui ne laisse rien.** Fabriquez un dossier sans aucun `.md`
+   (`mkdir ~/Desktop/sans-md` puis `echo bonjour > ~/Desktop/sans-md/notes.txt`)
+   et déposez-le : refusé, avec la raison. Vérifiez ensuite dans le terminal
+   que `ls formations/` ne montre aucun dossier ni fichier résiduel.
+
+Gardez la formation `essai-import` importée : la leçon suivante s'en servira
+pour archiver, jeter et restaurer sans toucher à vos vraies formations.
+
 ## Critères de réussite
 
 - [ ] j'ai créé une formation depuis « Nouvelle formation » : elle apparaît au catalogue
