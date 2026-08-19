@@ -39,11 +39,17 @@ plusieurs, avec des comptes. Un ami développeur rejoindra le projet vers la fin
 de la formation.
 
 :::attention
-La todo-app est un prétexte : **on ne développera pas cette application**. Son
-dépôt restera quasi vide — une seule micro-modification de code, au module 5,
-juste pour voir la boucle complète tourner. Ce qu'on apprend ici, c'est la
-gestion du projet, pas la programmation. Et à la dernière leçon, le bac à sable
-sera jeté.
+La todo-app est un prétexte : **l'application ne sera jamais développée**. Le
+dépôt, lui, sera bien créé et très vivant — mais comme un classeur de
+chantier : rempli de tâches, d'étiquettes, de jalons et d'un tableau, pas de
+programme. Décrire un travail et le suivre, c'est la compétence qu'on apprend
+ici ; le réaliser serait de la programmation, une autre formation.
+
+Quand une modification du dépôt sera nécessaire pour voir la boucle complète
+tourner — à partir du module 5 —, ce sera une tâche d'écriture (compléter la
+page de présentation, par exemple), réellement réalisée de bout en bout :
+l'issue créée, le texte écrit, la fermeture automatique constatée. Jamais du
+code applicatif. Et à la dernière leçon, le bac à sable sera jeté.
 :::
 
 Cette formation n'enseigne pas non plus git en profondeur (l'outil d'historique
@@ -74,4 +80,4 @@ guider — c'est exactement son rôle dans cette formation.
 - [ ] je me suis connecté à github.com dans mon navigateur
 - [ ] `gh --version` a affiché un numéro de version dans mon terminal
 - [ ] `gh auth status` a affiché mon compte, connecté
-- [ ] j'ai retrouvé dans cette leçon à quel module se fera l'unique modification de code
+- [ ] j'ai retrouvé dans cette leçon pourquoi le dépôt peut vivre sans que l'application existe
