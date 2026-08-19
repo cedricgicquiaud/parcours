@@ -2,9 +2,12 @@ Vous savez maintenant écrire une issue et la faire vivre. Voici le deuxième
 temps de la méthode : la même chose, pilotée par Claude Code — et votre rôle
 qui change : vous ne tapez plus, vous jugez.
 
-## `gh` côté issues
+## Les commandes que vous verrez passer
 
-L'outil `gh` sait tout faire sur les issues depuis le terminal :
+L'outil `gh` sait tout faire sur les issues. Vous ne les taperez pas : vous
+décrivez, Claude les lance, et elles défilent dans la conversation. Ce tableau
+sert à reconnaître ce qui passe — c'est ainsi qu'on garde un œil sur ce que
+fait son exécutant :
 
 | Commande | Effet |
 | --- | --- |
@@ -38,8 +41,9 @@ Code. L'objectif :
   deux issues dans votre dépôt `todo-app` — en exigeant le moule de la
   formation : titre-résultat, description en trois temps, « Terminé quand »
   en cases à cocher ;
-- puis vérifiez son travail, par une commande `gh` ET dans le navigateur,
-  avant de l'accepter.
+- puis vérifiez son travail par deux canaux : demandez-lui la liste des issues
+  ouvertes, ET regardez l'onglet Issues dans le navigateur — c'est votre canal
+  à vous, indépendant de ce que Claude raconte.
 
 :::indice
 Formulez la demande comme à un collègue : le dépôt visé, les deux résultats
@@ -49,12 +53,11 @@ descriptions comme vous reliriez celles d'un collègue pressé.
 :::
 
 :::indice
-Pour vérifier : `gh issue list -R votre-compte/todo-app` — dans le terminal
-intégré de votre environnement — doit montrer les nouvelles issues (remplacez
-`votre-compte` par votre nom d'utilisateur GitHub, celui que `gh auth status`
-affiche). Et dans le navigateur, l'onglet Issues du
-dépôt doit les afficher, identiques en forme à celle que vous avez écrite à la
-main.
+Pour vérifier : demandez « liste les issues ouvertes de todo-app » — vous
+verrez passer `gh issue list -R votre-compte/todo-app` (`-R` vise le dépôt à
+distance, `votre-compte` est votre nom d'utilisateur GitHub). Puis, dans le
+navigateur, l'onglet Issues du dépôt doit montrer la même chose : les
+nouvelles issues, identiques en forme à celle que vous avez écrite à la main.
 :::
 
 :::solution
@@ -81,7 +84,7 @@ claire dans la demande — est ce qui vise juste.
 
 ## Critères de réussite
 
-- [ ] `gh issue list -R votre-compte/todo-app` affiche au moins trois issues ouvertes
+- [ ] j'ai vu passer les commandes `gh issue create` de Claude dans la conversation
 - [ ] les deux issues créées par Claude s'affichent dans l'onglet Issues du navigateur
 - [ ] j'ai relu leurs descriptions : trois temps et cases « Terminé quand », comme la mienne
-- [ ] `gh issue view` avec `--web` a ouvert l'une d'elles dans mon navigateur
+- [ ] la liste donnée par Claude et l'onglet Issues du navigateur racontent la même chose

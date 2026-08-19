@@ -18,11 +18,13 @@ Chaque brique passe par le même rythme, en deux temps :
 
 1. **À la main.** Vous faites le geste vous-même, dans votre navigateur, pour
    voir ce que GitHub fait — et savoir reconnaître un résultat correct.
-2. **Par Claude Code.** Vous demandez le même geste à Claude Code, depuis
+2. **Par Claude Code.** Vous décrivez le résultat attendu, en français, depuis
    l'environnement où vous l'utilisez d'habitude — Visual Studio Code, CMux,
-   ou un simple terminal. Sous le capot, Claude pilote GitHub avec `gh` —
-   l'outil en ligne de commande officiel de GitHub, qui fait tout ce que le
-   site fait à la souris.
+   ou un simple terminal — et Claude fait. Sous le capot, il pilote GitHub
+   avec `gh`, l'outil en ligne de commande officiel de GitHub : vous ne
+   taperez presque jamais ces commandes vous-même, mais elles défileront sous
+   vos yeux, et vous apprendrez à les reconnaître. Votre instrument de
+   vérification indépendant, lui, reste le navigateur.
 
 Le point d'orgue arrive au module 6 : partir d'un projet vide et obtenir un
 backlog — la liste structurée de tout le travail à faire — généré par Claude
@@ -68,10 +70,11 @@ tous embarquent un terminal, et c'est là que se tapent les commandes `gh`.
 Trois vérifications, à faire maintenant.
 
 1. **Le compte** : ouvrez [github.com](https://github.com) et connectez-vous.
-2. **L'outil `gh`** : dans le terminal de votre environnement, tapez
-   `gh --version`. Une ligne avec un numéro de version doit s'afficher.
-3. **La connexion de `gh`** : tapez `gh auth status`. Votre nom de compte doit
-   apparaître, avec la mention « Logged in ».
+2. **L'outil `gh` et sa connexion** : demandez à Claude Code, tel quel :
+   « vérifie que `gh` est installé et connecté à mon compte GitHub ». Il
+   lancera `gh --version` (le numéro de version) puis `gh auth status` (votre
+   compte, « Logged in ») — deux commandes que vous pouvez aussi taper
+   vous-même dans le terminal de votre environnement, si vous préférez.
 
 :::indice Si `gh` manque ou n'est pas connecté
 Sur Mac, `gh` s'installe avec `brew install gh` (Homebrew est le gestionnaire
@@ -84,5 +87,5 @@ guider — c'est exactement son rôle dans cette formation.
 ## Critères de réussite
 
 - [ ] je me suis connecté à github.com dans mon navigateur
-- [ ] `gh --version` a affiché un numéro de version dans mon terminal
-- [ ] `gh auth status` a affiché mon compte, connecté
+- [ ] j'ai vu `gh --version` afficher un numéro de version
+- [ ] j'ai vu `gh auth status` afficher mon compte, connecté
