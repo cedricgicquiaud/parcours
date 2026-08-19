@@ -55,9 +55,29 @@ dessus, la liste devient une corvée et personne ne la coche jusqu'au bout.
 La limite dure est de 300 par leçon. Si vous l'approchez, c'est que la leçon
 devrait être coupée en deux.
 
+## Constatez-le sur pièce
+
+Le terrain d'essai : la leçon [Bienvenue](lecon:bienvenue), que vous avez déjà
+terminée. Ouvrez son fichier `formations/prise-en-main/lecons/bienvenue.md`
+dans un éditeur de texte, et gardez Parcours ouvert à côté, sur cette leçon
+« Bienvenue ». Après chaque modification du fichier, rechargez la page : le
+serveur relit le disque à chaque affichage.
+
+1. **La normalisation protège.** Dans le fichier, entourez de backticks un mot
+   d'un critère déjà coché. Rechargez : la coche a tenu — backticks, casse,
+   accents et ponctuation ne comptent pas.
+2. **La reformulation casse.** Remplacez maintenant un mot de ce même critère
+   par un synonyme. Rechargez : la case est revenue vide, sans message.
+3. **La position ne compte pas.** Ajoutez une ligne `- [ ] critère d'essai` en
+   tête de la liste. Rechargez : les coches des autres critères sont intactes.
+
+Remettez ensuite le fichier comme avant : retirez le critère d'essai, restaurez
+la formulation d'origine. La coche perdue à l'étape 2 ne revient pas — c'est la
+leçon à retenir — recochez-la simplement.
+
 ## Critères de réussite
 
 - [ ] j'ai coché un critère, puis j'ai entouré un de ses mots de backticks dans le fichier : la coche a tenu
 - [ ] j'ai ensuite reformulé ce critère : la case est revenue vide, sans message d'erreur
 - [ ] j'ai ajouté un critère en tête de liste : les coches des autres sont intactes
-- [ ] j'ai relu mes propres critères en me demandant si chacun se répond par oui ou non
+- [ ] j'ai relu une liste de critères — celle de cette leçon, par exemple — en vérifiant que chacun se répond par oui ou par non

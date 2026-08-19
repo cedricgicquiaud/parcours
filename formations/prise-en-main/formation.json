@@ -69,7 +69,7 @@
           "id": "ecrire-criteres",
           "titre": "Écrire de bons critères",
           "fichier": "lecons/ecrire-criteres.md",
-          "duree": 8
+          "duree": 10
         }
       ],
       "description": "L'interrupteur qui sépare la lecture de l'écriture, puis le format lui-même."
