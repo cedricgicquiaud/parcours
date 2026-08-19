@@ -94,7 +94,7 @@ export function ColonneLaterale(props: ProprietesRail) {
               <div className="barre-ligne">
                 <Barre pourcentage={formation.avancement.pourcentage} />
                 <span className="meta-faible">
-                  {formation.avancement.faites}/{formation.avancement.total}
+                  {modulesTermines(formation).faits}/{modulesTermines(formation).total}
                 </span>
               </div>
             </div>
@@ -328,6 +328,21 @@ function Resultats(props: ProprietesRail & { formation: ReponseFormation }) {
   );
 }
 
+type ModuleAvance = ReponseFormation["avancement"]["modules"][number];
+
+function estTermine(module: ModuleAvance): boolean {
+  return module.total > 0 && module.faites === module.total;
+}
+
+/**
+ * Les compteurs de formation parlent en modules, pas en leçons (recette
+ * 2026-08-19) : « 1/2 » se lit d'un coup d'œil, « 10/31 » non.
+ */
+function modulesTermines(formation: ReponseFormation): { faits: number; total: number } {
+  const modules = formation.avancement.modules;
+  return { faits: modules.filter(estTermine).length, total: modules.length };
+}
+
 function estFaite(formation: ReponseFormation | null, leconId: string): boolean {
   return (formation?.avancement.modules ?? []).some((module) =>
     module.lecons.some((lecon) => lecon.id === leconId && lecon.faite),
@@ -434,9 +449,8 @@ function ListeFormations(props: ProprietesRail) {
 
 function Spine(props: ProprietesRail) {
   const { formation, leconCourante } = props;
-  const lecons = (formation?.avancement.modules ?? []).flatMap(
-    (module) => module.lecons,
-  );
+  const modules = formation?.avancement.modules ?? [];
+  const decompte = formation ? modulesTermines(formation) : null;
 
   return (
     <div className="spine">
@@ -458,24 +472,26 @@ function Spine(props: ProprietesRail) {
         <Icone nom="sidebar-simple" taille={17} />
       </button>
 
-      {formation ? (
+      {formation && decompte ? (
         <>
           <button
             type="button"
             className="spine-points"
             onClick={props.basculerReplie}
-            title={`${formation.avancement.faites} leçons sur ${formation.avancement.total}`}
+            title={`${decompte.faits} module${decompte.faits > 1 ? "s" : ""} sur ${decompte.total}`}
             aria-label="Ouvrir le sommaire"
           >
-            {lecons.slice(0, 12).map((lecon) => (
+            {modules.slice(0, 12).map((module) => (
               <span
-                key={lecon.id}
-                className={`spine-point${lecon.faite ? " faite" : ""}${
-                  lecon.id === leconCourante ? " courante" : ""
+                key={module.id}
+                className={`spine-point${estTermine(module) ? " faite" : ""}${
+                  module.lecons.some((lecon) => lecon.id === leconCourante)
+                    ? " courante"
+                    : ""
                 }`}
               />
             ))}
-            {lecons.length > 12 ? <span className="spine-separateur" /> : null}
+            {modules.length > 12 ? <span className="spine-separateur" /> : null}
           </button>
           <span
             className="spine-pourcent"
