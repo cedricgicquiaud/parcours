@@ -150,8 +150,12 @@ describe("sommaire de la fiche — modules repliables (recette 2026-08-19)", () 
     const sommaires = screen
       .getAllByText(/Pratique/)
       .map((titre) => titre.closest("details")!);
-    const fiche = sommaires.find((module) => module.classList.contains("carte"))!;
-    const rail = sommaires.find((module) => !module.classList.contains("carte"))!;
+    const fiche = sommaires.find((module) =>
+      module.classList.contains("module-fiche"),
+    )!;
+    const rail = sommaires.find(
+      (module) => !module.classList.contains("module-fiche"),
+    )!;
 
     fireEvent.click(within(fiche).getByText(/Pratique/).closest("summary")!);
     expect(rail.open).toBe(false);
