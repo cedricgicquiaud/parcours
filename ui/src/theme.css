@@ -1559,8 +1559,16 @@ summary::-webkit-details-marker {
   height: auto;
 }
 
-/* Aucune règle de police ici : le SVG porte la sienne, celle avec laquelle
-   mermaid a mesuré ses boîtes. La lui remplacer fait déborder le texte. */
+/* Les étiquettes mermaid sont des <p> HTML embarqués dans le SVG : la
+   typographie de prose (16,5 px ci-dessus) ne doit pas s'y appliquer, sinon
+   le texte dépasse la boîte que mermaid a mesurée à 15 px et se fait rogner
+   (« Labels » rendu « Label », recette du 2026-08-19). `inherit` reprend la
+   taille que mermaid pose lui-même sur la racine du schéma — celle de sa
+   mesure, quelle qu'elle soit. */
+.contenu-lecon .mermaid-source p {
+  font-size: inherit;
+  line-height: inherit;
+}
 
 /* Barre d'actions de leçon */
 .barre-actions {
