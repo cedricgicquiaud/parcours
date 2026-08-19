@@ -123,7 +123,20 @@ describe("GET /api/formations (C-R2, C-R3)", () => {
       lecons: 2,
       faites: 0,
       action: "commencer",
+      modules: 1,
+      modulesFaits: 0,
     });
+  });
+
+  it("compte les modules terminés du compte (modulesFaits)", async () => {
+    await appeler("/api/progression/formation-claude/installer", { method: "PUT" });
+    // Une leçon sur deux : le module n'est pas terminé.
+    let corps = await (await appeler("/api/formations")).json();
+    expect(corps.formations[1]).toMatchObject({ modules: 1, modulesFaits: 0 });
+
+    await appeler("/api/progression/formation-claude/hooks", { method: "PUT" });
+    corps = await (await appeler("/api/formations")).json();
+    expect(corps.formations[1]).toMatchObject({ modules: 1, modulesFaits: 1 });
   });
 
   it("signale un dossier de formations introuvable (F-R1)", async () => {
