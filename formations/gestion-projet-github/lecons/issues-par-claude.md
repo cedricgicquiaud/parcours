@@ -16,10 +16,10 @@ fait son exécutant :
 | `gh issue view 3` | affiche l'issue nº 3 dans le terminal |
 | `gh issue view 3 --web` | l'ouvre dans le navigateur |
 
-Un détail compte pour nous : votre dépôt `todo-app` n'est pas téléchargé sur
-votre machine (et n'a pas besoin de l'être). L'option `-R votre-compte/todo-app`
-(R comme *repository*) dit à `gh` quel dépôt viser à distance. Sans elle, `gh`
-cherche un dépôt dans le dossier courant, et n'en trouve pas.
+Un détail qui simplifie tout : lancées depuis le dossier `todo-app` — la copie
+locale ouverte dans votre environnement depuis la leçon du bac à sable — ces
+commandes savent d'elles-mêmes quel dépôt viser. Depuis n'importe où ailleurs,
+l'option `-R votre-compte/todo-app` (R comme *repository*) le précise.
 
 ## Le contrat : Claude écrit, vous jugez
 
@@ -36,9 +36,8 @@ La V1 de todo-app mérite deux issues de plus : **ajouter une tâche à la
 liste**, et **supprimer une tâche de la liste**. Faites-les créer par Claude
 Code. L'objectif :
 
-- demandez à Claude Code, en français, depuis l'environnement où vous
-  travaillez avec lui (Visual Studio Code, CMux, un terminal…), de créer ces
-  deux issues dans votre dépôt `todo-app` — en exigeant le moule de la
+- le dossier `todo-app` ouvert dans votre environnement, demandez à Claude
+  Code, en français, de créer ces deux issues — en exigeant le moule de la
   formation : titre-résultat, description en trois temps, « Terminé quand »
   en cases à cocher ;
 - puis vérifiez son travail par deux canaux : demandez-lui la liste des issues
@@ -53,33 +52,32 @@ descriptions comme vous reliriez celles d'un collègue pressé.
 :::
 
 :::indice
-Pour vérifier : demandez « liste les issues ouvertes de todo-app » — vous
-verrez passer `gh issue list -R votre-compte/todo-app` (`-R` vise le dépôt à
-distance, `votre-compte` est votre nom d'utilisateur GitHub). Puis, dans le
-navigateur, l'onglet Issues du dépôt doit montrer la même chose : les
-nouvelles issues, identiques en forme à celle que vous avez écrite à la main.
+Pour vérifier : demandez « liste les issues ouvertes » — vous verrez passer
+`gh issue list`, qui sait quel dépôt viser puisqu'il tourne dans le dossier
+`todo-app`. Puis, dans le navigateur, l'onglet Issues du dépôt doit montrer la
+même chose : les nouvelles issues, identiques en forme à celle que vous avez
+écrite à la main.
 :::
 
 :::solution
-Une demande qui marche, à adapter à vos mots :
+Une demande qui marche, à adapter à vos mots — le dossier `todo-app` ouvert :
 
 ```
-Dans mon dépôt GitHub votre-compte/todo-app (à distance, il n'est pas
-cloné ici), crée deux issues : « Ajouter une tâche à la liste » et
+Crée deux issues dans ce dépôt : « Ajouter une tâche à la liste » et
 « Supprimer une tâche de la liste ». Chaque description suit trois
 temps : ## Problème, ## Action, ## Terminé quand — ce dernier en cases
 à cocher (au moins deux). Montre-moi les commandes avant de les lancer.
 ```
 
-**Pourquoi ça marche** : la demande donne le dépôt exact, le résultat attendu
-et le moule — les trois choses qu'un exécutant, humain ou Claude, ne doit pas
-avoir à deviner. « Montre-moi les commandes avant » vous garde la main : vous
-voyez le `gh issue create -R … --title … --body …` avant qu'il parte.
+**Pourquoi ça marche** : la demande donne le résultat attendu et le moule, et
+le dépôt visé va de soi — c'est celui du dossier ouvert. « Montre-moi les
+commandes avant » vous garde la main : vous voyez le
+`gh issue create --title … --body …` avant qu'il parte.
 
-**L'erreur fréquente** : oublier de préciser le dépôt. Claude cherche alors un
-dépôt git dans le dossier courant, n'en trouve pas (ou pire, en trouve un
-autre), et la demande déraille. Le `-R votre-compte/todo-app` — ou sa mention
-claire dans la demande — est ce qui vise juste.
+**L'erreur fréquente** : lancer la demande depuis un autre dossier. Claude vise
+alors un autre dépôt — ou n'en trouve pas — et la demande déraille. Travaillez
+depuis le dossier `todo-app` ; et hors de lui, précisez la cible avec
+`-R votre-compte/todo-app`.
 :::
 
 ## Critères de réussite
