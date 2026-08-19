@@ -36,6 +36,18 @@ Pour chaque module, calquée sur `FORMATION_CLAUDE/PROGRAMME.md` :
 3. **Les critères** : des constats sur le projet fil rouge de l'apprenant,
    jamais sur le contenu du cours tiers (pas de « j'ai fini la vidéo 3 »).
 
+## Dans ce parcours, le temps « cours » se réduit au rattachement
+
+La charte structure une leçon en « cours puis pratique » — mais ici, la théorie
+vit CHEZ L'ÉDITEUR du cours : c'est tout le sens de l'accompagnement. Le temps
+« cours » d'une leçon se limite donc à situer — quelle compétence ce module du
+cours enseigne, en une ou deux phrases au niveau compétence, et le lien pour
+aller l'apprendre. Ré-enseigner la théorie en prose, même originale, a trois
+coûts : la formation glisse vers la reprise (le risque juridique qu'on vient
+d'écarter), elle vieillit avec le cours qu'elle paraphrase, et elle double le
+travail de maintenance. Si l'apprenant a besoin de théorie, le lien est là ;
+notre page, c'est la pratique.
+
 ## La relecture juridique (avant livraison)
 
 Relire chaque leçon en se posant une seule question : *si l'éditeur du cours
