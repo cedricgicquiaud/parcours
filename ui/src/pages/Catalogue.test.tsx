@@ -17,6 +17,7 @@ function catalogue(surcharge: Partial<ReponseCatalogue> = {}): ReponseCatalogue 
         titre: "Formation pratique Claude",
         description: "Compagnon pratique",
         modules: 2,
+        modulesFaits: 1,
         lecons: 31,
         faites: 12,
         duree: 165,
@@ -29,6 +30,7 @@ function catalogue(surcharge: Partial<ReponseCatalogue> = {}): ReponseCatalogue 
         id: "ecrire-web",
         titre: "Écrire pour le web",
         modules: 1,
+        modulesFaits: 0,
         lecons: 12,
         duree: 90,
         faites: 0,
@@ -41,6 +43,7 @@ function catalogue(surcharge: Partial<ReponseCatalogue> = {}): ReponseCatalogue 
         id: "sqlite",
         titre: "SQLite en pratique",
         modules: 1,
+        modulesFaits: 1,
         lecons: 12,
         faites: 12,
         pourcentage: 100,
@@ -97,6 +100,17 @@ describe("Catalogue (U-R1, U-R8)", () => {
     expect(
       screen.queryByText("Douze leçons pour écrire clair."),
     ).not.toBeInTheDocument();
+  });
+
+  it("compte les modules terminés, pas les leçons (recette 2026-08-19)", () => {
+    render(<Catalogue {...proprietes} catalogue={catalogue()} />);
+    // Carte « EN COURS » : « 1 module sur 2 », plus « 12 leçons sur 31 ».
+    expect(screen.getByText(/1 module sur 2/)).toBeInTheDocument();
+    expect(screen.queryByText(/12 leçons sur 31/)).not.toBeInTheDocument();
+    // Cartes du catalogue : « 0/1 module », plus « 0/12 leçons ».
+    const carte = screen.getByText("Écrire pour le web").closest(".carte")!;
+    expect(carte).toHaveTextContent("0/1 module");
+    expect(carte.textContent).not.toMatch(/leçon/);
   });
 
   it("annonce la durée sur la carte en cours et sur les cartes du catalogue", () => {
