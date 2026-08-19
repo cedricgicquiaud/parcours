@@ -1,0 +1,33 @@
+{
+  "skill_name": "creation-formation",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Crée une formation Parcours courte — un module, 3 à 4 leçons — sur les bases du terminal macOS (se déplacer, lister, créer et supprimer des fichiers), pour quelqu'un qui ne l'a jamais ouvert.",
+      "expected_output": "Un dossier de formation valide : formation.json + leçons markdown, chaque leçon en trois temps (cours, pratique avec terrain posé, critères en constats), durées, validée par le scanner.",
+      "files": [],
+      "assertions": [
+        "La formation passe le scanner réel de Parcours : statut valide (via scripts/valider.ts)",
+        "Chaque leçon contient des critères cochables (cases '- [ ]'), entre 3 et 6 par leçon",
+        "Chaque leçon a une durée dans le manifeste (champ duree)",
+        "Les critères sont des constats au passé, répondables par oui/non — jamais des questions de quiz",
+        "Chaque leçon pose le terrain avant ses critères : une section pratique dit où et comment faire les gestes demandés",
+        "Tout terme technique (terminal, dossier, commande...) est expliqué à sa première apparition"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Je veux une formation Parcours qui accompagne le cours Anthropic Academy « Claude Code 101 » (https://anthropic.skilljar.com/claude-code-101) : uniquement des exercices pratiques originaux à faire chez soi, avec un lien vers le cours.",
+      "expected_output": "Une formation valide dont chaque leçon lie le cours en sortant, n'en reprend aucun contenu, affiche la non-affiliation, et fait pratiquer sur un projet fil rouge original.",
+      "files": [],
+      "assertions": [
+        "La formation passe le scanner réel de Parcours : statut valide (via scripts/valider.ts)",
+        "Chaque leçon contient un lien sortant vers le cours Academy (anthropic.skilljar.com)",
+        "La non-affiliation à Anthropic est affichée (fiche ou leçons)",
+        "Aucune reprise du contenu du cours : les leçons font pratiquer sur un projet original, elles ne racontent pas le cours",
+        "Les critères portent sur le travail de l'apprenant, jamais sur l'avancement dans le cours tiers ('j'ai fini la vidéo' interdit)",
+        "Chaque leçon a une durée dans le manifeste"
+      ]
+    }
+  ]
+}
