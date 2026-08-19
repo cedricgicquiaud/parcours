@@ -16,12 +16,19 @@ export function variablesMermaid(racine: Element): Record<string, string> {
   const trait = jeton("--line", "#eae4dc");
   const accent = jeton("--accent", "#f2701f");
 
-  // Ni `fontFamily` ni `fontSize` ici, volontairement : mermaid mesure les
-  // libellés avec sa police par défaut pour dimensionner les boîtes. Lui en
-  // imposer une autre décale la mesure du dessin, et le texte déborde
-  // (« parcours.db » tronqué en « parcours.c »). On ne lui donne que des
-  // couleurs.
+  // La police de la page s'applique au SVG par héritage CSS, que mermaid le
+  // veuille ou non : s'il mesure ses boîtes avec sa police par défaut
+  // (Trebuchet MS, plus étroite qu'Open Sans), le dernier mot des libellés
+  // déborde de la zone mesurée et disparaît. La seule option cohérente est de
+  // lui donner exactement la police et la taille affichées.
+  // Le jeton `--font` est la vérité : c'est lui que `body` applique. La taille
+  // vient du calcul (le test en px écarte les valeurs symboliques de jsdom).
+  const police = jeton("--font", '"Open Sans", system-ui, sans-serif');
+  const taille = /px$/.test(styles.fontSize) ? styles.fontSize : "15px";
+
   return {
+    fontFamily: police,
+    fontSize: taille,
     background: jeton("--bg", "#ffffff"),
     // Nœuds
     primaryColor: fond,

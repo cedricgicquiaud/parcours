@@ -131,7 +131,9 @@ export function PageLecon({
           startOnLoad: false,
           securityLevel: "strict",
           theme: "base",
-          themeVariables: variablesMermaid(document.documentElement),
+          // Le nœud de contenu, pas la racine : c'est SA police calculée qui
+          // s'applique au SVG par héritage (la racine n'hérite pas de body).
+          themeVariables: variablesMermaid(noeud),
         });
         for (const [index, schema] of schemas.entries()) {
           const source = schema.dataset.source ?? "";
