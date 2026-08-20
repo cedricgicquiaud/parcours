@@ -26,14 +26,14 @@ déplace de gauche à droite jusqu'à la fin.
 ```mermaid
 graph LR
   L[Labels] -->|classent| I[Issue]
-  M[Milestone] -->|date| I
+  M[Milestone] -->|destine| I
   I -->|affichée sur| P[Project]
   PR[Pull request] -->|réalise et ferme| I
   A[Actions] -->|vérifient| PR
 ```
 
 En une phrase : **l'issue décrit le travail, le label le classe, le milestone
-le date, le Project l'affiche, la pull request le réalise et le ferme,
+le destine, le Project l'affiche, la pull request le réalise et le ferme,
 l'Action le vérifie.**
 
 Le détail viendra module par module. Ce qui compte aujourd'hui : ces six

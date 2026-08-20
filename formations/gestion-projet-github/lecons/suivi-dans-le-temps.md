@@ -15,6 +15,24 @@ mais « qu'est-ce qu'on prend MAINTENANT ? ». L'itération y répond, et impose
 sa discipline : peu d'items par période — mieux vaut finir trois tâches que
 commencer huit.
 
+## Itération ou milestone ? Les deux, ce n'est pas pareil
+
+Ils se ressemblent assez pour qu'on les confonde — la différence tient en une
+question chacun :
+
+- le **milestone** répond à « **vers quoi** ce travail avance-t-il ? ». C'est
+  une destination : la V1 est finie quand son contenu est fini, qu'importe le
+  temps que ça prend. Si le travail déborde, le milestone attend.
+- l'**itération** répond à « **quand** s'en occupe-t-on ? ». C'est une case de
+  calendrier : la quinzaine se termine à sa date, quoi qu'il arrive. Si le
+  travail déborde, il glisse à la case suivante.
+
+Une même issue porte donc les deux sans doublon : elle **vise** la V1 et elle
+est **prise** cette quinzaine. La redondance n'apparaît que si l'on détourne
+l'un des deux — des milestones nommés « Sprint 1 », « Sprint 2 » sont des
+itérations déguisées : là, choisissez. Et si le rythme d'itérations ne prend
+pas chez vous, les milestones seuls font une vie très honorable.
+
 ## La roadmap : la frise
 
 La vue **Roadmap** étale les items sur une frise chronologique, alignés sur
