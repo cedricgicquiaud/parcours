@@ -11,7 +11,10 @@ leçon précédente. Elle rappelle juste le contrat d'exécution :
   quand » en cases) ;
 - label `amélioration` et milestone `V2 — les listes partagées` posés **dès la
   création** ;
-- rien d'autre que la liste : ni ajout, ni omission.
+- rien d'autre que la liste : ni ajout, ni omission ;
+- et si vous tenez une roadmap (leçon « La roadmap » du module 4) : chaque
+  issue naît en **sous-issue du chantier** de son palier — la barre
+  d'avancement du chantier devient alors le reflet exact du découpage.
 
 Le tableau, lui, n'a pas besoin d'instruction : Auto-add veille depuis le
 module 4. Regardez les cartes tomber dans Todo.

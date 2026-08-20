@@ -33,6 +33,9 @@ pièges où l'on tombe même avec de bons outils. Savoir où s'arrête l'outil
   main, ensuite la règle — c'est la méthode de toute cette formation.
 - **L'issue fourre-tout** : « Améliorer l'app » qui enfle de commentaires en
   commentaires. Dès qu'une issue contient trois sujets, elle se découpe.
+- **Le chantier zombie** : la barre de roadmap créée un jour d'enthousiasme et
+  plus jamais mise à jour. Une roadmap fausse est pire que pas de roadmap —
+  ne tenez la vue « Produit » que si quelqu'un la lit.
 
 ## Constatez-le sur pièce : l'audit de votre bac à sable
 

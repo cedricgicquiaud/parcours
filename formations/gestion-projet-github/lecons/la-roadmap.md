@@ -39,6 +39,14 @@ chantiers ; le Board ne montre que le travail.** Une barre par palier sur la
 frise — jamais de trou, jamais de détail. Les tâches concrètes, elles, vivent
 sur le tableau et dans les sprints, jamais sur la roadmap.
 
+Pour que les écrans respectent cette règle tout seuls, il faut le leur dire :
+un label `chantier` sur les issues-chantiers, et un filtre par vue (la barre
+« Filter » en haut de chaque vue). Le Board exclut le label
+(`-label:chantier`), la vue de la roadmap ne garde que lui
+(`label:chantier`). Sans ces filtres, Auto-add poserait les chantiers sur le
+Board — des cartes qui ne bougeraient jamais — et la frise listerait toutes
+les tâches sans barre, comme des figurants.
+
 ## La roadmap au fil du projet
 
 - **Au départ** : vous créez tous les milestones datés et tous leurs
@@ -82,8 +90,9 @@ Dans votre bac à sable, dans l'ordre :
    module 4 — un champ `Début` et un champ `Cible`, tous deux de type
    **Date**.
 4. Créez les chantiers : deux issues, « Chantier V1 » et « Chantier V2 »,
-   trois lignes de description chacune. Dans l'Inventaire, datez-les en
-   quinconce — V1 sur les semaines qui viennent, V2 décalé d'un mois.
+   trois lignes de description chacune, portant un label `chantier` (créez-le
+   au passage). Dans l'Inventaire, datez-les en quinconce — V1 sur les
+   semaines qui viennent, V2 décalé d'un mois.
 5. Créez la vue de la roadmap : un nouvel onglet de type **Roadmap**, nommé
    « Produit », et dans ses options, réglez **Dates** sur la paire
    `Début` / `Cible` — c'est ce réglage qui dit à la frise où lire le temps ;
@@ -91,7 +100,10 @@ Dans votre bac à sable, dans l'ordre :
    (Une vue ne lit qu'une source de temps à la fois ; si un jour vous voulez
    aussi une frise de la quinzaine, créez une seconde vue Roadmap réglée sur
    votre champ d'itérations.)
-6. La touche finale : toujours dans les options de la vue, activez les
+6. Appliquez la règle d'or aux écrans : dans la vue « Produit », tapez
+   `label:chantier` dans la barre Filter ; sur le Board, tapez
+   `-label:chantier`. Chaque écran ne montre plus que son monde.
+7. La touche finale : dans les options de la vue « Produit », activez les
    **Markers** sur les milestones — leurs échéances se dessinent en traits
    verticaux.
 
