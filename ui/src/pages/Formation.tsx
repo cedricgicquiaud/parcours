@@ -6,9 +6,10 @@ import {
   Bandeau,
   Barre,
   BlocErreur,
+  EnTeteModule,
   Icone,
-  LeconEtat,
   LienInterne,
+  LigneLecon,
   ModuleRepliable,
   Squelette,
 } from "../composants/communs";
@@ -61,38 +62,26 @@ function SommaireFiche({
           ouvert={!estReplie(module.id)}
           surBascule={() => basculer(module.id)}
           enTete={
-            <>
-              <span className="module-entete-texte">
-                <span className="module-kicker">
-                  Module {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="module-titre">{module.titre}</span>
-              </span>
-              <span className="module-compteur">
-                {module.faites}/{module.total}
-                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
-              </span>
-            </>
+            <EnTeteModule
+              numero={index + 1}
+              titre={module.titre}
+              duree={module.duree}
+              compteur={`${module.faites}/${module.total}`}
+            />
           }
         >
           {module.description ? (
             <p className="module-description">{module.description}</p>
           ) : null}
           {module.lecons.map((lecon) => (
-            <LienInterne
+            <LigneLecon
               key={lecon.id}
-              className="ligne-lecon"
               route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
               naviguer={naviguer}
-            >
-              <LeconEtat faite={lecon.faite} />
-              <span className="ligne-lecon-texte">
-                <span className="ligne-lecon-titre">{lecon.titre}</span>
-                {lecon.duree !== undefined ? (
-                  <span className="ligne-lecon-meta">{formaterDuree(lecon.duree)}</span>
-                ) : null}
-              </span>
-            </LienInterne>
+              faite={lecon.faite}
+              titre={lecon.titre}
+              duree={lecon.duree}
+            />
           ))}
         </ModuleRepliable>
       ))}

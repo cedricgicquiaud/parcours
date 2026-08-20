@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { formaterDuree } from "../duree";
 import { cheminDe, estClicSimple, type Route } from "../routeur";
 
 /**
@@ -106,6 +107,82 @@ export function PiedPlateforme() {
     <footer className="pied-plateforme">
       Projet indépendant, non affilié à Anthropic.
     </footer>
+  );
+}
+
+/**
+ * En-tête à deux niveaux d'un module de sommaire (rail et fiche) :
+ * un libellé discret « Module NN · durée », puis le titre qui se lit.
+ */
+export function EnTeteModule({
+  numero,
+  titre,
+  duree,
+  compteur,
+}: {
+  numero: number;
+  titre: string;
+  duree?: number;
+  compteur: ReactNode;
+}) {
+  return (
+    <>
+      <span className="module-entete-texte">
+        <span className="module-kicker">
+          Module {String(numero).padStart(2, "0")}
+          {duree !== undefined ? ` · ${formaterDuree(duree)}` : ""}
+        </span>
+        <span className="module-titre">{titre}</span>
+      </span>
+      <span className="module-compteur">{compteur}</span>
+    </>
+  );
+}
+
+/**
+ * Ligne de leçon d'un sommaire : état rond, titre, puis métadonnées
+ * (durée, décompte de critères de la leçon ouverte).
+ */
+export function LigneLecon({
+  route,
+  naviguer,
+  courante = false,
+  faite,
+  titre,
+  duree,
+  criteres,
+}: {
+  route: Route;
+  naviguer: (route: Route) => void;
+  courante?: boolean;
+  faite: boolean;
+  titre: string;
+  duree?: number;
+  criteres?: { faits: number; total: number } | null;
+}) {
+  return (
+    <LienInterne
+      className={`ligne-lecon${courante ? " courante" : ""}`}
+      route={route}
+      courante={courante}
+      naviguer={naviguer}
+    >
+      <LeconEtat faite={faite} />
+      <span className="ligne-lecon-texte">
+        <span className="ligne-lecon-titre">{titre}</span>
+        {duree !== undefined || criteres ? (
+          <span className="ligne-lecon-meta">
+            {duree !== undefined ? formaterDuree(duree) : null}
+            {duree !== undefined && criteres ? " · " : null}
+            {criteres ? (
+              <span className="ligne-lecon-criteres">
+                {criteres.faits}/{criteres.total}
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+      </span>
+    </LienInterne>
   );
 }
 

@@ -415,7 +415,7 @@ summary::-webkit-details-marker {
 }
 
 .spine-pourcent {
-  /* Un jeton rond, dans la même famille visuelle que les pastilles de leçons :
+  /* Un jeton rond, dans la même famille visuelle que les états de leçons :
      à la verticale, le chiffre était illisible. */
   display: inline-flex;
   align-items: center;
@@ -503,7 +503,8 @@ summary::-webkit-details-marker {
 .resultat-extrait {
   font-size: 12.5px;
   color: var(--muted);
-  padding-left: 14px;
+  /* Aligné sous le titre : état rond de 17 px + gap de 9 px. */
+  padding-left: 26px;
 }
 
 .resultat-extrait mark {
@@ -1510,14 +1511,7 @@ summary.module-entete:hover .module-kicker {
 }
 
 .ligne-lecon-titre {
-  flex: 1;
   min-width: 0;
-}
-
-.ligne-lecon-criteres {
-  font-size: 11.5px;
-  color: var(--faint);
-  font-variant-numeric: tabular-nums;
 }
 
 .table-defilante {

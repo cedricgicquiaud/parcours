@@ -4,7 +4,15 @@ import { useModulesReplies, type Mode } from "../preferences";
 import { formaterDuree } from "../duree";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
-import { Barre, Icone, LeconEtat, LienInterne, ModuleRepliable } from "./communs";
+import {
+  Barre,
+  EnTeteModule,
+  Icone,
+  LeconEtat,
+  LienInterne,
+  LigneLecon,
+  ModuleRepliable,
+} from "./communs";
 
 export interface ProprietesRail {
   route: Route;
@@ -360,49 +368,27 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
           ouvert={!estReplie(module.id)}
           surBascule={() => basculer(module.id)}
           enTete={
-            <>
-              <span className="module-entete-texte">
-                <span className="module-kicker">
-                  Module {String(index + 1).padStart(2, "0")}
-                  {module.duree !== undefined
-                    ? ` · ${formaterDuree(module.duree)}`
-                    : ""}
-                </span>
-                <span className="module-titre">{module.titre}</span>
-              </span>
-              <span className="module-compteur">
-                {module.faites}/{module.total}
-              </span>
-            </>
+            <EnTeteModule
+              numero={index + 1}
+              titre={module.titre}
+              duree={module.duree}
+              compteur={`${module.faites}/${module.total}`}
+            />
           }
         >
           {module.lecons.map((lecon) => {
             const courante = lecon.id === leconCourante;
-            const criteres = courante ? props.criteresCourants : null;
             return (
-              <LienInterne
+              <LigneLecon
                 key={lecon.id}
-                className={`ligne-lecon${courante ? " courante" : ""}`}
                 route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
-                courante={courante}
                 naviguer={props.naviguer}
-              >
-                <LeconEtat faite={lecon.faite} />
-                <span className="ligne-lecon-texte">
-                  <span className="ligne-lecon-titre">{lecon.titre}</span>
-                  {lecon.duree !== undefined || criteres ? (
-                    <span className="ligne-lecon-meta">
-                      {lecon.duree !== undefined ? formaterDuree(lecon.duree) : null}
-                      {lecon.duree !== undefined && criteres ? " · " : null}
-                      {criteres ? (
-                        <span className="ligne-lecon-criteres">
-                          {criteres.faits}/{criteres.total}
-                        </span>
-                      ) : null}
-                    </span>
-                  ) : null}
-                </span>
-              </LienInterne>
+                courante={courante}
+                faite={lecon.faite}
+                titre={lecon.titre}
+                duree={lecon.duree}
+                criteres={courante ? props.criteresCourants : null}
+              />
             );
           })}
         </ModuleRepliable>
