@@ -109,6 +109,15 @@ export function PiedPlateforme() {
   );
 }
 
+/** État d'une leçon : rond plein coché si faite, anneau vide sinon. */
+export function LeconEtat({ faite }: { faite: boolean }) {
+  return (
+    <span className={faite ? "lecon-etat faite" : "lecon-etat"} aria-hidden="true">
+      {faite ? <Icone nom="check" taille={10} /> : null}
+    </span>
+  );
+}
+
 /**
  * Module repliable d'un sommaire (rail et fiche). Le clic sur l'en-tête est
  * intercepté : l'état React — mémorisé par `useModulesReplies` — reste la

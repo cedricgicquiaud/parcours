@@ -355,13 +355,6 @@ summary::-webkit-details-marker {
   max-width: 66ch;
 }
 
-.ligne-lecon-duree {
-  margin-left: auto;
-  font-size: 11.5px;
-  color: var(--faint);
-  font-variant-numeric: tabular-nums;
-}
-
 /* Spine : latéral replié */
 .spine {
   width: 62px;
@@ -650,22 +643,41 @@ summary.module-entete:hover .module-kicker {
   color: var(--text);
 }
 
-.ligne-lecon .ph-check {
-  font-size: 13px;
-  color: var(--accent-text);
+/* Leçon à deux lignes (recette 2026-08-20) : titre, puis métadonnées. */
+.ligne-lecon-texte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
-.pastille {
-  width: 5px;
-  height: 5px;
-  margin: 0 4px;
-  border-radius: 50%;
-  background: var(--line);
+.ligne-lecon-meta {
+  font-size: 11.5px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* État d'une leçon : rond plein coché si faite, anneau vide sinon. */
+.lecon-etat {
+  width: 17px;
+  height: 17px;
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
 }
 
-.ligne-lecon.courante .pastille {
+.lecon-etat.faite {
+  border-color: var(--accent);
   background: var(--accent);
+  color: #fff;
+}
+
+.ligne-lecon.courante .lecon-etat:not(.faite) {
+  border-color: var(--accent);
 }
 
 .ligne-formation {

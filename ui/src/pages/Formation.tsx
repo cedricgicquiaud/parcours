@@ -7,6 +7,7 @@ import {
   Barre,
   BlocErreur,
   Icone,
+  LeconEtat,
   LienInterne,
   ModuleRepliable,
   Squelette,
@@ -84,15 +85,13 @@ function SommaireFiche({
               route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
               naviguer={naviguer}
             >
-              {lecon.faite ? (
-                <Icone nom="check" taille={13} />
-              ) : (
-                <span className="pastille" />
-              )}
-              <span className="ligne-lecon-titre">{lecon.titre}</span>
-              {lecon.duree !== undefined ? (
-                <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
-              ) : null}
+              <LeconEtat faite={lecon.faite} />
+              <span className="ligne-lecon-texte">
+                <span className="ligne-lecon-titre">{lecon.titre}</span>
+                {lecon.duree !== undefined ? (
+                  <span className="ligne-lecon-meta">{formaterDuree(lecon.duree)}</span>
+                ) : null}
+              </span>
             </LienInterne>
           ))}
         </ModuleRepliable>
