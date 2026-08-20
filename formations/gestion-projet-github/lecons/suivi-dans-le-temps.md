@@ -64,9 +64,12 @@ Dans votre Project :
 2. Posez « Barrer visuellement… » et « Ajouter une tâche… » sur l'itération
    courante ; laissez le reste sans itération (pas encore décidé — c'est un
    état honnête).
-3. Créez une vue **Roadmap** (le `+` des vues → Roadmap) : vos deux items
-   apparaissent sur la frise, alignés sur l'itération courante ; les autres
-   attendent en dehors.
+3. Créez une vue **Roadmap** (le `+` des vues → Roadmap), puis dites-lui où
+   lire le temps : dans les options de la vue (l'engrenage en haut à droite),
+   réglez **Dates** sur votre champ d'itérations. Sans ce réglage, la frise ne
+   sait pas dater les items et reste vide. Une fois fait : vos deux items
+   apparaissent, alignés sur l'itération courante ; les autres attendent en
+   dehors.
 
 ## Critères de réussite
 
