@@ -55,9 +55,12 @@ tableau, avec trois questions :
 
 Dans votre Project :
 
-1. Dans la vue « Inventaire », créez un champ **Itération** (New field → type
-   Iteration, périodes de 2 semaines — GitHub crée les premières
-   automatiquement).
+1. Dans la vue « Inventaire », créez un champ de type **Iteration** (New
+   field, périodes de 2 semaines — GitHub crée les premières automatiquement).
+   Le nom est libre : « Itération », « Sprint »… c'est le TYPE qui donne la
+   mécanique de calendrier, pas le nom. L'erreur à éviter : un champ à choix
+   unique avec des options « Sprint 1 », « Sprint 2 » tapées à la main — il en
+   aurait l'air, sans les périodes qui s'enchaînent ni la frise.
 2. Posez « Barrer visuellement… » et « Ajouter une tâche… » sur l'itération
    courante ; laissez le reste sans itération (pas encore décidé — c'est un
    état honnête).
@@ -67,6 +70,6 @@ Dans votre Project :
 
 ## Critères de réussite
 
-- [ ] le champ Itération existe, avec ses périodes de deux semaines
+- [ ] mon champ de type Iteration existe — quel que soit son nom — avec ses périodes de deux semaines
 - [ ] deux items sont posés sur l'itération courante, les autres restent sans itération
 - [ ] ma vue Roadmap affiche les deux items sur la frise
