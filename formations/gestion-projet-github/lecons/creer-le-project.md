@@ -24,13 +24,18 @@ Le label classe, le milestone date, le Project montre — chacun son verbe.
 
 1. Dans votre dépôt `todo-app`, ouvrez l'onglet **Projects**, puis créez un
    nouveau projet (selon l'écran, le bouton propose de lier un projet existant
-   ou d'en créer un : créez). Choisissez le modèle **Board** et nommez-le
-   `todo-app`.
-2. Ajoutez vos issues : en bas d'une colonne, le bouton **+ Add item** ouvre
-   une recherche — tapez `#` pour voir les issues du dépôt, et ajoutez les
-   **cinq** ouvertes.
-3. Posez toutes les cartes dans la colonne **Todo** (une carte ajoutée arrive
-   parfois sans statut : glissez-la, ou choisissez le statut sur la carte).
+   ou d'en créer un : créez), avec le modèle **Board**.
+2. Sur l'écran de création : nommez le projet `todo-app` (remplacez le
+   « untitled project » proposé), et gardez cochée la case **Import items
+   from repository** — `Open issues`, depuis `todo-app`. Elle ajoute vos cinq
+   issues ouvertes d'un coup, et promet d'ajouter aussi les futures. (Si
+   votre écran n'offre pas l'import : le bouton **+ Add item**, en bas d'une
+   colonne, fait la même chose issue par issue — tapez `#` pour chercher.)
+3. L'aperçu de colonnes montré à la création n'est qu'une illustration. Une
+   fois le tableau créé : trois colonnes suffisent — `Todo`, `In Progress`,
+   `Done` ; le menu de chaque en-tête permet de renommer ou supprimer le
+   surplus. Posez toutes les cartes dans **Todo** (une carte arrivée sans
+   statut se glisse, ou se règle sur la carte).
 4. Retournez dans l'onglet Projects du dépôt : votre tableau y est listé —
    c'est le lien dépôt ↔ projet.
 
