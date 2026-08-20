@@ -109,7 +109,8 @@
         { "id": "creer-le-project", "titre": "Créer le Project", "fichier": "lecons/creer-le-project.md", "duree": 15, "suppose": ["le-tri-scripte"] },
         { "id": "vues-et-champs", "titre": "Vues et champs", "fichier": "lecons/vues-et-champs.md", "duree": 15, "suppose": ["creer-le-project"] },
         { "id": "automatisations-du-tableau", "titre": "Les automatisations du tableau", "fichier": "lecons/automatisations-du-tableau.md", "duree": 15, "suppose": ["creer-le-project", "cycle-de-vie"] },
-        { "id": "suivi-dans-le-temps", "titre": "Le suivi dans le temps", "fichier": "lecons/suivi-dans-le-temps.md", "duree": 15, "suppose": ["vues-et-champs"] }
+        { "id": "suivi-dans-le-temps", "titre": "Le suivi dans le temps", "fichier": "lecons/suivi-dans-le-temps.md", "duree": 15, "suppose": ["vues-et-champs"] },
+        { "id": "la-roadmap", "titre": "La roadmap", "fichier": "lecons/la-roadmap.md", "duree": 15, "suppose": ["suivi-dans-le-temps", "les-milestones"] }
       ],
       "description": "Le tableau Kanban : le monter, le regarder autrement, et le laisser se tenir à jour tout seul."
     },
