@@ -1,99 +1,94 @@
-« Vous pouvez me donner une roadmap sur trois-quatre mois ? » La question
-arrivera — d'un associé, d'un client, de vous-même. Voici comment y répondre
-avec GitHub seul, sans promettre ce que personne ne peut tenir.
+« Vous pouvez me donner une roadmap sur quatre mois ? » La question finit
+toujours par arriver. Cette leçon y répond avec GitHub seul — et sans mentir,
+car c'est le vrai danger d'une roadmap : promettre un détail qu'on ne peut pas
+connaître.
 
-## Le principe de la longue-vue
+## Une roadmap honnête promet des destinations, pas un calendrier détaillé
 
-Sur un projet réel, la spec ne prévoit jamais tout, et les cas s'identifient
-en route — c'est normal, le réel en apprend plus que la réflexion. Une roadmap
-honnête en tient compte : **plus c'est proche, plus c'est net.** Trois niveaux
-de zoom :
+Sur un projet réel, personne ne peut prévoir toutes les tâches à l'avance. Les
+cas se découvrent en travaillant — c'est normal, et aucune méthode ne
+l'empêche.
 
-1. **Les milestones lointains** : des enveloppes datées — une promesse en deux
-   phrases, une échéance **estimée**, et une seule issue : leur chapeau de
-   chantier (la barre sur la frise, on y vient). Rien de plus : détailler le
-   lointain, c'est du travail jeté d'avance.
-2. **Le milestone en cours** : le seul découpé en issues — spec relue,
-   découpage discuté, création en masse (c'est tout le module 6, qui se rejoue
-   à chaque palier, au moment de s'y mettre).
-3. **L'itération** : elle ne crée rien, elle **pioche** — deux ou trois issues
-   du milestone en cours, prises pour la quinzaine.
+Une roadmap honnête accepte cette réalité. Elle promet des **destinations
+datées** : « les comptes fin octobre, le partage fin novembre ». Elle ne
+détaille en tâches que le palier en cours. Le lointain reste volontairement
+flou : le détailler aujourd'hui, c'est du travail jeté, puisque le réel le
+contredira.
 
-Une même tâche vit donc trois moments : promise (dans l'enveloppe), définie
-(au découpage), prise (dans une itération). Et chaque niveau a son rendez-vous
-de mise au point : le mensuel ajuste les dates des enveloppes, l'hebdomadaire
-choisit la pioche.
+Retenez l'image d'une longue-vue : **plus c'est proche, plus c'est net.**
 
-C'est ce qui empêche la roadmap de « glisser en permanence » : elle n'engage
-le détail que sur le proche, et se re-décide à intervalle fixe. Le glissement
-douloureux naît du calendrier intégral promis d'avance — celui qu'on ne
-construit jamais ici. Mieux : la barre du milestone en cours alerte tôt (elle
-n'avance pas assez vite ? on le voit des semaines avant l'échéance, pas la
-veille).
+## Les trois objets d'une roadmap GitHub
 
-## La roadmap en deux affichages
+Pour construire cette roadmap, trois objets — deux que vous connaissez, un
+nouveau :
 
-- **La version texte : la page Milestones.** Les paliers dans l'ordre du
-  temps, leur échéance, la barre d'avancement du palier en cours. C'est la
-  page à montrer — elle se lit sans explication et dit toujours vrai.
-- **La version dessinée : la vue Roadmap du Project.** Les issues du milestone
-  en cours sur leurs itérations (le net), et les **markers** : dans les
-  options de la vue (le même menu où vous avez réglé « Dates »), le réglage
-  **Markers** dessine des traits verticaux aux dates clés — dont les échéances
-  de vos milestones.
+1. **Le milestone daté** : le palier. Vous savez déjà tout de lui ; la
+   roadmap lui ajoute juste sa date d'échéance (page Milestones → Edit).
+2. **L'issue-chantier** : la nouveauté de cette leçon. C'est une issue
+   ordinaire, nommée d'après son palier (« Chantier V2 »), avec trois lignes
+   de description. Son rôle : **représenter le palier sur la frise**. Pour
+   cela, elle porte deux dates — un début et une cible — dans deux champs du
+   Project que vous allez créer. **Un chantier par milestone, toujours** : il
+   est la barre de son palier.
+3. **Les issues de travail** : celles que vous connaissez depuis le module 2.
+   Elles n'existent que pour le palier en cours, et n'ont pas de dates.
 
-## La règle qui rend la vue complète : un chapeau par palier
+La règle d'or qui rend tout lisible : **la roadmap ne montre que les
+chantiers ; le Board ne montre que le travail.** Une barre par palier sur la
+frise — jamais de trou, jamais de détail. Les tâches concrètes, elles, vivent
+sur le tableau et dans les sprints, jamais sur la roadmap.
 
-Pour dessiner des **barres**, la frise a besoin d'items datés. La règle qui
-marche : chaque palier a son **issue-chapeau de chantier** (« Chantier
-comptes », « Chantier partage »…), datée par deux champs début/cible —
-**systématiquement, palier en cours compris**. Le chapeau n'est pas réservé
-aux gros morceaux : c'est la barre du palier sur la roadmap.
+## La roadmap au fil du projet
 
-La séparation des deux mondes devient alors nette, et la vue toujours
-complète :
+- **Au départ** : vous créez tous les milestones datés et tous leurs
+  chantiers. La roadmap complète existe dès le premier jour — trois paliers,
+  trois barres — alors qu'aucune tâche n'est encore écrite.
+- **À l'ouverture d'un palier** (chaque mois, environ) : vous découpez son
+  chantier en tâches — c'est le passage du module 6, rejoué palier par
+  palier. La roadmap ne bouge pas d'un pixel : une barre s'est remplie de
+  l'intérieur, c'est tout.
+- **Quand le réel bouscule** : vous déplacez des dates d'échéance — deux
+  clics. Et vous le voyez venir tôt : la barre d'avancement du milestone en
+  cours dit des semaines à l'avance qu'un palier sera juste, pas la veille.
+- **À la fin d'un palier** : les tâches se ferment toutes seules (leurs PR),
+  l'avancement du chantier monte tout seul (« 5 of 5 »)… et là, il vous
+  attend. **Fermer un chantier est votre geste** : c'est le moment de relire
+  le palier — rien découvert en route ? la spec n'a pas bougé ? — avant de
+  déclarer fini. Les conséquences s'automatisent, les décisions se gardent.
 
-- la roadmap « produit » ne montre **que les chapeaux** — un par palier, du
-  premier jour du projet au dernier : jamais de trou ;
-- le Board et les itérations ne montrent **que les issues** — le travail
-  concret du palier en cours, sans dates, jamais sur la frise.
+## Où se lit la roadmap
 
-Le découpage mensuel ne touche donc pas à la roadmap : il remplit l'intérieur
-d'une barre (les sous-issues du chantier qui s'ouvre), il n'en ajoute ni n'en
-retire. La vue d'ensemble est stable ; seul le détail en dessous évolue.
+Deux affichages, pour deux usages :
 
-Et la fin de vie d'un chantier suit la frontière habituelle : ses sous-issues
-se ferment toutes seules (leurs PR), sa barre d'avancement monte toute seule —
-mais à « 5 of 5 », le chapeau reste ouvert. **Le fermer est votre geste**, et
-c'est voulu : c'est le moment de relire le palier (rien découvert en route qui
-manque ? la spec n'a pas bougé ?) avant de déclarer fini. Fermé, sa carte file
-dans Done comme les autres ; le milestone à 100 % se clôt pareil, d'un clic.
-Les conséquences s'automatisent, les décisions se gardent.
+- **La page Milestones** : les paliers dans l'ordre, leurs dates, la barre
+  d'avancement de celui en cours. C'est la roadmap « texte » — la page à
+  montrer à un associé, elle se lit sans explication.
+- **La vue Roadmap « Produit »** : les chantiers en barres décalées sur la
+  frise — la roadmap « dessinée ». En option, le réglage **Markers** de la
+  vue ajoute des traits verticaux aux échéances des milestones.
 
 ## Constatez-le sur pièce
 
-Dans votre bac à sable :
+Dans votre bac à sable, dans l'ordre :
 
-1. Donnez une **date d'échéance** à vos milestones V1 et V2 (page Milestones →
-   Edit sur chacun — une date plausible suffit, c'est un bac à sable).
-2. Relisez la page Milestones : l'ordre, les dates, les barres — voilà votre
-   roadmap « texte », telle qu'un associé la lirait.
-3. Dans la vue Roadmap du Project, ouvrez les options et activez les
-   **Markers** sur les milestones : leurs échéances apparaissent en traits
-   verticaux sur la frise.
-4. Maintenant les **barres décalées** — l'image qu'on attend d'une roadmap.
-   La frise ne sait dessiner une durée que si l'item porte des dates : créez
-   deux champs de type **Date**, `Début` et `Cible` (dans la vue Inventaire,
-   comme au module 4). Puis créez une **seconde vue Roadmap**, nommée
-   « Produit », et réglez ses **Dates** sur la paire `Début` / `Cible` — une
-   vue ne lit qu'une source de temps à la fois, d'où les deux vues : celle des
-   itérations pour la quinzaine, celle-ci pour les mois.
-5. Appliquez la règle : un chapeau par palier. Créez « Chantier V1 » et
-   « Chantier V2 » (deux issues, trois lignes de description chacune), et
-   datez-les en quinconce — V1 sur les semaines à venir, V2 décalé d'un
-   mois. La vue « Produit » les
-   dessine en barres décalées dans le temps : votre roadmap visuelle, sur
-   trois mois, en dix minutes.
+1. Datez vos deux milestones : page Milestones → Edit sur V1 puis V2, une
+   échéance plausible chacun.
+2. Relisez cette page : l'ordre du temps, les dates, les barres — votre
+   roadmap texte est déjà là.
+3. Créez les deux champs de dates : dans la vue Inventaire, comme au
+   module 4 — un champ `Début` et un champ `Cible`, tous deux de type
+   **Date**.
+4. Créez les chantiers : deux issues, « Chantier V1 » et « Chantier V2 »,
+   trois lignes de description chacune. Dans l'Inventaire, datez-les en
+   quinconce — V1 sur les semaines qui viennent, V2 décalé d'un mois.
+5. Créez la vue de la roadmap : un nouvel onglet de type **Roadmap**, nommé
+   « Produit », et dans ses options, réglez **Dates** sur la paire
+   `Début` / `Cible`. (Une vue ne lit qu'une source de temps — votre vue des
+   sprints garde la sienne, celle-ci a les dates des chantiers.) Vos deux
+   barres décalées apparaissent.
+6. La touche finale : toujours dans les options de la vue, activez les
+   **Markers** sur les milestones — leurs échéances se dessinent en traits
+   verticaux.
 
 ## Critères de réussite
 
