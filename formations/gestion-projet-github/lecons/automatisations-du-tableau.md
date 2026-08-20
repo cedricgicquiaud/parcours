@@ -23,28 +23,32 @@ plus personne ne déplace de carte, jamais.
 
 ## Constatez-le sur pièce
 
-Votre cobaye : l'issue d'essai du module 2, fermée depuis. Elle va servir une
-dernière fois.
-
 1. Ouvrez **Workflows** et activez : **Auto-add to project** (sur votre dépôt,
    filtre `is:issue` proposé par défaut — peut-être déjà actif si vous avez
    importé les issues à la création du projet : constatez, c'est tout),
    **Item added** → statut `Todo`, et **Item closed** → statut `Done`.
-2. **Rouvrez** l'issue d'essai (onglet Closed de la liste des issues →
-   Reopen). Puis patience : ces règles tournent en tâche de fond chez GitHub —
-   l'effet suit le geste de quelques minutes, parfois. Deux façons de
-   constater l'arrivée : la rubrique **Projects** de la colonne de droite de
-   l'issue (dès qu'elle nomme votre projet, c'est fait), puis la carte sur le
-   tableau — pensez à la colonne **No Status**, en bout de tableau, si elle
-   arrive sans statut.
-3. **Refermez-la**. Sa carte file dans **Done** — sans que vous ayez touché au
+2. Le déclencheur fiable est la **création**. Créez une issue jetable,
+   « Essai des automatisations » (une ligne de description suffit), et suivez
+   son arrivée : d'abord la rubrique **Projects** de sa colonne de droite (dès
+   qu'elle nomme votre projet, c'est fait), puis la carte au tableau. Patience
+   possible : ces règles tournent en tâche de fond chez GitHub, l'effet suit
+   le geste de quelques minutes parfois — et une carte arrivée sans statut se
+   cache dans la colonne **No Status**, en bout de tableau.
+3. **Fermez-la**. Sa carte file dans **Done** — sans que vous ayez touché au
    tableau (même délai possible).
-4. Vos cinq vraies issues, elles, n'ont pas bougé de Todo : les règles ne
+4. Vos issues de travail, elles, n'ont pas bougé de Todo : les règles ne
    déplacent que ce qui change d'état.
+
+:::attention
+Constat de recette réelle : **rouvrir** une issue fermée ne déclenche pas
+« Auto-add » — la règle guette les créations et les modifications, pas la
+réouverture. Si une issue rouverte manque un jour au tableau, ajoutez-la à la
+main : la rubrique Projects de sa colonne de droite fait très bien le geste.
+:::
 
 ## Critères de réussite
 
 - [ ] la page Workflows montre Auto-add, Item added et Item closed activés
-- [ ] l'issue d'essai rouverte est apparue au tableau sans aucun geste de ma part
-- [ ] refermée, sa carte est passée dans Done toute seule
-- [ ] mes cinq issues sont toujours dans Todo
+- [ ] ma nouvelle issue d'essai est apparue au tableau sans aucun geste de ma part
+- [ ] fermée, sa carte est passée dans Done toute seule
+- [ ] mes issues de travail n'ont pas bougé de Todo
