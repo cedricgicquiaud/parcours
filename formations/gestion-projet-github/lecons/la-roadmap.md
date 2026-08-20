@@ -54,9 +54,23 @@ Dans votre bac à sable :
 3. Dans la vue Roadmap du Project, ouvrez les options et activez les
    **Markers** sur les milestones : leurs échéances apparaissent en traits
    verticaux sur la frise.
+4. Maintenant les **barres décalées** — l'image qu'on attend d'une roadmap.
+   La frise ne sait dessiner une durée que si l'item porte des dates : créez
+   deux champs de type **Date**, `Début` et `Cible` (dans la vue Inventaire,
+   comme au module 4). Puis créez une **seconde vue Roadmap**, nommée
+   « Produit », et réglez ses **Dates** sur la paire `Début` / `Cible` — une
+   vue ne lit qu'une source de temps à la fois, d'où les deux vues : celle des
+   itérations pour la quinzaine, celle-ci pour les mois.
+5. Datez deux issues-chapeaux en quinconce — par exemple « Créer un compte »
+   sur les semaines à venir, et une nouvelle issue « Chantier
+   synchronisation » décalée d'un mois (la synchronisation n'a pas encore la
+   sienne, votre relecture de la spec l'a montré). La vue « Produit » les
+   dessine en barres décalées dans le temps : votre roadmap visuelle, sur
+   trois mois, en dix minutes.
 
 ## Critères de réussite
 
 - [ ] mes milestones V1 et V2 portent chacun une date d'échéance
 - [ ] la page Milestones se lit comme une roadmap : l'ordre du temps, les dates, les barres
 - [ ] les échéances des milestones sont dessinées sur la frise de ma vue Roadmap
+- [ ] ma vue « Produit » montre des barres décalées dans le temps, une par chantier
