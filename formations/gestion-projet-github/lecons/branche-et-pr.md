@@ -32,18 +32,27 @@ Voilà un vrai travail.
 
 ## À vous
 
-Le dossier `todo-app` ouvert dans votre environnement, en deux temps :
+L'exercice tient en trois étapes : créer la tâche, confier le travail,
+relire. Le dossier `todo-app` est ouvert dans votre environnement.
 
-1. **L'issue** : « Décrire la V2 en détail dans le README » — au moule, label
-   `documentation` (il existe d'office), milestone V2. À la main ou par
-   Claude, comme vous voulez. Constatez au passage : le tableau l'attrape tout
-   seul (module 4).
-2. **Le travail, par Claude** : demandez-lui de prendre cette issue — créer
-   une branche, rédiger la section (comptes, partage, synchronisation), et
-   **ouvrir une PR sans la fusionner**. La fusion attend la leçon d'après.
+1. **Créez l'issue.** Titre : « Décrire la V2 en détail dans le README ».
+   Description en trois temps, comme d'habitude. Posez-lui le label
+   `documentation` — un de ceux que GitHub crée d'office — et le milestone V2.
+   À la main ou en le demandant à Claude, au choix. Quelques instants plus
+   tard, regardez le tableau : la carte est arrivée toute seule dans Todo —
+   c'est l'automatisation du module 4, déjà au travail.
 
-Puis lisez la PR comme un relecteur : le titre, la description, et *Files
-changed* — la section nouvelle, tout en vert.
+2. **Confiez le travail à Claude.** En français, quelque chose comme :
+   « prends l'issue [son numéro] : crée une branche, rédige la section V2 du
+   README — les comptes, le partage, la synchronisation — et ouvre une pull
+   request. Ne fusionne pas. » S'il propose de « finir le travail », refusez :
+   la fusion viendra à la leçon suivante, et c'est votre geste.
+
+3. **Relisez la PR, en relecteur.** Ouvrez-la dans le navigateur et passez-la
+   en revue : le titre (dit-il ce que ça change ?), la description, puis
+   l'onglet **Files changed** — la section nouvelle y apparaît, chaque ligne
+   ajoutée en vert. C'est la modification exacte : rien de plus, rien de
+   caché.
 
 :::indice
 La demande tient en une phrase : « prends l'issue N : branche, rédige la
