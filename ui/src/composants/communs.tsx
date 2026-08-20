@@ -225,6 +225,9 @@ export function ModuleRepliable({
         }}
       >
         {enTete}
+        <span className="module-chevron" aria-hidden="true">
+          <Icone nom="caret-down" taille={14} />
+        </span>
       </summary>
       {children}
     </details>
