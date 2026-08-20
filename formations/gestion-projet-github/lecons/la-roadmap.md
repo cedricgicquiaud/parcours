@@ -62,6 +62,14 @@ Le découpage mensuel ne touche donc pas à la roadmap : il remplit l'intérieur
 d'une barre (les sous-issues du chantier qui s'ouvre), il n'en ajoute ni n'en
 retire. La vue d'ensemble est stable ; seul le détail en dessous évolue.
 
+Et la fin de vie d'un chantier suit la frontière habituelle : ses sous-issues
+se ferment toutes seules (leurs PR), sa barre d'avancement monte toute seule —
+mais à « 5 of 5 », le chapeau reste ouvert. **Le fermer est votre geste**, et
+c'est voulu : c'est le moment de relire le palier (rien découvert en route qui
+manque ? la spec n'a pas bougé ?) avant de déclarer fini. Fermé, sa carte file
+dans Done comme les autres ; le milestone à 100 % se clôt pareil, d'un clic.
+Les conséquences s'automatisent, les décisions se gardent.
+
 ## Constatez-le sur pièce
 
 Dans votre bac à sable :
