@@ -6,8 +6,10 @@ import {
   Bandeau,
   Barre,
   BlocErreur,
+  EnTeteModule,
   Icone,
   LienInterne,
+  LigneLecon,
   ModuleRepliable,
   Squelette,
 } from "../composants/communs";
@@ -60,37 +62,26 @@ function SommaireFiche({
           ouvert={!estReplie(module.id)}
           surBascule={() => basculer(module.id)}
           enTete={
-            <>
-              <span className="module-titre">
-                {String(index + 1).padStart(2, "0")} · {module.titre}
-              </span>
-              <span className="module-compteur">
-                {module.faites}/{module.total}
-                {module.duree !== undefined ? ` · ${formaterDuree(module.duree)}` : ""}
-              </span>
-            </>
+            <EnTeteModule
+              numero={index + 1}
+              titre={module.titre}
+              duree={module.duree}
+              compteur={`${module.faites}/${module.total}`}
+            />
           }
         >
           {module.description ? (
             <p className="module-description">{module.description}</p>
           ) : null}
           {module.lecons.map((lecon) => (
-            <LienInterne
+            <LigneLecon
               key={lecon.id}
-              className="ligne-lecon"
               route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
               naviguer={naviguer}
-            >
-              {lecon.faite ? (
-                <Icone nom="check" taille={13} />
-              ) : (
-                <span className="pastille" />
-              )}
-              <span className="ligne-lecon-titre">{lecon.titre}</span>
-              {lecon.duree !== undefined ? (
-                <span className="ligne-lecon-duree">{formaterDuree(lecon.duree)}</span>
-              ) : null}
-            </LienInterne>
+              faite={lecon.faite}
+              titre={lecon.titre}
+              duree={lecon.duree}
+            />
           ))}
         </ModuleRepliable>
       ))}

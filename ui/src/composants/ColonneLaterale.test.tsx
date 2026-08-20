@@ -171,6 +171,47 @@ describe("rail au catalogue — compteurs en modules (recette 2026-08-19)", () =
   });
 });
 
+describe("sommaire latéral — leçons à deux lignes (recette 2026-08-20)", () => {
+  it("affiche la durée sous le titre, en ligne de métadonnées", () => {
+    render(<ColonneLaterale {...proprietes} />);
+    const lien = screen.getByRole("link", { name: /Se repérer/ });
+    expect(lien.querySelector(".ligne-lecon-titre")!.textContent).toBe("Se repérer");
+    expect(lien.querySelector(".ligne-lecon-meta")!.textContent).toBe("12 min");
+  });
+
+  it("ne rend aucune ligne de métadonnées quand il n'y a rien à y dire", () => {
+    const sansDuree: ReponseFormation = structuredClone(formation);
+    delete sansDuree.avancement.modules[0]!.lecons[1]!.duree;
+    render(<ColonneLaterale {...proprietes} formation={sansDuree} />);
+    const lien = screen.getByRole("link", { name: /Se repérer/ });
+    expect(lien.querySelector(".ligne-lecon-meta")).toBeNull();
+  });
+
+  it("place le décompte de critères de la leçon ouverte dans ses métadonnées", () => {
+    render(
+      <ColonneLaterale {...proprietes} criteresCourants={{ faits: 1, total: 4 }} />,
+    );
+    const lien = screen.getByRole("link", { name: /Bienvenue/ });
+    const meta = lien.querySelector(".ligne-lecon-meta")!;
+    expect(meta).toHaveTextContent("8 min");
+    expect(meta.querySelector(".ligne-lecon-criteres")!.textContent).toBe("1/4");
+  });
+
+  it("marque l'état par une pastille ronde : pleine si faite, vide sinon", () => {
+    render(<ColonneLaterale {...proprietes} />);
+    expect(
+      screen
+        .getByRole("link", { name: /Bienvenue/ })
+        .querySelector(".lecon-etat.faite"),
+    ).not.toBeNull();
+    const aFaire = screen
+      .getByRole("link", { name: /Se repérer/ })
+      .querySelector(".lecon-etat");
+    expect(aFaire).not.toBeNull();
+    expect(aFaire!.classList.contains("faite")).toBe(false);
+  });
+});
+
 describe("compteurs de formation — en modules, pas en leçons (recette 2026-08-19)", () => {
   it("compte les modules terminés dans l'en-tête du rail", () => {
     const { container } = render(<ColonneLaterale {...proprietes} />);
@@ -198,30 +239,21 @@ describe("compteurs de formation — en modules, pas en leçons (recette 2026-08
   });
 });
 
-describe("sommaire latéral — durées (recette 2026-08-19)", () => {
-  it("affiche la durée sur l'en-tête de chaque module qui en a une", () => {
+describe("sommaire latéral — en-tête de module à deux niveaux (recette 2026-08-20)", () => {
+  it("sépare le libellé « Module NN · durée » du titre, qui se lit tel quel", () => {
     render(<ColonneLaterale {...proprietes} />);
-    expect(screen.getByText(/Découvrir/).closest(".module-entete")).toHaveTextContent(
-      "20 min",
+    const entete = screen.getByText(/Découvrir/).closest(".module-entete")!;
+    expect(entete.querySelector(".module-kicker")!.textContent).toBe(
+      "Module 01 · 20 min",
     );
+    expect(entete.querySelector(".module-titre")!.textContent).toBe("Découvrir");
   });
 
-  it("n'affiche PAS la durée sur les lignes de leçons — trop dense", () => {
-    render(<ColonneLaterale {...proprietes} />);
-    expect(screen.getByRole("link", { name: /Se repérer/ })).not.toHaveTextContent(
-      /min/,
-    );
-    expect(screen.getByRole("link", { name: /Bienvenue/ })).not.toHaveTextContent(
-      /min/,
-    );
-  });
-
-  it("laisse l'en-tête de module sans durée quand le module n'en a pas", () => {
+  it("laisse le libellé sans durée quand le module n'en a pas", () => {
     const sansDuree: ReponseFormation = structuredClone(formation);
     delete sansDuree.avancement.modules[0]!.duree;
     render(<ColonneLaterale {...proprietes} formation={sansDuree} />);
-    expect(
-      screen.getByText(/Découvrir/).closest(".module-entete"),
-    ).not.toHaveTextContent(/min/);
+    const entete = screen.getByText(/Découvrir/).closest(".module-entete")!;
+    expect(entete.querySelector(".module-kicker")!.textContent).toBe("Module 01");
   });
 });

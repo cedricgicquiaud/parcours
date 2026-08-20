@@ -4,7 +4,15 @@ import { useModulesReplies, type Mode } from "../preferences";
 import { formaterDuree } from "../duree";
 import { morceauxSurlignes, type EtatRecherche } from "../recherche";
 import type { Route } from "../routeur";
-import { Barre, Icone, LienInterne, ModuleRepliable } from "./communs";
+import {
+  Barre,
+  EnTeteModule,
+  Icone,
+  LeconEtat,
+  LienInterne,
+  LigneLecon,
+  ModuleRepliable,
+} from "./communs";
 
 export interface ProprietesRail {
   route: Route;
@@ -286,11 +294,7 @@ function Resultats(props: ProprietesRail & { formation: ReponseFormation }) {
           naviguer={props.naviguer}
         >
           <span className="resultat-titre">
-            {estFaite(props.formation, resultat.leconId) ? (
-              <Icone nom="check" taille={12} />
-            ) : (
-              <span className="pastille" />
-            )}
+            <LeconEtat faite={estFaite(props.formation, resultat.leconId)} />
             {resultat.titre}
           </span>
           <span className="resultat-extrait">
@@ -364,44 +368,29 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
           ouvert={!estReplie(module.id)}
           surBascule={() => basculer(module.id)}
           enTete={
-            <>
-              <span className="module-titre">
-                {String(index + 1).padStart(2, "0")} · {module.titre}
-                {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
-                    chaque leçon — le rail resterait illisible sinon. */}
-                {module.duree !== undefined ? (
-                  <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
-                    {formaterDuree(module.duree)}
-                  </span>
-                ) : null}
-              </span>
-              <span className="module-compteur">
-                {module.faites}/{module.total}
-              </span>
-            </>
+            <EnTeteModule
+              numero={index + 1}
+              titre={module.titre}
+              duree={module.duree}
+              compteur={`${module.faites}/${module.total}`}
+            />
           }
         >
-          {module.lecons.map((lecon) => (
-            <LienInterne
-              key={lecon.id}
-              className={`ligne-lecon${lecon.id === leconCourante ? " courante" : ""}`}
-              route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
-              courante={lecon.id === leconCourante}
-              naviguer={props.naviguer}
-            >
-              {lecon.faite ? (
-                <Icone nom="check" taille={13} />
-              ) : (
-                <span className="pastille" />
-              )}
-              <span className="ligne-lecon-titre">{lecon.titre}</span>
-              {lecon.id === leconCourante && props.criteresCourants ? (
-                <span className="ligne-lecon-criteres">
-                  {props.criteresCourants.faits}/{props.criteresCourants.total}
-                </span>
-              ) : null}
-            </LienInterne>
-          ))}
+          {module.lecons.map((lecon) => {
+            const courante = lecon.id === leconCourante;
+            return (
+              <LigneLecon
+                key={lecon.id}
+                route={{ nom: "lecon", fid: formation.id, lid: lecon.id }}
+                naviguer={props.naviguer}
+                courante={courante}
+                faite={lecon.faite}
+                titre={lecon.titre}
+                duree={lecon.duree}
+                criteres={courante ? props.criteresCourants : null}
+              />
+            );
+          })}
         </ModuleRepliable>
       ))}
     </nav>
