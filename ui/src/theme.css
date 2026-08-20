@@ -536,16 +536,32 @@ summary::-webkit-details-marker {
 
 .module-entete {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   padding: 0 8px 7px;
 }
 
-.module-titre {
-  font-size: 10.5px;
-  letter-spacing: 0.11em;
+/* En-tête à deux niveaux (recette 2026-08-20, inspiration Coursera) :
+   un libellé discret « Module NN · durée », puis le titre qui se lit. */
+.module-entete-texte {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.module-kicker {
+  font-size: 10px;
+  letter-spacing: 0.1em;
   color: var(--faint);
   text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.module-titre {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .module-compteur {
@@ -573,7 +589,7 @@ details:not([open]) > summary.module-entete::before {
   transform: rotate(-45deg);
 }
 
-summary.module-entete:hover .module-titre {
+summary.module-entete:hover .module-kicker {
   color: var(--muted);
 }
 

@@ -61,8 +61,11 @@ function SommaireFiche({
           surBascule={() => basculer(module.id)}
           enTete={
             <>
-              <span className="module-titre">
-                {String(index + 1).padStart(2, "0")} · {module.titre}
+              <span className="module-entete-texte">
+                <span className="module-kicker">
+                  Module {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="module-titre">{module.titre}</span>
               </span>
               <span className="module-compteur">
                 {module.faites}/{module.total}

@@ -365,15 +365,14 @@ function Sommaire(props: ProprietesRail & { formation: ReponseFormation }) {
           surBascule={() => basculer(module.id)}
           enTete={
             <>
-              <span className="module-titre">
-                {String(index + 1).padStart(2, "0")} · {module.titre}
-                {/* Recette 2026-08-19 : la durée vit sur le module, pas sur
-                    chaque leçon — le rail resterait illisible sinon. */}
-                {module.duree !== undefined ? (
-                  <span className="ligne-lecon-duree" style={{ marginLeft: 6 }}>
-                    {formaterDuree(module.duree)}
-                  </span>
-                ) : null}
+              <span className="module-entete-texte">
+                <span className="module-kicker">
+                  Module {String(index + 1).padStart(2, "0")}
+                  {module.duree !== undefined
+                    ? ` · ${formaterDuree(module.duree)}`
+                    : ""}
+                </span>
+                <span className="module-titre">{module.titre}</span>
               </span>
               <span className="module-compteur">
                 {module.faites}/{module.total}
