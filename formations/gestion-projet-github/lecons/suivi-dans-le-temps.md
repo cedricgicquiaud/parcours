@@ -1,6 +1,7 @@
-Le Board dit ce qui est en cours ; il ne dit pas **quand**. Pour piloter dans
-le temps — cette semaine, la suivante, le mois prochain — le Project offre les
-itérations, la vue Roadmap… et surtout un rituel qui ne coûte que dix minutes.
+Le Board dit ce qui est en cours ; il ne dit pas **quand**. Ce module se
+termine par deux leçons qui posent le temps, chacune à son échelle : celle-ci
+organise la **quinzaine** — la leçon suivante organisera les **mois**, quand
+on vous demandera une roadmap.
 
 ## L'itération : découper le temps
 
@@ -33,13 +34,6 @@ l'un des deux — des milestones nommés « Sprint 1 », « Sprint 2 » sont des
 itérations déguisées : là, choisissez. Et si le rythme d'itérations ne prend
 pas chez vous, les milestones seuls font une vie très honorable.
 
-## La roadmap : la frise
-
-La vue **Roadmap** étale les items sur une frise chronologique, alignés sur
-leurs itérations (ou des champs de dates). D'un regard : ce qui est prévu tôt,
-tard, pas encore placé. C'est la vue à montrer quand quelqu'un demande « où va
-le projet ? ».
-
 ## Le rituel : le tableau ne sert que si on le regarde
 
 Le meilleur outillage meurt sans rendez-vous. Le vaccin tient en une ligne :
@@ -64,15 +58,15 @@ Dans votre Project :
 2. Posez « Barrer visuellement… » et « Ajouter une tâche… » sur l'itération
    courante ; laissez le reste sans itération (pas encore décidé — c'est un
    état honnête).
-3. Créez une vue **Roadmap** (le `+` des vues → Roadmap), puis dites-lui où
-   lire le temps : dans les options de la vue (l'engrenage en haut à droite),
-   réglez **Dates** sur votre champ d'itérations. Sans ce réglage, la frise ne
-   sait pas dater les items et reste vide. Une fois fait : vos deux items
-   apparaissent, alignés sur l'itération courante ; les autres attendent en
-   dehors.
+3. Jouez le rituel une première fois : groupez une vue par votre champ
+   d'itérations (menu de la vue → Group by) — la quinzaine d'un côté, le
+   non-décidé de l'autre. C'est l'écran de votre rendez-vous du lundi.
+
+La quinzaine est réglée. Pour dessiner les mois — la frise, les paliers datés,
+la roadmap qu'on vous demandera un jour — c'est la leçon suivante.
 
 ## Critères de réussite
 
 - [ ] mon champ de type Iteration existe — quel que soit son nom — avec ses périodes de deux semaines
 - [ ] deux items sont posés sur l'itération courante, les autres restent sans itération
-- [ ] ma vue Roadmap affiche les deux items sur la frise
+- [ ] ma vue groupée par itération sépare la quinzaine du non-décidé

@@ -1,3 +1,4 @@
+La leçon précédente a réglé la quinzaine ; celle-ci règle les mois.
 « Vous pouvez me donner une roadmap sur quatre mois ? » La question finit
 toujours par arriver. Cette leçon y répond avec GitHub seul — et sans mentir,
 car c'est le vrai danger d'une roadmap : promettre un détail qu'on ne peut pas
@@ -63,9 +64,11 @@ Deux affichages, pour deux usages :
 - **La page Milestones** : les paliers dans l'ordre, leurs dates, la barre
   d'avancement de celui en cours. C'est la roadmap « texte » — la page à
   montrer à un associé, elle se lit sans explication.
-- **La vue Roadmap « Produit »** : les chantiers en barres décalées sur la
-  frise — la roadmap « dessinée ». En option, le réglage **Markers** de la
-  vue ajoute des traits verticaux aux échéances des milestones.
+- **La vue Roadmap « Produit »** : la roadmap « dessinée ». **Roadmap** est le
+  troisième type de vue d'un Project, après Board et Table : une **frise
+  chronologique**, qui place les items sur un calendrier d'après leurs dates.
+  Ici, elle montre les chantiers en barres décalées ; en option, son réglage
+  **Markers** ajoute des traits verticaux aux échéances des milestones.
 
 ## Constatez-le sur pièce
 
@@ -83,9 +86,11 @@ Dans votre bac à sable, dans l'ordre :
    quinconce — V1 sur les semaines qui viennent, V2 décalé d'un mois.
 5. Créez la vue de la roadmap : un nouvel onglet de type **Roadmap**, nommé
    « Produit », et dans ses options, réglez **Dates** sur la paire
-   `Début` / `Cible`. (Une vue ne lit qu'une source de temps — votre vue des
-   sprints garde la sienne, celle-ci a les dates des chantiers.) Vos deux
-   barres décalées apparaissent.
+   `Début` / `Cible` — c'est ce réglage qui dit à la frise où lire le temps ;
+   sans lui, elle reste vide. Vos deux barres décalées apparaissent.
+   (Une vue ne lit qu'une source de temps à la fois ; si un jour vous voulez
+   aussi une frise de la quinzaine, créez une seconde vue Roadmap réglée sur
+   votre champ d'itérations.)
 6. La touche finale : toujours dans les options de la vue, activez les
    **Markers** sur les milestones — leurs échéances se dessinent en traits
    verticaux.
