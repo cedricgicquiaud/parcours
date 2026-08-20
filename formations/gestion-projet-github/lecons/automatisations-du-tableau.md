@@ -31,9 +31,14 @@ dernière fois.
    importé les issues à la création du projet : constatez, c'est tout),
    **Item added** → statut `Todo`, et **Item closed** → statut `Done`.
 2. **Rouvrez** l'issue d'essai (onglet Closed de la liste des issues →
-   Reopen). Retournez au tableau : elle est entrée **toute seule**, dans Todo.
+   Reopen). Puis patience : ces règles tournent en tâche de fond chez GitHub —
+   l'effet suit le geste de quelques minutes, parfois. Deux façons de
+   constater l'arrivée : la rubrique **Projects** de la colonne de droite de
+   l'issue (dès qu'elle nomme votre projet, c'est fait), puis la carte sur le
+   tableau — pensez à la colonne **No Status**, en bout de tableau, si elle
+   arrive sans statut.
 3. **Refermez-la**. Sa carte file dans **Done** — sans que vous ayez touché au
-   tableau.
+   tableau (même délai possible).
 4. Vos cinq vraies issues, elles, n'ont pas bougé de Todo : les règles ne
    déplacent que ce qui change d'état.
 
