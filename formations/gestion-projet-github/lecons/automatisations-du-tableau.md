@@ -27,8 +27,9 @@ Votre cobaye : l'issue d'essai du module 2, fermée depuis. Elle va servir une
 dernière fois.
 
 1. Ouvrez **Workflows** et activez : **Auto-add to project** (sur votre dépôt,
-   filtre `is:issue` proposé par défaut), **Item added** → statut `Todo`, et
-   **Item closed** → statut `Done`.
+   filtre `is:issue` proposé par défaut — peut-être déjà actif si vous avez
+   importé les issues à la création du projet : constatez, c'est tout),
+   **Item added** → statut `Todo`, et **Item closed** → statut `Done`.
 2. **Rouvrez** l'issue d'essai (onglet Closed de la liste des issues →
    Reopen). Retournez au tableau : elle est entrée **toute seule**, dans Todo.
 3. **Refermez-la**. Sa carte file dans **Done** — sans que vous ayez touché au
