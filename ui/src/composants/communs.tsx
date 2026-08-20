@@ -168,20 +168,18 @@ export function LigneLecon({
       naviguer={naviguer}
     >
       <LeconEtat faite={faite} />
-      <span className="ligne-lecon-texte">
-        <span className="ligne-lecon-titre">{titre}</span>
-        {duree !== undefined || criteres ? (
-          <span className="ligne-lecon-meta">
-            {duree !== undefined ? formaterDuree(duree) : null}
-            {duree !== undefined && criteres ? " · " : null}
-            {criteres ? (
-              <span className="ligne-lecon-criteres">
-                {criteres.faits}/{criteres.total}
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-      </span>
+      <span className="ligne-lecon-titre">{titre}</span>
+      {duree !== undefined || criteres ? (
+        <span className="ligne-lecon-meta">
+          {duree !== undefined ? formaterDuree(duree) : null}
+          {duree !== undefined && criteres ? " · " : null}
+          {criteres ? (
+            <span className="ligne-lecon-criteres">
+              {criteres.faits}/{criteres.total}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
     </LienInterne>
   );
 }

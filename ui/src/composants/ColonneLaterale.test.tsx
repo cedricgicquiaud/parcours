@@ -172,7 +172,7 @@ describe("rail au catalogue — compteurs en modules (recette 2026-08-19)", () =
 });
 
 describe("sommaire latéral — leçons à deux lignes (recette 2026-08-20)", () => {
-  it("affiche la durée sous le titre, en ligne de métadonnées", () => {
+  it("affiche la durée en face du titre, en métadonnée", () => {
     render(<ColonneLaterale {...proprietes} />);
     const lien = screen.getByRole("link", { name: /Se repérer/ });
     expect(lien.querySelector(".ligne-lecon-titre")!.textContent).toBe("Se repérer");
