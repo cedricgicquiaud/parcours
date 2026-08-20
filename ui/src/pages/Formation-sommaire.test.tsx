@@ -72,6 +72,13 @@ describe("sommaire de la fiche — modules repliables (recette 2026-08-19)", () 
     expect(screen.getByRole("link", { name: /Installer/ })).toBeInTheDocument();
   });
 
+  it("sépare le libellé « Module NN » du titre, comme dans le rail (2026-08-20)", () => {
+    afficher();
+    const entete = screen.getByText(/Fondations/).closest(".module-entete")!;
+    expect(entete.querySelector(".module-kicker")!.textContent).toBe("Module 01");
+    expect(entete.querySelector(".module-titre")!.textContent).toBe("Fondations");
+  });
+
   it("replie un module au clic sur son en-tête, et le redéplie au clic suivant", () => {
     afficher();
     const entete = screen.getByText(/Fondations/).closest("summary")!;

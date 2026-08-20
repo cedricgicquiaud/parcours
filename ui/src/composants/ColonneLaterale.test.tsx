@@ -198,30 +198,21 @@ describe("compteurs de formation — en modules, pas en leçons (recette 2026-08
   });
 });
 
-describe("sommaire latéral — durées (recette 2026-08-19)", () => {
-  it("affiche la durée sur l'en-tête de chaque module qui en a une", () => {
+describe("sommaire latéral — en-tête de module à deux niveaux (recette 2026-08-20)", () => {
+  it("sépare le libellé « Module NN · durée » du titre, qui se lit tel quel", () => {
     render(<ColonneLaterale {...proprietes} />);
-    expect(screen.getByText(/Découvrir/).closest(".module-entete")).toHaveTextContent(
-      "20 min",
+    const entete = screen.getByText(/Découvrir/).closest(".module-entete")!;
+    expect(entete.querySelector(".module-kicker")!.textContent).toBe(
+      "Module 01 · 20 min",
     );
+    expect(entete.querySelector(".module-titre")!.textContent).toBe("Découvrir");
   });
 
-  it("n'affiche PAS la durée sur les lignes de leçons — trop dense", () => {
-    render(<ColonneLaterale {...proprietes} />);
-    expect(screen.getByRole("link", { name: /Se repérer/ })).not.toHaveTextContent(
-      /min/,
-    );
-    expect(screen.getByRole("link", { name: /Bienvenue/ })).not.toHaveTextContent(
-      /min/,
-    );
-  });
-
-  it("laisse l'en-tête de module sans durée quand le module n'en a pas", () => {
+  it("laisse le libellé sans durée quand le module n'en a pas", () => {
     const sansDuree: ReponseFormation = structuredClone(formation);
     delete sansDuree.avancement.modules[0]!.duree;
     render(<ColonneLaterale {...proprietes} formation={sansDuree} />);
-    expect(
-      screen.getByText(/Découvrir/).closest(".module-entete"),
-    ).not.toHaveTextContent(/min/);
+    const entete = screen.getByText(/Découvrir/).closest(".module-entete")!;
+    expect(entete.querySelector(".module-kicker")!.textContent).toBe("Module 01");
   });
 });
