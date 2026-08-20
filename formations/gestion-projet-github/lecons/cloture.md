@@ -42,7 +42,9 @@ La méthode s'installe sur un vrai projet — **un seul** pour commencer, le
 plus vivant. Le premier pas tient en une session : ses travaux en cours
 convertis en issues par le moule, un Project, les workflows du module 4. La
 boucle et les Actions viendront quand le rythme sera pris — d'abord à la
-main, ensuite la règle, vous connaissez la musique.
+main, ensuite la règle, vous connaissez la musique. La roadmap (milestones
+datés, chantiers) est l'étage optionnel du dessus : ajoutez-le le jour où
+quelqu'un vous demande des dates, pas avant.
 
 ## Critères de réussite
 

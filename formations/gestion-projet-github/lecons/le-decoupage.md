@@ -19,7 +19,11 @@ projet avec son équipe — l'équipe est simplement plus rapide.
 
 Devant la liste proposée, quatre questions :
 
-1. **Un résultat par titre ?** (la granularité de la leçon précédente)
+1. **Un résultat par titre ?** (la granularité de la leçon précédente). Un
+   morceau trop gros pour une issue — plusieurs semaines, plusieurs
+   résultats — devient un **chapeau** : une issue mère, découpée en
+   sous-issues qui, elles, passent le test. Une bonne proposition vous le
+   signale d'elle-même (« ce point est trop gros, je propose un chapeau »).
 2. **Rien ne doublonne l'existant ?** Les issues #5 et #6 couvrent déjà le
    compte et le partage — la proposition doit compléter, pas répéter.
 3. **Tout est couvert ?** Reprenez la spec phrase à phrase : chaque promesse a
