@@ -16,7 +16,7 @@ texte. Chaque item porte un champ **Status** — les colonnes du tableau :
 `Todo`, `In Progress`, `Done` par défaut.
 
 Le tableau ne remplace ni les labels ni les milestones : il les **affiche**.
-Le label classe, le milestone date, le Project montre — chacun son verbe.
+Le label classe, le milestone destine, le Project montre — chacun son verbe.
 
 ## Constatez-le sur pièce
 

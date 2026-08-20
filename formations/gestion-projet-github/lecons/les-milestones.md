@@ -14,7 +14,7 @@ réponse à « où en est la V1 ? » — sans réunion, sans tableur.
 Deux règles à retenir :
 
 - une issue appartient à **au plus un** milestone — contrairement aux labels,
-  qui se cumulent. Le label classe, le milestone date : une tâche peut être
+  qui se cumulent. Le label classe, le milestone destine : une tâche peut être
   « amélioration » ET « priorité haute », mais elle vise UNE étape.
 - un milestone n'est pas une obligation : une issue sans milestone est
   simplement du travail pas encore rattaché à une étape.
