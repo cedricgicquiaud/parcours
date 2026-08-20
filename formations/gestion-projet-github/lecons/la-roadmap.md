@@ -10,8 +10,9 @@ honnête en tient compte : **plus c'est proche, plus c'est net.** Trois niveaux
 de zoom :
 
 1. **Les milestones lointains** : des enveloppes datées — une promesse en deux
-   phrases, une échéance **estimée**. Pas d'issues : détailler le lointain,
-   c'est du travail jeté d'avance.
+   phrases, une échéance **estimée**, et une seule issue : leur chapeau de
+   chantier (la barre sur la frise, on y vient). Rien de plus : détailler le
+   lointain, c'est du travail jeté d'avance.
 2. **Le milestone en cours** : le seul découpé en issues — spec relue,
    découpage discuté, création en masse (c'est tout le module 6, qui se rejoue
    à chaque palier, au moment de s'y mettre).
@@ -39,9 +40,27 @@ veille).
   en cours sur leurs itérations (le net), et les **markers** : dans les
   options de la vue (le même menu où vous avez réglé « Dates »), le réglage
   **Markers** dessine des traits verticaux aux dates clés — dont les échéances
-  de vos milestones. Pour donner un corps aux paliers lointains, une
-  **issue-chapeau** par palier (« Chantier synchronisation »), datée par des
-  champs de dates début/cible, devient une barre sur la frise.
+  de vos milestones.
+
+## La règle qui rend la vue complète : un chapeau par palier
+
+Pour dessiner des **barres**, la frise a besoin d'items datés. La règle qui
+marche : chaque palier a son **issue-chapeau de chantier** (« Chantier
+comptes », « Chantier partage »…), datée par deux champs début/cible —
+**systématiquement, palier en cours compris**. Le chapeau n'est pas réservé
+aux gros morceaux : c'est la barre du palier sur la roadmap.
+
+La séparation des deux mondes devient alors nette, et la vue toujours
+complète :
+
+- la roadmap « produit » ne montre **que les chapeaux** — un par palier, du
+  premier jour du projet au dernier : jamais de trou ;
+- le Board et les itérations ne montrent **que les issues** — le travail
+  concret du palier en cours, sans dates, jamais sur la frise.
+
+Le découpage mensuel ne touche donc pas à la roadmap : il remplit l'intérieur
+d'une barre (les sous-issues du chantier qui s'ouvre), il n'en ajoute ni n'en
+retire. La vue d'ensemble est stable ; seul le détail en dessous évolue.
 
 ## Constatez-le sur pièce
 
@@ -61,10 +80,10 @@ Dans votre bac à sable :
    « Produit », et réglez ses **Dates** sur la paire `Début` / `Cible` — une
    vue ne lit qu'une source de temps à la fois, d'où les deux vues : celle des
    itérations pour la quinzaine, celle-ci pour les mois.
-5. Datez deux issues-chapeaux en quinconce — par exemple « Créer un compte »
-   sur les semaines à venir, et une nouvelle issue « Chantier
-   synchronisation » décalée d'un mois (la synchronisation n'a pas encore la
-   sienne, votre relecture de la spec l'a montré). La vue « Produit » les
+5. Appliquez la règle : un chapeau par palier. Créez « Chantier V1 » et
+   « Chantier V2 » (deux issues, trois lignes de description chacune), et
+   datez-les en quinconce — V1 sur les semaines à venir, V2 décalé d'un
+   mois. La vue « Produit » les
    dessine en barres décalées dans le temps : votre roadmap visuelle, sur
    trois mois, en dix minutes.
 
