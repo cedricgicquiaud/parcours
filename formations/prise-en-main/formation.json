@@ -150,7 +150,7 @@
     }
   ],
   "description": "Apprendre Parcours en s'en servant : lire, écrire, publier, ranger. Chaque leçon se termine par des critères qui sont autant de vérifications réelles dans l'application.",
-  "couverture": "assets/couverture-20260819-103308.png",
+  "couverture": "assets/couverture.png",
   "presentation": "Parcours lit des formations écrites en markdown et les affiche comme un site de cours : un catalogue, une fiche, un sommaire, des leçons, une progression qui se souvient d'où vous en étiez.\n\nCette formation est elle-même une formation Parcours. Tout ce qu'elle décrit, vous pouvez l'ouvrir : ses fichiers sont dans `formations/prise-en-main/`, et ce que vous lisez en est le rendu exact.\n\n:::astuce\nSes critères de réussite ne sont pas des questions de cours. Ce sont des gestes à faire dans l'application, ici, maintenant. Les cocher tous, c'est avoir vérifié Parcours de bout en bout.\n:::\n\nProjet indépendant, non affilié à Anthropic.",
   "objectifs": [
     "Lire une formation et suivre sa progression sans rien perdre",
