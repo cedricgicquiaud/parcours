@@ -2,7 +2,7 @@
 
 ## Overview
 
-Deux écrans du lecteur de formations décrit dans `.workflow/SPEC.md` : le **catalogue**
+Deux écrans du lecteur de formations : le **catalogue**
 (`/`) et la **leçon** (`/formation/:fid/lecon/:lid`), avec le sommaire de formation
 comme colonne latérale repliable partagée. L'écran formation de la SPEC (§ 5.2) est
 absorbé par cette colonne : le sommaire est visible en permanence pendant la lecture,
