@@ -142,7 +142,6 @@ formations/   the courses: formation.json, lecons/*.md, assets/
 server/       Hono API: scan, Markdown rendering, accounts, progress, search, email
 ui/           React + Vite: catalogue, course, lesson, editor, administration
 docs/         format, API, screenshots
-.workflow/    product requirements, decisions, delivery history
 ```
 
 </details>
